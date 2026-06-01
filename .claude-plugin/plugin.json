@@ -1,0 +1,16 @@
+{
+  "name": "harness-eval-lab",
+  "version": "0.1.0",
+  "description": "Evaluate AI agent setups across 5 dimensions: Soundness, Safety, Coherence, Efficiency, Impact.",
+  "author": "Benjamin Kapner",
+  "repository": "https://github.com/Benkapner/harness-eval-lab",
+  "keywords": ["evaluation", "harness", "setup", "skills", "configuration"],
+  "hooks": {
+    "SessionStart": [
+      {
+        "command": "uv run python skills/eval-setup/scripts/ensure_deps.py",
+        "timeout": 30000
+      }
+    ]
+  }
+}
