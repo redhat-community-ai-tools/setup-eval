@@ -27,37 +27,59 @@ def list_files(directory: Path) -> list[str]:
     )
 
 
-def parse_skill(skill_path: str) -> ParsedSkill:
-    """Parse a skill directory or SKILL.md file into a ParsedSkill."""
-    path = Path(skill_path)
+def _read_and_parse(path: Path) -> tuple[str, object, list[str]]:
+    """Read a file and parse its frontmatter. Returns (raw_content, frontmatter_result, errors)."""
+    raw_content = path.read_text()
+    fm = parse_frontmatter_rich(raw_content)
+    return raw_content, fm, fm.errors
 
+
+def _not_found(path: Path, expected: str) -> tuple[str, None, list[str]]:
+    """Return a parse failure for a missing file."""
+    return "", None, [f"{expected} not found" if expected else f"Path does not exist: {path}"]
+
+
+def _resolve_skill_path(skill_path: str) -> tuple[Path, Path | None, list[str]]:
+    """Resolve a skill path to (skill_dir, skill_md, errors)."""
+    path = Path(skill_path)
     if path.is_file() and path.name.lower() == "skill.md":
-        skill_dir = path.parent
-        skill_md = path
-    elif path.is_dir():
-        skill_dir = path
+        return path.parent, path, []
+    if path.is_dir():
         candidates = [p for p in path.iterdir() if p.name.lower() == "skill.md"]
         if candidates:
-            skill_md = candidates[0]
-        else:
-            return ParsedSkill(
-                dir_path=str(skill_dir), dir_name=skill_dir.name,
-                skill_md_path=str(skill_dir / "SKILL.md"),
-                raw_content="", frontmatter={}, raw_frontmatter="",
-                frontmatter_start_line=0, body="", body_start_line=0,
-                files=list_files(skill_dir),
-                parse_errors=["SKILL.md not found"],
-            )
-    else:
+            return path, candidates[0], []
+        return path, None, ["SKILL.md not found"]
+    return path, None, [f"Path does not exist: {path}"]
+
+
+def _resolve_command_path(command_path: str) -> tuple[Path, Path | None, list[str]]:
+    """Resolve a command path to (cmd_dir, cmd_md, errors)."""
+    path = Path(command_path)
+    if path.is_file() and path.name == "command.md":
+        return path.parent, path, []
+    if path.is_dir():
+        cmd_md = path / "command.md"
+        if cmd_md.exists():
+            return path, cmd_md, []
+        return path, None, ["command.md not found"]
+    return path, None, [f"Path does not exist: {path}"]
+
+
+def parse_skill(skill_path: str) -> ParsedSkill:
+    """Parse a skill directory or SKILL.md file into a ParsedSkill."""
+    skill_dir, skill_md, errors = _resolve_skill_path(skill_path)
+
+    if skill_md is None:
         return ParsedSkill(
-            dir_path=str(path), dir_name=path.name, skill_md_path=str(path),
+            dir_path=str(skill_dir), dir_name=skill_dir.name,
+            skill_md_path=str(skill_dir / "SKILL.md"),
             raw_content="", frontmatter={}, raw_frontmatter="",
             frontmatter_start_line=0, body="", body_start_line=0,
-            files=[], parse_errors=[f"Path does not exist: {path}"],
+            files=list_files(skill_dir),
+            parse_errors=errors,
         )
 
-    raw_content = skill_md.read_text()
-    fm = parse_frontmatter_rich(raw_content)
+    raw_content, fm, parse_errors = _read_and_parse(skill_md)
 
     return ParsedSkill(
         dir_path=str(skill_dir), dir_name=skill_dir.name,
@@ -66,40 +88,25 @@ def parse_skill(skill_path: str) -> ParsedSkill:
         frontmatter_start_line=fm.frontmatter_start_line,
         body=fm.body, body_start_line=fm.body_start_line,
         files=list_files(skill_dir),
-        parse_errors=fm.errors,
+        parse_errors=parse_errors,
         tokens=count_tokens(raw_content),
     )
 
 
 def parse_command(command_path: str) -> ParsedCommand:
     """Parse a command directory or command.md file."""
-    path = Path(command_path)
+    cmd_dir, cmd_md, errors = _resolve_command_path(command_path)
 
-    if path.is_file() and path.name == "command.md":
-        cmd_dir = path.parent
-        cmd_md = path
-    elif path.is_dir():
-        cmd_md = path / "command.md"
-        cmd_dir = path
-        if not cmd_md.exists():
-            return ParsedCommand(
-                dir_path=str(path), dir_name=path.name,
-                command_md_path=str(cmd_md),
-                raw_content="", frontmatter={}, body="", body_start_line=0,
-                script_references=[], files=list_files(path),
-                parse_errors=["command.md not found"],
-            )
-    else:
+    if cmd_md is None:
         return ParsedCommand(
-            dir_path=str(path), dir_name=path.name,
-            command_md_path=str(path),
+            dir_path=str(cmd_dir), dir_name=cmd_dir.name,
+            command_md_path=str(cmd_dir / "command.md"),
             raw_content="", frontmatter={}, body="", body_start_line=0,
-            script_references=[], files=[],
-            parse_errors=[f"Path does not exist: {path}"],
+            script_references=[], files=list_files(cmd_dir),
+            parse_errors=errors,
         )
 
-    raw_content = cmd_md.read_text()
-    fm = parse_frontmatter_rich(raw_content)
+    raw_content, fm, parse_errors = _read_and_parse(cmd_md)
     script_refs = re.findall(r"[\w./-]+\.py\b", fm.body)
 
     return ParsedCommand(
@@ -109,7 +116,7 @@ def parse_command(command_path: str) -> ParsedCommand:
         body_start_line=fm.body_start_line,
         script_references=script_refs,
         files=list_files(cmd_dir),
-        parse_errors=fm.errors,
+        parse_errors=parse_errors,
         tokens=count_tokens(raw_content),
     )
 
@@ -226,8 +233,7 @@ def parse_agent(agent_path: str) -> ParsedAgent:
             parse_errors=[f"File not found: {path}"],
         )
 
-    raw_content = path.read_text()
-    fm = parse_frontmatter_rich(raw_content)
+    raw_content, fm, parse_errors = _read_and_parse(path)
 
     referenced_skills = fm.frontmatter.get("skills", []) or []
     if isinstance(referenced_skills, str):
@@ -269,6 +275,6 @@ def parse_agent(agent_path: str) -> ParsedAgent:
         allowed_tools=allowed_tools, model=model,
         sibling_files=sibling_files,
         files=list_files(agent_dir),
-        parse_errors=fm.errors,
+        parse_errors=parse_errors,
         tokens=count_tokens(raw_content),
     )
