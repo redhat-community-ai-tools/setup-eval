@@ -1,39 +1,43 @@
 # Agents Rubric
 
-Score each agent on 5 dimensions. Include a one-sentence justification citing specific evidence.
+Check each agent for issues in 5 categories. Report only real issues, citing specific evidence.
 
-## Specificity (weight 0.25)
+## Specificity
 
-- 1: Entirely vague: "implement the fix", "review the code", no concrete procedure
-- 3: Mix of specific phases and vague steps
-- 5: Every phase has specific steps, concrete rules, defined output format
+Flag if:
+- Phases have vague steps like "implement the fix" or "review the code" with no concrete procedure
+- No defined output format
 
-## Constraint clarity (weight 0.25)
+## Constraint clarity
 
-- 1: No constraints stated, agent can do anything
-- 3: Constraints exist in body and disallowedTools but with gaps
-- 5: Body constraints and disallowedTools form a coherent, complete security boundary; every "cannot" in the body is backed by enforcement; scope is explicitly bounded ("you do X, you do not do Y, Z, or W")
+Flag if:
+- No constraints stated (agent can do anything)
+- Body says "cannot" or "must not" do something but disallowedTools doesn't enforce it
+- Scope isn't explicitly bounded ("you do X, you do not do Y, Z, or W")
 
-## Zero-trust integrity (weight 0.20)
+## Zero-trust integrity
 
-- 1: No mention of input trust; agent blindly follows issue text or PR descriptions
-- 3: States zero-trust principle but verification steps are inconsistent
-- 5: Explicit zero-trust section; all external inputs treated as untrusted; concrete verification steps; injection-like patterns in input are flagged rather than followed
+Flag if:
+- No mention of input trust; agent blindly follows issue text or PR descriptions
+- External inputs are treated as trusted without verification steps
+- No injection-resistance patterns
 
-## Token efficiency (weight 0.15)
+## Token efficiency
 
-- 1: >5,000 tokens with low value density
-- 3: Under 3,000 tokens, some padding
-- 5: Every token earns its place; procedures delegated to skills (not inlined), no repeated boilerplate across agents
+Flag if:
+- Over 5,000 tokens with low value density
+- Procedures are inlined instead of delegated to skills
+- Repeated boilerplate across agents
 
-## Content quality (weight 0.15)
+## Content quality
 
-- 1: No structure, no output format, no failure handling
-- 3: Decent structure; output format defined but incomplete; failure handling vague
-- 5: Clear sections (identity, inputs, constraints, procedure, output, failure); output format with schema; exit codes documented; handoff contract explicit
+Flag if:
+- Missing key sections (identity, constraints, procedure, output format, failure handling)
+- No exit codes documented
+- Handoff contract is implicit rather than explicit
 
-## Scoring
+## Verdict
 
-Overall = round(specificity*0.25 + constraint_clarity*0.25 + zero_trust*0.20 + efficiency*0.15 + quality*0.15)
-
-Verdict: **KEEP** (4-5), **REVIEW** (3), **REMOVE** (1-2)
+- **KEEP**: No issues or only minor improvements possible
+- **REVIEW**: Multiple issues that reduce effectiveness
+- **REMOVE**: Fundamental problems (no constraints, no procedure, or harmful)

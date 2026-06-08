@@ -1,29 +1,44 @@
 # CLAUDE.md Rubric
 
-Score on 5 dimensions. Include a one-sentence justification citing specific evidence.
+Check CLAUDE.md for issues in 5 categories. Report only real issues, citing specific evidence.
 
-## Conciseness (weight 0.25)
+## Conciseness
 
-Can each line pass "would removing this cause Claude to make mistakes?" Ruthlessly prune.
+Flag if:
+- Any line could be removed without causing Claude to make mistakes
+- Content is padded or repetitive
 
-## Signal-to-noise (weight 0.25)
+Test: "Would removing this cause Claude to make mistakes?" If not, flag it.
 
-Only contains things Claude can't figure out from code? No generic advice like "write clean code", "be helpful", "follow best practices", "think step by step"? These waste tokens every session. Also check: no standard language conventions (use linters instead), no detailed API docs (link instead), no file-by-file descriptions.
+## Signal-to-noise
 
-## Skill separation (weight 0.20)
+Flag if:
+- Contains generic advice Claude already follows ("write clean code", "be helpful", "follow best practices", "think step by step")
+- Contains standard language conventions (use linters instead)
+- Contains detailed API docs (link instead of inline)
+- Contains file-by-file descriptions that will rot as the codebase evolves
 
-Domain-specific rules are in skills (on-demand), not CLAUDE.md (every session)? If CLAUDE.md contains rules that only matter for specific tasks, they should be skills.
+## Skill separation
 
-## Structure (weight 0.15)
+Flag if:
+- Contains domain-specific rules that only matter for specific tasks
+- These waste context every session and should be on-demand skills instead
 
-Clear sections? Critical rules marked? Scannable? Headers and organization that let Claude find information quickly.
+## Structure
 
-## Conflict-free (weight 0.15)
+Flag if:
+- Sections are unclear or poorly organized
+- Critical rules aren't marked or easy to find
+- Document isn't scannable (no headers, no logical grouping)
 
-No contradictions with any skill? Check that CLAUDE.md rules don't say the opposite of what a skill says.
+## Conflict-free
 
-## Scoring
+Flag if:
+- Any rule contradicts what a skill, command, or hook says
+- Same instruction appears in both CLAUDE.md and a skill (double token cost)
 
-Overall = round(conciseness*0.25 + signal_to_noise*0.25 + skill_separation*0.20 + structure*0.15 + conflict_free*0.15)
+## Verdict
 
-Verdict: **KEEP** (4-5), **REVIEW** (3), **REMOVE** (1-2)
+- **KEEP**: No issues or only minor improvements possible
+- **REVIEW**: Multiple issues that reduce effectiveness
+- **REMOVE**: Fundamental problems (entirely generic or conflicting)

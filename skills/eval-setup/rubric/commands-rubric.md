@@ -1,42 +1,53 @@
 # Commands Rubric
 
-Score each command on 7 dimensions. For clean commands, use a compact one-line format. For commands with issues, use the full format with per-dimension scores.
+Check each command for issues in 7 categories. For clean commands, use a compact one-line format.
 
-## Description quality (weight 0.20)
+## Description quality
 
-Clear, concise description for the UI menu?
+Flag if:
+- Description is missing from frontmatter
+- Description is too short or vague (2 words or fewer)
+- Description doesn't clearly say what the command does
 
-## Instruction clarity (weight 0.20)
+## Instruction clarity
 
-Claude knows exactly what to do, in what order?
+Flag if:
+- Claude wouldn't know what to do or in what order
+- Steps are ambiguous or contradictory
 
-## Script integrity (weight 0.15)
+## Script integrity
 
-Referenced scripts exist? Discovery pattern works?
+Flag if:
+- Referenced script files don't exist
+- Discovery pattern is broken
 
-## Scope appropriateness (weight 0.10)
+## Scope appropriateness
 
-Should this be a command (user-triggered) or a skill (auto-triggered)? Commands are for explicit actions (/review, /deploy). Skills are for passive behavior (whenever you write Python, do X).
+Flag if:
+- This should be a skill (auto-triggered) instead of a command (user-triggered)
+- Commands are for explicit actions (/review, /deploy); skills are for passive behavior
 
-## Token efficiency (weight 0.10)
+## Token efficiency
 
-Concise or bloated?
+Flag if:
+- Command is over 15KB (recommend splitting)
+- Command is over 30KB (must split)
 
-Command size thresholds:
-- Under 15KB: Fine
-- 15-30KB: Recommend splitting. Score at most 2/5.
-- Over 30KB: Strong recommendation to split. Score at most 1/5.
+## Redundancy with defaults
 
-## Redundancy with defaults (weight 0.15)
+Flag if:
+- Claude already does this without the command
+- Built-in capabilities include: plan mode, commit messages, code explanation, code review
+- Test: "if i deleted this command, could i get the same result by just asking Claude?" If yes, flag it.
 
-Does Claude already do this without the command? Claude has built-in plan mode, generates commit messages, explains code, and reviews code by default. A command is only justified if it adds specific rules, constraints, or structure. Test: "if i deleted this command, could i get the same result by just asking Claude?" If yes, it's redundant.
+## Robustness
 
-## Robustness (weight 0.10)
+Flag if:
+- Command hardcodes assumptions (specific tools, languages, thresholds)
+- Doesn't handle missing dependencies gracefully
 
-Does the command handle edge cases? Does it hardcode assumptions (specific tools, languages, thresholds)? Does it gracefully handle missing dependencies?
+## Verdict
 
-## Scoring
-
-Overall = round(description*0.20 + clarity*0.20 + script*0.15 + scope*0.10 + efficiency*0.10 + redundancy*0.15 + robustness*0.10)
-
-Verdict: **KEEP** (4-5), **REVIEW** (3), **REMOVE** (1-2)
+- **KEEP**: No issues or only minor improvements possible
+- **REVIEW**: Multiple issues that reduce effectiveness
+- **REMOVE**: Fundamental problems (entirely redundant, broken, or harmful)
