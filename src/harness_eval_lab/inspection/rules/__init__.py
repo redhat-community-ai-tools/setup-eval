@@ -19,6 +19,9 @@ def register_all_rules() -> None:
         AgentNoCredentialAccess,
     )
     from harness_eval_lab.inspection.rules.agents.no_prompt_injection import AgentNoPromptInjection
+    from harness_eval_lab.inspection.rules.agents.obfuscation_detection import (
+        AgentObfuscationDetection,
+    )
     from harness_eval_lab.inspection.rules.agents.referenced_skills_exist import (
         ReferencedSkillsExist,
     )
@@ -46,6 +49,9 @@ def register_all_rules() -> None:
     from harness_eval_lab.inspection.rules.commands.no_prompt_injection import (
         CommandNoPromptInjection,
     )
+    from harness_eval_lab.inspection.rules.commands.obfuscation_detection import (
+        CommandObfuscationDetection,
+    )
     from harness_eval_lab.inspection.rules.commands.reverse_shell_detection import (
         CommandReverseShellDetection,
     )
@@ -65,6 +71,9 @@ def register_all_rules() -> None:
     from harness_eval_lab.inspection.rules.hooks.valid_structure import HooksValidStructure
     from harness_eval_lab.inspection.rules.security.no_credential_access import NoCredentialAccess
     from harness_eval_lab.inspection.rules.security.no_prompt_injection import NoPromptInjection
+    from harness_eval_lab.inspection.rules.security.obfuscation_detection import (
+        ObfuscationDetection,
+    )
     from harness_eval_lab.inspection.rules.security.reverse_shell_detection import (
         ReverseShellDetection,
     )
@@ -81,11 +90,13 @@ def register_all_rules() -> None:
         NoPromptInjection,
         NoCredentialAccess,
         ReverseShellDetection,
+        ObfuscationDetection,
         CommandDescriptionRequired,
         CommandScriptExists,
         CommandNoPromptInjection,
         CommandNoCredentialAccess,
         CommandReverseShellDetection,
+        CommandObfuscationDetection,
         CommandSkillOverlap,
         CommandShadowsBuiltin,
         CommandDuplicateDetection,
@@ -100,5 +111,6 @@ def register_all_rules() -> None:
         AgentNoPromptInjection,
         AgentNoCredentialAccess,
         AgentReverseShellDetection,
+        AgentObfuscationDetection,
     ]:
         register_rule(rule_cls())
