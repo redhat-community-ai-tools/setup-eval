@@ -1,6 +1,6 @@
 ---
 name: eval-skill
-description: Deep-evaluate a single skill with static analysis and qualitative rubric scoring, both individually and in context of the full setup. Use when the user wants to check if a specific skill is worth keeping, well-built, or redundant.
+description: Deep-evaluate a single skill with static analysis and qualitative issue detection, both individually and in context of the full setup. Use when the user wants to check if a specific skill is worth keeping, well-built, or redundant.
 allowed-tools:
   - Bash
   - Read
@@ -8,14 +8,14 @@ allowed-tools:
 
 # Evaluate Skill
 
-Deep-evaluate a single skill using two layers: static analysis (Layer 1) and qualitative rubric scoring (Layer 2), both individually and in context of the full setup.
+Deep-evaluate a single skill using two layers: static analysis (Layer 1) and qualitative issue detection (Layer 2), both individually and in context of the full setup.
 
 ## Hard Rules
 
-1. **Never give a verdict without running the rubric.** Read the actual file content and score all rubric dimensions before assigning a star rating or verdict.
-2. **Every dimension must have a score and justification.** Both the individual rubric AND the contextual analysis must be fully scored before the verdict.
-3. **Read before you judge.** Read the actual SKILL.md content (and reference files if they exist) to evaluate quality.
-4. **Don't manufacture problems.** If the skill is good, say so. Only recommend changes that make a real difference.
+1. **Never give a verdict without running the checks.** Read the actual file content and check all rubric categories before assigning a verdict.
+2. **Every category must be checked.** Both the individual rubric AND the contextual analysis must be fully evaluated.
+3. **Read before you judge.** Read the actual SKILL.md content (and reference files if they exist).
+4. **Don't manufacture problems.** If the skill is good, say so. Only report real issues.
 5. **Always end with a short summary.**
 
 ## Step 1: Select the Skill
@@ -38,23 +38,21 @@ Read the JSON output. It contains diagnostics, token count, and contextual findi
 
 Read the skill's actual content:
 1. The SKILL.md file
-2. All files in the skill's subdirectories (reference files). Score the COMBINED content.
+2. All files in the skill's subdirectories (reference files). Check the COMBINED content.
 3. The skill's guidelines.md (if it exists)
 
-Also read for context (don't score these, they're context for evaluating the target skill):
+Also read for context (don't check these, they're context for evaluating the target skill):
 4. All OTHER skill SKILL.md files in the workspace
 5. CLAUDE.md
 6. Hooks in .claude/settings.json
 
 ## Step 4: Individual Rubric (Layer 2)
 
-Read `rubric/skills-rubric.md` for dimension definitions and scoring criteria.
+Read `rubric/skills-rubric.md` for the issue categories and what to flag.
 
-Score the skill on all 5 dimensions with one-sentence justifications citing specific evidence from the skill content.
+Check the skill against all 5 categories. For each issue found, cite specific evidence from the content.
 
-Calculate overall: round(specificity*0.25 + redundancy*0.25 + trigger*0.20 + efficiency*0.15 + quality*0.15)
-
-Verdict: **KEEP** (4-5 stars), **REVIEW** (3 stars), **REMOVE** (1-2 stars)
+Verdict: **KEEP** (no issues or minor only), **REVIEW** (multiple issues), **REMOVE** (fundamentally broken/redundant)
 
 ## Step 5: Contextual Analysis (Layer 2)
 
@@ -71,7 +69,7 @@ Read `report-format.md` for the full report structure.
 
 The report must include:
 - Layer 1 results (rule checklist with PASS/FAIL)
-- Layer 2 individual rubric (all 5 dimensions scored)
-- Layer 2 contextual analysis (all 5 dimensions rated)
+- Layer 2 individual issues (by category)
+- Layer 2 contextual analysis
 - +/!/x sections (good, improve, broken)
 - Final verdict with suggestions

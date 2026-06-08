@@ -7,8 +7,8 @@ AI agent setup evaluation tool. Inspects the environment around AI coding agents
 Two interfaces: CLI (3 commands) and Claude Code plugin (2 skills). Both call the same Python engine.
 
 **Two evaluation layers:**
-- **Layer 1 (CLI):** 26 deterministic Python rules + system-level analysis (token budget, trigger overlaps, dependencies). No LLM. Fast. Good for CI.
-- **Layer 2 (plugin only):** Claude reads every file, scores components qualitatively, runs 21 cross-type optimization checks, and produces the 5-dimension scorecard (Soundness, Safety, Coherence, Efficiency, Impact).
+- **Layer 1 (CLI):** 26 deterministic Python rules + system-level analysis (token budget, trigger overlaps, dependencies). No LLM. Fast. Good for CI. Optional `--rubric` flag for LLM-based issue detection.
+- **Layer 2 (plugin only):** Claude reads every file, detects issues qualitatively, runs 21 cross-type optimization checks, and produces an evidence-based health summary.
 
 ## Development
 
@@ -23,10 +23,12 @@ Two interfaces: CLI (3 commands) and Claude Code plugin (2 skills). Both call th
 ### CLI
 - `harness-eval-lab scan <path>` - run 26 rules, print errors and warnings. No LLM, deterministic, good for CI. Supports `--fail-on-error` for hooks/CI.
 - `harness-eval-lab eval-setup <path>` - run 26 rules + system-level analysis (token budget, trigger overlaps, dependencies).
-- `harness-eval-lab eval-skill <skill-path>` - inspect one skill + contextual analysis. Add `--context <path>` for setup context. Add `--rubric` for LLM-based scoring (optional, costs money).
+- `harness-eval-lab eval-skill <skill-path>` - inspect one skill + contextual analysis. Add `--context <path>` for setup context. Add `--rubric` for LLM-based issue detection (optional, costs money).
+
+All CLI commands support `--user-config <path>` to discover user-level CLAUDE.md files from `~/.claude/`.
 
 ### Plugin (slash commands)
-- `/eval-setup` - Layer 1 + Layer 2: run the engine, then Claude reads every file, scores on the 5 dimensions, runs 21 cross-type checks, produces the scorecard
+- `/eval-setup` - Layer 1 + Layer 2: run the engine, then Claude reads every file, detects issues, runs 21 cross-type checks, produces health summary
 - `/eval-skill` - Layer 1 + Layer 2: deep-evaluate one skill individually and in context
 
 ## Project structure
@@ -36,7 +38,7 @@ Two interfaces: CLI (3 commands) and Claude Code plugin (2 skills). Both call th
   - `config/` - rule presets (recommended/strict/security/pre-workflow)
   - `core/` - setup discovery, fingerprinting, component types
   - `inspection/` - static analysis: parsers, lint engine, 26 rules, suppression, auto-fix
-  - `rubric/` - LLM-based scoring with weighted dimensions per component type
+  - `rubric/` - LLM-based issue detection with per-component-type categories
   - `analysis/` - system-level analysis (budget, triggers, dependencies)
   - `output/` - report generation (terminal + JSON)
   - `utils/` - token counting, TF-IDF similarity, frontmatter parsing, LLM client

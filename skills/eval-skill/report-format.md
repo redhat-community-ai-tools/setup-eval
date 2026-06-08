@@ -24,15 +24,14 @@
 
 ---
 
-## Layer 2: Rubric Scoring
+## Layer 2: Issue Detection
 
-### Individual Assessment                        ####    VERDICT
+### Individual Assessment                        [VERDICT]
 
-  Specificity:      [score]/5  [justification]
-  Redundancy:       [score]/5  [justification]
-  Trigger quality:  [score]/5  [justification]
-  Token efficiency: [score]/5  [justification]
-  Content quality:  [score]/5  [justification]
+  Issues found:
+    [category] [description] -> [suggestion]
+    [category] [description] -> [suggestion]
+  Or: No issues found.
 
 ### Contextual Analysis
 
