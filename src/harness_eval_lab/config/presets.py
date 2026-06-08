@@ -10,9 +10,11 @@ RECOMMENDED: dict[str, str] = {
     "content/duplicate-detection": "warning",
     "security/no-prompt-injection": "error",
     "security/no-credential-access": "error",
+    "security/reverse-shell": "error",
     # Command rules
     "command/no-prompt-injection": "error",
     "command/no-credential-access": "error",
+    "command/reverse-shell": "error",
     # CLAUDE.md rules
     "claude-md/exists": "warning",
     # Agent rules
@@ -22,6 +24,7 @@ RECOMMENDED: dict[str, str] = {
     "agent/constraint-body-match": "warning",
     "agent/no-prompt-injection": "error",
     "agent/no-credential-access": "error",
+    "agent/reverse-shell": "error",
 }
 
 STRICT: dict[str, str] = {
@@ -44,9 +47,11 @@ SECURITY: dict[str, str] = {
     "content/duplicate-detection": "off",
     "security/no-prompt-injection": "error",
     "security/no-credential-access": "error",
+    "security/reverse-shell": "error",
     # Command security rules
     "command/no-prompt-injection": "error",
     "command/no-credential-access": "error",
+    "command/reverse-shell": "error",
     # CLAUDE.md rules
     "claude-md/exists": "off",
     # Agent rules
@@ -56,6 +61,7 @@ SECURITY: dict[str, str] = {
     "agent/constraint-body-match": "off",
     "agent/no-prompt-injection": "error",
     "agent/no-credential-access": "error",
+    "agent/reverse-shell": "error",
 }
 
 PRE_WORKFLOW: dict[str, str] = {
@@ -75,6 +81,7 @@ PRE_WORKFLOW: dict[str, str] = {
     "command/shadows-builtin": "off",
     "command/no-prompt-injection": "error",
     "command/no-credential-access": "error",
+    "command/reverse-shell": "error",
     "claude-md/exists": "off",
     "claude-md/skill-duplication": "off",
     "claude-md/generic-advice": "off",
@@ -85,6 +92,7 @@ PRE_WORKFLOW: dict[str, str] = {
     "agent/constraint-body-match": "off",
     "agent/no-prompt-injection": "error",
     "agent/no-credential-access": "error",
+    "agent/reverse-shell": "error",
 }
 
 PRESETS: dict[str, dict[str, str]] = {

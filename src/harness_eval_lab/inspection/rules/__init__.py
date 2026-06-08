@@ -22,6 +22,9 @@ def register_all_rules() -> None:
     from harness_eval_lab.inspection.rules.agents.referenced_skills_exist import (
         ReferencedSkillsExist,
     )
+    from harness_eval_lab.inspection.rules.agents.reverse_shell_detection import (
+        AgentReverseShellDetection,
+    )
 
     # CLAUDE.md rules
     from harness_eval_lab.inspection.rules.claude_md.exists import ClaudeMdExists
@@ -43,6 +46,9 @@ def register_all_rules() -> None:
     from harness_eval_lab.inspection.rules.commands.no_prompt_injection import (
         CommandNoPromptInjection,
     )
+    from harness_eval_lab.inspection.rules.commands.reverse_shell_detection import (
+        CommandReverseShellDetection,
+    )
     from harness_eval_lab.inspection.rules.commands.script_exists import CommandScriptExists
     from harness_eval_lab.inspection.rules.commands.shadows_builtin import CommandShadowsBuiltin
     from harness_eval_lab.inspection.rules.commands.skill_overlap import CommandSkillOverlap
@@ -59,6 +65,9 @@ def register_all_rules() -> None:
     from harness_eval_lab.inspection.rules.hooks.valid_structure import HooksValidStructure
     from harness_eval_lab.inspection.rules.security.no_credential_access import NoCredentialAccess
     from harness_eval_lab.inspection.rules.security.no_prompt_injection import NoPromptInjection
+    from harness_eval_lab.inspection.rules.security.reverse_shell_detection import (
+        ReverseShellDetection,
+    )
     from harness_eval_lab.inspection.rules.structural.skill_md_exists import SkillMdExists
 
     for rule_cls in [
@@ -71,10 +80,12 @@ def register_all_rules() -> None:
         DuplicateDetection,
         NoPromptInjection,
         NoCredentialAccess,
+        ReverseShellDetection,
         CommandDescriptionRequired,
         CommandScriptExists,
         CommandNoPromptInjection,
         CommandNoCredentialAccess,
+        CommandReverseShellDetection,
         CommandSkillOverlap,
         CommandShadowsBuiltin,
         CommandDuplicateDetection,
@@ -88,5 +99,6 @@ def register_all_rules() -> None:
         ConstraintBodyMatch,
         AgentNoPromptInjection,
         AgentNoCredentialAccess,
+        AgentReverseShellDetection,
     ]:
         register_rule(rule_cls())
