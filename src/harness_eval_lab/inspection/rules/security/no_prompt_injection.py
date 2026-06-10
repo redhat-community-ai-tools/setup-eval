@@ -12,23 +12,41 @@ from harness_eval_lab.inspection.types import (
 )
 
 _INJECTION_PATTERNS: list[tuple[str, re.Pattern]] = [
-    ("ignore previous instructions", re.compile(r"ignore\s+(all\s+)?previous\s+instructions", re.I)),
+    (
+        "ignore previous instructions",
+        re.compile(r"ignore\s+(all\s+)?previous\s+instructions", re.I),
+    ),
     ("disregard prior", re.compile(r"disregard\s+(all\s+)?(prior|previous|above)", re.I)),
     ("you are now", re.compile(r"you\s+are\s+now\s+(?:a|an|the)\s+", re.I)),
     ("system prompt override", re.compile(r"system\s*prompt\s*(override|injection|change)", re.I)),
-    ("override instructions", re.compile(r"override\s+(all\s+)?(instructions|rules|guidelines)", re.I)),
+    (
+        "override instructions",
+        re.compile(r"override\s+(all\s+)?(instructions|rules|guidelines)", re.I),
+    ),
     ("new instructions", re.compile(r"new\s+instructions?\s*:", re.I)),
     ("jailbreak attempt", re.compile(r"(\bDAN\b|do\s+anything\s+now|developer\s+mode)", re.I)),
-    ("prompt leak", re.compile(r"(reveal|show|print|output)\s+(your|the)\s+(system\s+)?prompt", re.I)),
+    (
+        "prompt leak",
+        re.compile(r"(reveal|show|print|output)\s+(your|the)\s+(system\s+)?prompt", re.I),
+    ),
     ("role hijack", re.compile(r"forget\s+(everything|all|your)\s+(you|instructions|rules)", re.I)),
     ("hidden instruction", re.compile(r"<\s*(?:system|instruction|hidden)\s*>", re.I)),
     ("role play", re.compile(r"pretend\s+(?:to\s+be|you\s+are)\s+(?:a|an|the)\s+", re.I)),
-    ("encoding evasion", re.compile(r"(?:in\s+base64|encode\s+(?:as|in|to)\s+base64|base64\s+encod)", re.I)),
+    (
+        "encoding evasion",
+        re.compile(r"(?:in\s+base64|encode\s+(?:as|in|to)\s+base64|base64\s+encod)", re.I),
+    ),
     ("repeat after me", re.compile(r"repeat\s+after\s+me", re.I)),
-    ("bypass safety", re.compile(r"(?:ignore\s+safety|bypass\s+(?:filter|safety|restriction))", re.I)),
+    (
+        "bypass safety",
+        re.compile(r"(?:ignore\s+safety|bypass\s+(?:filter|safety|restriction))", re.I),
+    ),
     ("output control", re.compile(r"output\s+the\s+following\s+exactly", re.I)),
     ("markdown image exfiltration", re.compile(r"!\[.*?\]\(https?://", re.I)),
-    ("translate evasion", re.compile(r"translate\s+(?:this|the\s+following)\s+(?:to|into)\s+", re.I)),
+    (
+        "translate evasion",
+        re.compile(r"translate\s+(?:this|the\s+following)\s+(?:to|into)\s+", re.I),
+    ),
 ]
 
 
@@ -65,8 +83,7 @@ class NoPromptInjection:
                 if pattern.search(line):
                     is_quoted = stripped.startswith(">") or stripped.startswith('"')
                     is_example = any(
-                        w in line.lower()
-                        for w in ["for example", "e.g.", "such as", "like:"]
+                        w in line.lower() for w in ["for example", "e.g.", "such as", "like:"]
                     )
 
                     if in_code_fence:

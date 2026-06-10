@@ -42,7 +42,9 @@ class TestBudgetAnalysis:
         assert budget.heaviest_component_ratio > 0
 
     def test_setup_b_has_more_tokens(
-        self, setup_a_path: str, setup_b_path: str,
+        self,
+        setup_a_path: str,
+        setup_b_path: str,
     ) -> None:
         a = analyze_budget(discover_setup("a", setup_a_path))
         b = analyze_budget(discover_setup("b", setup_b_path))

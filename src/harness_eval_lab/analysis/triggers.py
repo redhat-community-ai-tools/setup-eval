@@ -38,8 +38,14 @@ def analyze_triggers(setup: Setup) -> TriggerReport:
             descriptions[comp.name] = desc
 
             desc_lower = desc.lower()
-            use_when_phrases = ["use when", "use for", "applies to",
-                                "relevant for", "triggered by", "invoke when"]
+            use_when_phrases = [
+                "use when",
+                "use for",
+                "applies to",
+                "relevant for",
+                "triggered by",
+                "invoke when",
+            ]
             if not any(phrase in desc_lower for phrase in use_when_phrases):
                 report.missing_use_when.append(comp.name)
         else:

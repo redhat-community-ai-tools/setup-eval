@@ -19,12 +19,27 @@ def cli() -> None:
 
 @cli.command("eval-setup-lint")
 @click.argument("path", type=click.Path(exists=True))
-@click.option("--preset", type=click.Choice(["recommended", "strict", "security", "pre-workflow"]), default="recommended")
+@click.option(
+    "--preset",
+    type=click.Choice(["recommended", "strict", "security", "pre-workflow"]),
+    default="recommended",
+)
 @click.option("--format", "fmt", type=click.Choice(["terminal", "json"]), default="terminal")
 @click.option("--fix", is_flag=True, help="Apply auto-fixes.")
-@click.option("--fail-on-error", is_flag=True, help="Exit with code 1 if any errors found. Useful for CI and hooks.")
-@click.option("--user-config", type=click.Path(), default=None, help="Path to ~/.claude directory for user-level CLAUDE.md discovery.")
-def eval_setup_lint(path: str, preset: str, fmt: str, fix: bool, fail_on_error: bool, user_config: str | None) -> None:
+@click.option(
+    "--fail-on-error",
+    is_flag=True,
+    help="Exit with code 1 if any errors found. Useful for CI and hooks.",
+)
+@click.option(
+    "--user-config",
+    type=click.Path(),
+    default=None,
+    help="Path to ~/.claude directory for user-level CLAUDE.md discovery.",
+)
+def eval_setup_lint(
+    path: str, preset: str, fmt: str, fix: bool, fail_on_error: bool, user_config: str | None
+) -> None:
     """Layer 1: 26 rules + system analysis. No LLM, deterministic, fast."""
     from harness_eval_lab.analysis.system import analyze_system
     from harness_eval_lab.config.presets import PRESETS
@@ -71,7 +86,9 @@ def eval_setup_lint(path: str, preset: str, fmt: str, fix: bool, fail_on_error: 
                     for d in r.diagnostics:
                         icon = "X" if d.severity.value == "error" else "!"
                         click.echo(f"  [{icon}] {d.rule_id}: {d.message}")
-            click.echo(f"\n{len(results)} components scanned, {total_errors} errors, {total_warnings} warnings")
+            click.echo(
+                f"\n{len(results)} components scanned, {total_errors} errors, {total_warnings} warnings"
+            )
 
     if fix:
         all_findings = [d for r in results for d in r.diagnostics]
@@ -90,8 +107,15 @@ def eval_setup_lint(path: str, preset: str, fmt: str, fix: bool, fail_on_error: 
 @click.option("--format", "fmt", type=click.Choice(["terminal", "json"]), default="terminal")
 @click.option("--provider", type=click.Choice(["gemini", "anthropic"]), default="gemini")
 @click.option("--model", default=None, help="LLM model for rubric scoring.")
-@click.option("--user-config", type=click.Path(), default=None, help="Path to ~/.claude directory for user-level CLAUDE.md discovery.")
-def eval_setup_review(path: str, fmt: str, provider: str, model: str | None, user_config: str | None) -> None:
+@click.option(
+    "--user-config",
+    type=click.Path(),
+    default=None,
+    help="Path to ~/.claude directory for user-level CLAUDE.md discovery.",
+)
+def eval_setup_review(
+    path: str, fmt: str, provider: str, model: str | None, user_config: str | None
+) -> None:
     """Layer 2: LLM rubric scoring per component. Requires API key in environment."""
     from harness_eval_lab.rubric.scorer import RubricChecker
     from harness_eval_lab.utils.llm import create_client
@@ -102,8 +126,7 @@ def eval_setup_review(path: str, fmt: str, provider: str, model: str | None, use
     checker = RubricChecker(client)
 
     context_parts = [
-        f"[{c.component_type.value}] {c.name}: {c.content[:200]}"
-        for c in setup.components
+        f"[{c.component_type.value}] {c.name}: {c.content[:200]}" for c in setup.components
     ]
     context_text = "\n".join(context_parts)
 
@@ -180,14 +203,40 @@ def eval_setup_review(path: str, fmt: str, provider: str, model: str | None, use
 
 @cli.command("eval-skill")
 @click.argument("skill_path", type=click.Path(exists=True))
-@click.option("--context", "context_path", type=click.Path(exists=True), default=None, help="Setup directory for contextual evaluation.")
-@click.option("--preset", type=click.Choice(["recommended", "strict", "security", "pre-workflow"]), default="recommended")
+@click.option(
+    "--context",
+    "context_path",
+    type=click.Path(exists=True),
+    default=None,
+    help="Setup directory for contextual evaluation.",
+)
+@click.option(
+    "--preset",
+    type=click.Choice(["recommended", "strict", "security", "pre-workflow"]),
+    default="recommended",
+)
 @click.option("--format", "fmt", type=click.Choice(["terminal", "json"]), default="terminal")
-@click.option("--rubric", "run_rubric", is_flag=True, help="Also run LLM rubric scoring (requires API key).")
+@click.option(
+    "--rubric", "run_rubric", is_flag=True, help="Also run LLM rubric scoring (requires API key)."
+)
 @click.option("--provider", type=click.Choice(["gemini", "anthropic"]), default="gemini")
 @click.option("--model", default=None, help="LLM model for rubric scoring.")
-@click.option("--user-config", type=click.Path(), default=None, help="Path to ~/.claude directory for user-level CLAUDE.md discovery.")
-def eval_skill(skill_path: str, context_path: str | None, preset: str, fmt: str, run_rubric: bool, provider: str, model: str | None, user_config: str | None) -> None:
+@click.option(
+    "--user-config",
+    type=click.Path(),
+    default=None,
+    help="Path to ~/.claude directory for user-level CLAUDE.md discovery.",
+)
+def eval_skill(
+    skill_path: str,
+    context_path: str | None,
+    preset: str,
+    fmt: str,
+    run_rubric: bool,
+    provider: str,
+    model: str | None,
+    user_config: str | None,
+) -> None:
     """Deep-evaluate a single skill, individually and in context of the setup."""
     from harness_eval_lab.config.presets import PRESETS
     from harness_eval_lab.inspection.engine import lint
@@ -215,8 +264,13 @@ def eval_skill(skill_path: str, context_path: str | None, preset: str, fmt: str,
 
         context_text = None
         if context_path:
-            ctx_setup = discover_setup(name="context", path=context_path, user_config_dir=user_config)
-            parts = [f"[{c.component_type.value}] {c.name}: {c.content[:200]}" for c in ctx_setup.components]
+            ctx_setup = discover_setup(
+                name="context", path=context_path, user_config_dir=user_config
+            )
+            parts = [
+                f"[{c.component_type.value}] {c.name}: {c.content[:200]}"
+                for c in ctx_setup.components
+            ]
             context_text = "\n".join(parts)
 
         rubric_result = checker.check(
@@ -317,9 +371,11 @@ def _inspect_single_file(target, config_rules):
         return [lint_hooks(str(target), config_rules)]
     elif target.suffix == ".md":
         return [lint_agent(str(target), config_rules)]
-    click.echo(f"Warning: could not detect component type for '{target.name}'. "
-               f"Expected: SKILL.md, command.md, CLAUDE.md, settings.json, or an agent .md file.",
-               err=True)
+    click.echo(
+        f"Warning: could not detect component type for '{target.name}'. "
+        f"Expected: SKILL.md, command.md, CLAUDE.md, settings.json, or an agent .md file.",
+        err=True,
+    )
     return []
 
 
@@ -338,9 +394,7 @@ def _contextual_skill_analysis(skill_path, context_path, config_rules):
             continue
         sim = tfidf_similarity(skill.body, comp.content)
         if sim >= 0.60:
-            findings.append(
-                f"Content overlap: {sim:.0%} similar to skill '{comp.name}'"
-            )
+            findings.append(f"Content overlap: {sim:.0%} similar to skill '{comp.name}'")
 
     for comp in setup.by_type(ComponentType.CLAUDE_MD):
         for section_text in comp.content.split("\n#"):
@@ -348,24 +402,22 @@ def _contextual_skill_analysis(skill_path, context_path, config_rules):
                 continue
             sim = tfidf_similarity(skill.body, section_text)
             if sim >= 0.50:
-                findings.append(
-                    f"Overlaps with CLAUDE.md content ({sim:.0%} similar)"
-                )
+                findings.append(f"Overlaps with CLAUDE.md content ({sim:.0%} similar)")
                 break
 
     triggers = analyze_triggers(setup)
     for name_a, name_b, sim in triggers.overlap_pairs:
         if skill.dir_name in (name_a, name_b):
             other = name_b if name_a == skill.dir_name else name_a
-            findings.append(
-                f"Trigger overlap with '{other}' ({sim:.0%} similar descriptions)"
-            )
+            findings.append(f"Trigger overlap with '{other}' ({sim:.0%} similar descriptions)")
 
     if skill.frontmatter:
         desc = skill.frontmatter.get("description", "")
         if isinstance(desc, str):
             desc_lower = desc.lower()
-            if not any(p in desc_lower for p in ["use when", "use for", "applies to", "relevant for"]):
+            if not any(
+                p in desc_lower for p in ["use when", "use for", "applies to", "relevant for"]
+            ):
                 findings.append(
                     "Missing activation context in description (no 'use when' phrasing)"
                 )

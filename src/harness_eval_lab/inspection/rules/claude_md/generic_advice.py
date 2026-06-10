@@ -18,7 +18,10 @@ _GENERIC_PATTERNS: list[tuple[str, re.Pattern]] = [
     ("follow best practices", re.compile(r"follow\s+(the\s+)?best\s+practices", re.I)),
     ("think step by step", re.compile(r"think\s+step\s+by\s+step", re.I)),
     ("consider edge cases", re.compile(r"consider\s+(all\s+)?edge\s+cases", re.I)),
-    ("handle errors properly", re.compile(r"handle\s+errors\s+(?:properly|correctly|gracefully)", re.I)),
+    (
+        "handle errors properly",
+        re.compile(r"handle\s+errors\s+(?:properly|correctly|gracefully)", re.I),
+    ),
     ("use proper formatting", re.compile(r"use\s+proper\s+formatting", re.I)),
     ("write maintainable code", re.compile(r"write\s+maintainable\s+code", re.I)),
     ("be concise", re.compile(r"be\s+concise\s+and\s+clear", re.I)),
@@ -61,12 +64,14 @@ class ClaudeMdGenericAdvice:
 
             for label, pattern in _GENERIC_PATTERNS:
                 if pattern.search(line):
-                    context.report(ReportDescriptor(
-                        message_id="generic",
-                        data={"label": label, "line": str(i + 1)},
-                        location=Location(
-                            file=claude_md.file_path,
-                            start_line=i + 1,
-                        ),
-                    ))
+                    context.report(
+                        ReportDescriptor(
+                            message_id="generic",
+                            data={"label": label, "line": str(i + 1)},
+                            location=Location(
+                                file=claude_md.file_path,
+                                start_line=i + 1,
+                            ),
+                        )
+                    )
                     break

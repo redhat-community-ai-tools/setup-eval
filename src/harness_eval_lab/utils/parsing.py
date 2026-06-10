@@ -52,9 +52,12 @@ def parse_frontmatter_rich(content: str) -> FrontmatterResult:
 
     if not lines or lines[0].strip() != "---":
         return FrontmatterResult(
-            frontmatter={}, raw_frontmatter="",
-            frontmatter_start_line=0, body=content,
-            body_start_line=1, errors=[],
+            frontmatter={},
+            raw_frontmatter="",
+            frontmatter_start_line=0,
+            body=content,
+            body_start_line=1,
+            errors=[],
         )
 
     end_idx = None
@@ -66,13 +69,16 @@ def parse_frontmatter_rich(content: str) -> FrontmatterResult:
     if end_idx is None:
         errors.append("Frontmatter opening '---' found but no closing '---'")
         return FrontmatterResult(
-            frontmatter={}, raw_frontmatter="",
-            frontmatter_start_line=0, body=content,
-            body_start_line=1, errors=errors,
+            frontmatter={},
+            raw_frontmatter="",
+            frontmatter_start_line=0,
+            body=content,
+            body_start_line=1,
+            errors=errors,
         )
 
     raw_fm = "\n".join(lines[1:end_idx])
-    body = "\n".join(lines[end_idx + 1:])
+    body = "\n".join(lines[end_idx + 1 :])
 
     frontmatter: dict[str, object] = {}
     try:

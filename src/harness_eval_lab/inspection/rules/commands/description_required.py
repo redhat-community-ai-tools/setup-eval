@@ -36,6 +36,10 @@ class CommandDescriptionRequired:
         if not desc:
             context.report(ReportDescriptor(message_id="missing", location=loc))
         elif isinstance(desc, str) and len(desc.split()) <= 2:
-            context.report(ReportDescriptor(
-                message_id="too_vague", data={"desc": desc}, location=loc,
-            ))
+            context.report(
+                ReportDescriptor(
+                    message_id="too_vague",
+                    data={"desc": desc},
+                    location=loc,
+                )
+            )

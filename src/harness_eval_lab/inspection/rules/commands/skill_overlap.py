@@ -41,12 +41,14 @@ class CommandSkillOverlap:
 
             similarity = tfidf_similarity(cmd.body, skill.body)
             if similarity >= OVERLAP_THRESHOLD:
-                context.report(ReportDescriptor(
-                    message_id="overlap",
-                    data={
-                        "command": cmd.dir_name,
-                        "pct": str(int(similarity * 100)),
-                        "skill": skill.dir_name,
-                    },
-                    location=Location(file=cmd.command_md_path, start_line=1),
-                ))
+                context.report(
+                    ReportDescriptor(
+                        message_id="overlap",
+                        data={
+                            "command": cmd.dir_name,
+                            "pct": str(int(similarity * 100)),
+                            "skill": skill.dir_name,
+                        },
+                        location=Location(file=cmd.command_md_path, start_line=1),
+                    )
+                )

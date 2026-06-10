@@ -27,6 +27,7 @@ class DependencyReport:
     broken_refs: list[DependencyEdge] = field(default_factory=list)
     orphan_components: list[str] = field(default_factory=list)
 
+
 _SKILL_REF_PATTERNS = [
     re.compile(r"skills?[/\\](\w[\w-]*)"),
     re.compile(r"/(\w[\w-]*)\s+skill"),
@@ -51,13 +52,15 @@ def analyze_dependencies(setup: Setup) -> DependencyReport:
                 if not skill_name:
                     continue
                 exists = skill_name in known_skills
-                edges.append(DependencyEdge(
-                    source_type="agent",
-                    source_name=comp.name,
-                    target_type="skill",
-                    target_name=skill_name,
-                    exists=exists,
-                ))
+                edges.append(
+                    DependencyEdge(
+                        source_type="agent",
+                        source_name=comp.name,
+                        target_type="skill",
+                        target_name=skill_name,
+                        exists=exists,
+                    )
+                )
 
     for comp in setup.components:
         if comp.component_type in (ComponentType.MCP_CONFIG, ComponentType.HOOKS):
@@ -66,13 +69,15 @@ def analyze_dependencies(setup: Setup) -> DependencyReport:
             for match in pattern.finditer(comp.content):
                 ref_name = match.group(1)
                 if ref_name in all_known and ref_name != comp.name:
-                    edges.append(DependencyEdge(
-                        source_type=comp.component_type.value,
-                        source_name=comp.name,
-                        target_type="skill" if ref_name in known_skills else "command",
-                        target_name=ref_name,
-                        exists=True,
-                    ))
+                    edges.append(
+                        DependencyEdge(
+                            source_type=comp.component_type.value,
+                            source_name=comp.name,
+                            target_type="skill" if ref_name in known_skills else "command",
+                            target_name=ref_name,
+                            exists=True,
+                        )
+                    )
 
     seen = set()
     deduped: list[DependencyEdge] = []

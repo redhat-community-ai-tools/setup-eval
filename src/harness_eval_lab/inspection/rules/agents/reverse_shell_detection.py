@@ -37,11 +37,14 @@ class AgentReverseShellDetection:
         for i, line in enumerate(lines):
             for label, pattern in _REVERSE_SHELL_PATTERNS:
                 if pattern.search(line):
-                    context.report(ReportDescriptor(
-                        message_id="shell_detected",
-                        data={"label": label, "line": str(i + 1)},
-                        location=Location(
-                            file=agent.agent_md_path, start_line=i + 1,
-                        ),
-                    ))
+                    context.report(
+                        ReportDescriptor(
+                            message_id="shell_detected",
+                            data={"label": label, "line": str(i + 1)},
+                            location=Location(
+                                file=agent.agent_md_path,
+                                start_line=i + 1,
+                            ),
+                        )
+                    )
                     break

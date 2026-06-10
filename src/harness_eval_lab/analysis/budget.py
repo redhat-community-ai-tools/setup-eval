@@ -20,6 +20,7 @@ class BudgetReport:
     heaviest_component_name: str = ""
     heaviest_component_ratio: float = 0.0
 
+
 ALWAYS_LOADED_TYPES = {ComponentType.CLAUDE_MD, ComponentType.HOOKS}
 
 

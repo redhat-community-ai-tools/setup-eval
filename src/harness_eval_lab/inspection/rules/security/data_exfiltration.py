@@ -17,7 +17,10 @@ _EXFIL_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ("wget post data", re.compile(r"wget\s+--post-data", re.I)),
     ("dns tunneling dig", re.compile(r"\bdig\s+.*\bTXT\b", re.I)),
     ("dns tunneling nslookup", re.compile(r"\bnslookup\s+.*-type=TXT", re.I)),
-    ("webhook exfiltration", re.compile(r"(?:curl|wget|fetch)\s+.*(?:webhook|hooks\.|pipedream|requestbin|ngrok)", re.I)),
+    (
+        "webhook exfiltration",
+        re.compile(r"(?:curl|wget|fetch)\s+.*(?:webhook|hooks\.|pipedream|requestbin|ngrok)", re.I),
+    ),
     ("base64 pipe to network", re.compile(r"base64\s+.*\|\s*(?:curl|wget|nc)\b", re.I)),
     ("archive pipe to network", re.compile(r"tar\s+.*\|\s*(?:curl|wget|nc|ssh)\b", re.I)),
 ]

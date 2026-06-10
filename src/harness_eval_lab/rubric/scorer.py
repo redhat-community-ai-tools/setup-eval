@@ -88,13 +88,15 @@ class RubricChecker:
         for item in data.get("issues", []):
             if not isinstance(item, dict):
                 continue
-            issues.append(RubricIssue(
-                description=str(item.get("description", "")),
-                category=str(item.get("category", "")),
-                severity=str(item.get("severity", "warning")).lower(),
-                evidence=str(item.get("evidence", "")),
-                suggestion=str(item.get("suggestion", "")),
-            ))
+            issues.append(
+                RubricIssue(
+                    description=str(item.get("description", "")),
+                    category=str(item.get("category", "")),
+                    severity=str(item.get("severity", "warning")).lower(),
+                    evidence=str(item.get("evidence", "")),
+                    suggestion=str(item.get("suggestion", "")),
+                )
+            )
 
         return RubricResult(
             component_name=component_name,
@@ -137,24 +139,28 @@ class RubricChecker:
 
             issue_match = _ISSUE_RE.match(line)
             if issue_match:
-                issues.append(RubricIssue(
-                    description=issue_match.group(1).strip(),
-                    category=issue_match.group(2).strip(),
-                    severity=issue_match.group(3).strip().lower(),
-                    evidence=issue_match.group(4).strip(),
-                    suggestion=issue_match.group(5).strip(),
-                ))
+                issues.append(
+                    RubricIssue(
+                        description=issue_match.group(1).strip(),
+                        category=issue_match.group(2).strip(),
+                        severity=issue_match.group(3).strip().lower(),
+                        evidence=issue_match.group(4).strip(),
+                        suggestion=issue_match.group(5).strip(),
+                    )
+                )
                 continue
 
             # Fall back to legacy format (without severity)
             legacy_match = _ISSUE_RE_LEGACY.match(line)
             if legacy_match:
-                issues.append(RubricIssue(
-                    description=legacy_match.group(1).strip(),
-                    category=legacy_match.group(2).strip(),
-                    evidence=legacy_match.group(3).strip(),
-                    suggestion=legacy_match.group(4).strip(),
-                ))
+                issues.append(
+                    RubricIssue(
+                        description=legacy_match.group(1).strip(),
+                        category=legacy_match.group(2).strip(),
+                        evidence=legacy_match.group(3).strip(),
+                        suggestion=legacy_match.group(4).strip(),
+                    )
+                )
                 continue
 
             verdict_match = _VERDICT_RE.match(line)

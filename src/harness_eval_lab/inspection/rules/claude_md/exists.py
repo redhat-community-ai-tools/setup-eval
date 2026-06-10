@@ -30,7 +30,9 @@ class ClaudeMdExists:
             return
 
         if any("not found" in e.lower() or "file not found" in e.lower() for e in cmd.parse_errors):
-            context.report(ReportDescriptor(
-                message_id="not_found",
-                location=Location(file=cmd.file_path, start_line=1),
-            ))
+            context.report(
+                ReportDescriptor(
+                    message_id="not_found",
+                    location=Location(file=cmd.file_path, start_line=1),
+                )
+            )

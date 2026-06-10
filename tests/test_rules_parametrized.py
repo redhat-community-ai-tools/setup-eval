@@ -9,10 +9,10 @@ import pytest
 from harness_eval_lab.inspection.engine import lint, lint_claude_md, lint_command
 from harness_eval_lab.inspection.types import ParsedSkill
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_skill(tmp_path: Path, name: str, body: str) -> str:
     """Create a minimal skill directory and return its path."""
@@ -47,6 +47,7 @@ def _rule_ids(result: object) -> set[str]:
 # security/obfuscation
 # ---------------------------------------------------------------------------
 
+
 class TestObfuscationRule:
     @pytest.mark.parametrize(
         "body,should_fire",
@@ -62,7 +63,7 @@ class TestObfuscationRule:
                 id="clean-body-no-trigger",
             ),
             pytest.param(
-                'var x = String.fromCharCode(72, 101, 108)',
+                "var x = String.fromCharCode(72, 101, 108)",
                 True,
                 id="char-code-construction-triggers",
             ),
@@ -81,6 +82,7 @@ class TestObfuscationRule:
 # ---------------------------------------------------------------------------
 # security/data-exfiltration
 # ---------------------------------------------------------------------------
+
 
 class TestDataExfiltrationRule:
     @pytest.mark.parametrize(
@@ -103,9 +105,7 @@ class TestDataExfiltrationRule:
             ),
         ],
     )
-    def test_data_exfiltration(
-        self, tmp_path: Path, body: str, should_fire: bool
-    ) -> None:
+    def test_data_exfiltration(self, tmp_path: Path, body: str, should_fire: bool) -> None:
         skill_path = _make_skill(tmp_path, "exfil-test", body)
         result = lint(skill_path)
         ids = _rule_ids(result)
@@ -118,6 +118,7 @@ class TestDataExfiltrationRule:
 # ---------------------------------------------------------------------------
 # security/reverse-shell
 # ---------------------------------------------------------------------------
+
 
 class TestReverseShellRule:
     @pytest.mark.parametrize(
@@ -140,9 +141,7 @@ class TestReverseShellRule:
             ),
         ],
     )
-    def test_reverse_shell(
-        self, tmp_path: Path, body: str, should_fire: bool
-    ) -> None:
+    def test_reverse_shell(self, tmp_path: Path, body: str, should_fire: bool) -> None:
         skill_path = _make_skill(tmp_path, "revshell-test", body)
         result = lint(skill_path)
         ids = _rule_ids(result)
@@ -156,6 +155,7 @@ class TestReverseShellRule:
 # command/shadows-builtin
 # ---------------------------------------------------------------------------
 
+
 class TestCommandShadowsBuiltinRule:
     @pytest.mark.parametrize(
         "cmd_name,should_fire",
@@ -166,9 +166,7 @@ class TestCommandShadowsBuiltinRule:
             pytest.param("my-custom-cmd", False, id="custom-name-no-shadow"),
         ],
     )
-    def test_shadows_builtin(
-        self, tmp_path: Path, cmd_name: str, should_fire: bool
-    ) -> None:
+    def test_shadows_builtin(self, tmp_path: Path, cmd_name: str, should_fire: bool) -> None:
         cmd_path = _make_command(tmp_path, cmd_name, "Run the deployment process.")
         result = lint_command(cmd_path)
         ids = _rule_ids(result)
@@ -181,6 +179,7 @@ class TestCommandShadowsBuiltinRule:
 # ---------------------------------------------------------------------------
 # command/skill-overlap
 # ---------------------------------------------------------------------------
+
 
 class TestCommandSkillOverlapRule:
     def _make_parsed_skill(self, tmp_path: Path, name: str, body: str) -> ParsedSkill:
@@ -209,9 +208,7 @@ class TestCommandSkillOverlapRule:
             pytest.param(False, False, id="no-overlap-clean"),
         ],
     )
-    def test_skill_overlap(
-        self, tmp_path: Path, overlap: bool, should_fire: bool
-    ) -> None:
+    def test_skill_overlap(self, tmp_path: Path, overlap: bool, should_fire: bool) -> None:
         shared_text = (
             "Analyze the pull request changes carefully. "
             "Check for correctness bugs, security vulnerabilities, "
@@ -258,6 +255,7 @@ class TestCommandSkillOverlapRule:
 # claude-md/generic-advice
 # ---------------------------------------------------------------------------
 
+
 class TestClaudeMdGenericAdviceRule:
     @pytest.mark.parametrize(
         "content,should_fire",
@@ -279,9 +277,7 @@ class TestClaudeMdGenericAdviceRule:
             ),
         ],
     )
-    def test_generic_advice(
-        self, tmp_path: Path, content: str, should_fire: bool
-    ) -> None:
+    def test_generic_advice(self, tmp_path: Path, content: str, should_fire: bool) -> None:
         claude_md_path = _make_claude_md(tmp_path, content)
         result = lint_claude_md(claude_md_path)
         ids = _rule_ids(result)
@@ -294,6 +290,7 @@ class TestClaudeMdGenericAdviceRule:
 # ---------------------------------------------------------------------------
 # claude-md/skill-duplication
 # ---------------------------------------------------------------------------
+
 
 class TestClaudeMdSkillDuplicationRule:
     def _make_parsed_skill(self, tmp_path: Path, name: str, body: str) -> ParsedSkill:
@@ -322,9 +319,7 @@ class TestClaudeMdSkillDuplicationRule:
             pytest.param(False, False, id="unique-content-no-trigger"),
         ],
     )
-    def test_skill_duplication(
-        self, tmp_path: Path, duplicated: bool, should_fire: bool
-    ) -> None:
+    def test_skill_duplication(self, tmp_path: Path, duplicated: bool, should_fire: bool) -> None:
         skill_body = (
             "Analyze the pull request changes carefully. "
             "Check for correctness bugs, security vulnerabilities, "

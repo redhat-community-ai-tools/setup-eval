@@ -47,20 +47,24 @@ class HooksValidStructure:
             loc = Location(file=hooks_data.file_path)
 
             if not command:
-                context.report(ReportDescriptor(
-                    message_id="missing_command",
-                    data={"event": event},
-                    location=loc,
-                ))
+                context.report(
+                    ReportDescriptor(
+                        message_id="missing_command",
+                        data={"event": event},
+                        location=loc,
+                    )
+                )
                 continue
 
             for pattern, label in _DANGEROUS_PATTERNS:
                 if pattern.search(command):
-                    context.report(ReportDescriptor(
-                        message_id="dangerous_pattern",
-                        data={"event": event, "pattern": label},
-                        location=loc,
-                    ))
+                    context.report(
+                        ReportDescriptor(
+                            message_id="dangerous_pattern",
+                            data={"event": event, "pattern": label},
+                            location=loc,
+                        )
+                    )
 
             script_match = re.search(r"[\w./-]+\.(?:py|sh|bash)\b", command)
             if script_match:
@@ -68,8 +72,10 @@ class HooksValidStructure:
                 if not script_path.exists() and not script_path.is_absolute():
                     settings_dir = Path(hooks_data.file_path).parent
                     if not (settings_dir / script_path).exists():
-                        context.report(ReportDescriptor(
-                            message_id="script_missing",
-                            data={"event": event, "script": str(script_path)},
-                            location=loc,
-                        ))
+                        context.report(
+                            ReportDescriptor(
+                                message_id="script_missing",
+                                data={"event": event, "script": str(script_path)},
+                                location=loc,
+                            )
+                        )

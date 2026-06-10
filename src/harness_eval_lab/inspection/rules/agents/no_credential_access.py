@@ -40,23 +40,29 @@ class AgentNoCredentialAccess:
             for pattern in _SENSITIVE_PATHS:
                 match = pattern.search(line)
                 if match:
-                    context.report(ReportDescriptor(
-                        message_id="sensitive_path",
-                        data={"match": match.group(0), "line": str(i + 1)},
-                        location=Location(
-                            file=agent.agent_md_path, start_line=i + 1,
-                        ),
-                    ))
+                    context.report(
+                        ReportDescriptor(
+                            message_id="sensitive_path",
+                            data={"match": match.group(0), "line": str(i + 1)},
+                            location=Location(
+                                file=agent.agent_md_path,
+                                start_line=i + 1,
+                            ),
+                        )
+                    )
                     break
 
             for pattern in _SENSITIVE_ENV_VARS:
                 match = pattern.search(line)
                 if match:
-                    context.report(ReportDescriptor(
-                        message_id="sensitive_env",
-                        data={"match": match.group(0), "line": str(i + 1)},
-                        location=Location(
-                            file=agent.agent_md_path, start_line=i + 1,
-                        ),
-                    ))
+                    context.report(
+                        ReportDescriptor(
+                            message_id="sensitive_env",
+                            data={"match": match.group(0), "line": str(i + 1)},
+                            location=Location(
+                                file=agent.agent_md_path,
+                                start_line=i + 1,
+                            ),
+                        )
+                    )
                     break

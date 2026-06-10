@@ -52,11 +52,13 @@ class CommandDuplicateDetection:
             similarity = tfidf_similarity(cmd.body, other_text)
             if similarity >= SIMILARITY_THRESHOLD:
                 state["reported"].add(pair)
-                context.report(ReportDescriptor(
-                    message_id="duplicate",
-                    data={
-                        "similarity": str(int(similarity * 100)),
-                        "other": other_name,
-                    },
-                    location=Location(file=cmd.command_md_path, start_line=1),
-                ))
+                context.report(
+                    ReportDescriptor(
+                        message_id="duplicate",
+                        data={
+                            "similarity": str(int(similarity * 100)),
+                            "other": other_name,
+                        },
+                        location=Location(file=cmd.command_md_path, start_line=1),
+                    )
+                )

@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 from harness_eval_lab.core.types import ComponentType
 from harness_eval_lab.inspection.parsers import (
@@ -22,6 +24,8 @@ from harness_eval_lab.inspection.types import (
     ParsedCommand,
     ParsedSkill,
     ReportDescriptor,
+    Rule,
+    RuleCategory,
     RuleContext,
     Severity,
 )
@@ -44,15 +48,13 @@ def _is_nested_repo(child: Path, scan_root: Path) -> bool:
 def _interpolate(template: str, data: dict[str, str | int] | None) -> str:
     if not data:
         return template
-    return _INTERPOLATION_RE.sub(
-        lambda m: str(data.get(m.group(1), m.group(0))), template
-    )
+    return _INTERPOLATION_RE.sub(lambda m: str(data.get(m.group(1), m.group(0))), template)
 
 
 def _resolve_severity(
-    rule: object,
-    config_rules: dict[str, str | list],
-) -> tuple[Severity, list] | None:
+    rule: Rule,
+    config_rules: dict[str, str | list[Any]],
+) -> tuple[Severity, list[Any]] | None:
     """Determine effective severity and options for a rule.
 
     Returns (severity, options), or None if the rule should be skipped.
@@ -86,18 +88,19 @@ def _make_report_fn(
     rule_id: str,
     severity: Severity,
     meta_messages: dict[str, str],
-    category: str,
+    category: RuleCategory,
     fixable: bool,
     file_path: str,
-    suppressions: dict,
+    suppressions: dict[int | None, set[str]],
     findings: list[Finding],
     suppression_counter: list[int],
-) -> callable:
+) -> Callable[[ReportDescriptor], None]:
     """Build a report callback for a single rule.
 
     Uses a mutable list for the suppression counter so the caller can read
     the updated value after all rules have run.
     """
+
     def report(descriptor: ReportDescriptor) -> None:
         loc = descriptor.location or Location(file=file_path)
         if is_suppressed(suppressions, rule_id, loc.start_line):
@@ -106,17 +109,24 @@ def _make_report_fn(
         template = meta_messages.get(descriptor.message_id, descriptor.message_id)
         message = _interpolate(template, descriptor.data)
         effective_severity = descriptor.severity_override or severity
-        findings.append(Finding(
-            rule_id=rule_id, severity=effective_severity, message=message,
-            location=loc, category=category, fix=descriptor.fix if fixable else None,
-        ))
+        findings.append(
+            Finding(
+                rule_id=rule_id,
+                severity=effective_severity,
+                message=message,
+                location=loc,
+                category=category,
+                fix=descriptor.fix if fixable else None,
+            )
+        )
+
     return report
 
 
 def _parse_errors_to_findings(
     parse_errors: list[str],
     file_path: str,
-    category: str = "structural",
+    category: RuleCategory | str = "structural",
 ) -> list[Finding]:
     """Convert parse errors into Finding objects."""
     return [
@@ -125,7 +135,7 @@ def _parse_errors_to_findings(
             severity=Severity.ERROR,
             message=error,
             location=Location(file=file_path),
-            category=category,
+            category=category,  # type: ignore[arg-type]
         )
         for error in parse_errors
     ]
@@ -136,11 +146,11 @@ def _run_rules(
     file_path: str,
     raw_content: str,
     skill: ParsedSkill | None,
-    target: object | None,
-    config_rules: dict[str, str | list] | None,
+    target: Any,
+    config_rules: dict[str, str | list[Any]] | None,
     all_skills: list[ParsedSkill] | None = None,
     all_commands: list[ParsedCommand] | None = None,
-    scan_state: dict | None = None,
+    scan_state: dict[str, Any] | None = None,
 ) -> tuple[list[Finding], int]:
     """Run rules for a given target type. Returns (findings, suppression_count)."""
     findings: list[Finding] = []
@@ -150,9 +160,16 @@ def _run_rules(
     scan_state = scan_state if scan_state is not None else {}
 
     dummy_skill = skill or ParsedSkill(
-        dir_path="", dir_name="", skill_md_path=file_path, raw_content="",
-        frontmatter={}, raw_frontmatter="", frontmatter_start_line=0,
-        body="", body_start_line=0, files=[],
+        dir_path="",
+        dir_name="",
+        skill_md_path=file_path,
+        raw_content="",
+        frontmatter={},
+        raw_frontmatter="",
+        frontmatter_start_line=0,
+        body="",
+        body_start_line=0,
+        files=[],
     )
 
     rules = get_all_rules()
@@ -169,9 +186,15 @@ def _run_rules(
         context = RuleContext(
             skill=dummy_skill,
             report=_make_report_fn(
-                rule.meta.id, severity, rule.meta.messages,
-                rule.meta.category, rule.meta.fixable, file_path,
-                suppressions, findings, suppression_counter,
+                rule.meta.id,
+                severity,
+                rule.meta.messages,
+                rule.meta.category,
+                rule.meta.fixable,
+                file_path,
+                suppressions,
+                findings,
+                suppression_counter,
             ),
             severity=severity,
             options=options,
@@ -208,8 +231,9 @@ def _build_result(
 
 
 def lint(
-    skill_path: str, config_rules: dict[str, str | list] | None = None,
-    scan_state: dict | None = None,
+    skill_path: str,
+    config_rules: dict[str, str | list[Any]] | None = None,
+    scan_state: dict[str, Any] | None = None,
 ) -> InspectionResult:
     """Lint a single skill directory or SKILL.md file."""
     skill = parse_skill(skill_path)
@@ -220,119 +244,162 @@ def lint(
     )
 
     rule_diags, suppression_count = _run_rules(
-        ComponentType.SKILL, skill.skill_md_path, skill.raw_content,
-        skill=skill, target=skill, config_rules=config_rules,
+        ComponentType.SKILL,
+        skill.skill_md_path,
+        skill.raw_content,
+        skill=skill,
+        target=skill,
+        config_rules=config_rules,
         scan_state=scan_state,
     )
     diagnostics.extend(rule_diags)
 
     return _build_result(
-        skill_path, skill.dir_name, skill.tokens, "skill",
-        diagnostics, suppression_count,
+        skill_path,
+        skill.dir_name,
+        skill.tokens,
+        "skill",
+        diagnostics,
+        suppression_count,
     )
 
 
 def lint_command(
     command_path: str,
-    config_rules: dict[str, str | list] | None = None,
+    config_rules: dict[str, str | list[Any]] | None = None,
     all_skills: list[ParsedSkill] | None = None,
     all_commands: list[ParsedCommand] | None = None,
-    scan_state: dict | None = None,
+    scan_state: dict[str, Any] | None = None,
 ) -> InspectionResult:
     """Lint a single command directory."""
     cmd = parse_command(command_path)
     diagnostics = _parse_errors_to_findings(cmd.parse_errors, cmd.command_md_path)
 
     rule_diags, suppression_count = _run_rules(
-        ComponentType.COMMAND, cmd.command_md_path, cmd.raw_content,
-        skill=None, target=cmd, config_rules=config_rules,
-        all_skills=all_skills, all_commands=all_commands,
+        ComponentType.COMMAND,
+        cmd.command_md_path,
+        cmd.raw_content,
+        skill=None,
+        target=cmd,
+        config_rules=config_rules,
+        all_skills=all_skills,
+        all_commands=all_commands,
         scan_state=scan_state,
     )
     diagnostics.extend(rule_diags)
 
     return _build_result(
-        command_path, cmd.dir_name, cmd.tokens, "command",
-        diagnostics, suppression_count,
+        command_path,
+        cmd.dir_name,
+        cmd.tokens,
+        "command",
+        diagnostics,
+        suppression_count,
     )
 
 
 def lint_claude_md(
     file_path: str,
-    config_rules: dict[str, str | list] | None = None,
+    config_rules: dict[str, str | list[Any]] | None = None,
     all_skills: list[ParsedSkill] | None = None,
-    scan_state: dict | None = None,
+    scan_state: dict[str, Any] | None = None,
 ) -> InspectionResult:
     """Lint a CLAUDE.md file."""
     claude_md = parse_claude_md(file_path)
     diagnostics = _parse_errors_to_findings(claude_md.parse_errors, file_path)
 
     rule_diags, suppression_count = _run_rules(
-        ComponentType.CLAUDE_MD, file_path, claude_md.raw_content,
-        skill=None, target=claude_md, config_rules=config_rules,
+        ComponentType.CLAUDE_MD,
+        file_path,
+        claude_md.raw_content,
+        skill=None,
+        target=claude_md,
+        config_rules=config_rules,
         all_skills=all_skills,
         scan_state=scan_state,
     )
     diagnostics.extend(rule_diags)
 
     return _build_result(
-        file_path, Path(file_path).name, claude_md.tokens, "claude_md",
-        diagnostics, suppression_count,
+        file_path,
+        Path(file_path).name,
+        claude_md.tokens,
+        "claude_md",
+        diagnostics,
+        suppression_count,
     )
 
 
 def lint_hooks(
-    settings_path: str, config_rules: dict[str, str | list] | None = None,
-    scan_state: dict | None = None,
+    settings_path: str,
+    config_rules: dict[str, str | list[Any]] | None = None,
+    scan_state: dict[str, Any] | None = None,
 ) -> InspectionResult:
     """Lint hooks from settings.json."""
     hooks = parse_hooks(settings_path)
     diagnostics = _parse_errors_to_findings(hooks.parse_errors, settings_path)
 
     rule_diags, suppression_count = _run_rules(
-        ComponentType.HOOKS, settings_path, hooks.raw_content,
-        skill=None, target=hooks, config_rules=config_rules,
+        ComponentType.HOOKS,
+        settings_path,
+        hooks.raw_content,
+        skill=None,
+        target=hooks,
+        config_rules=config_rules,
         scan_state=scan_state,
     )
     diagnostics.extend(rule_diags)
 
     return _build_result(
-        settings_path, "hooks", 0, "hooks",
-        diagnostics, suppression_count,
+        settings_path,
+        "hooks",
+        0,
+        "hooks",
+        diagnostics,
+        suppression_count,
     )
 
 
 def lint_agent(
     agent_path: str,
-    config_rules: dict[str, str | list] | None = None,
+    config_rules: dict[str, str | list[Any]] | None = None,
     all_skills: list[ParsedSkill] | None = None,
-    scan_state: dict | None = None,
+    scan_state: dict[str, Any] | None = None,
 ) -> InspectionResult:
     """Lint a single agent .md file."""
     agent = parse_agent(agent_path)
     diagnostics = _parse_errors_to_findings(agent.parse_errors, agent.agent_md_path)
 
     rule_diags, suppression_count = _run_rules(
-        ComponentType.AGENT, agent.agent_md_path, agent.raw_content,
-        skill=None, target=agent, config_rules=config_rules,
+        ComponentType.AGENT,
+        agent.agent_md_path,
+        agent.raw_content,
+        skill=None,
+        target=agent,
+        config_rules=config_rules,
         all_skills=all_skills,
         scan_state=scan_state,
     )
     diagnostics.extend(rule_diags)
 
     return _build_result(
-        agent_path, agent.file_name.removesuffix(".md"), agent.tokens, "agent",
-        diagnostics, suppression_count,
+        agent_path,
+        agent.file_name.removesuffix(".md"),
+        agent.tokens,
+        "agent",
+        diagnostics,
+        suppression_count,
     )
 
 
 def inspect_setup(
-    setup: object, config_rules: dict[str, str | list] | None = None,
+    setup: Any,
+    config_rules: dict[str, str | list[Any]] | None = None,
 ) -> list[InspectionResult]:
     """Run inspection on all components in a setup."""
     from harness_eval_lab.core.types import ComponentType as CT
 
-    scan_state: dict = {}
+    scan_state: dict[str, Any] = {}
     results: list[InspectionResult] = []
     for comp in setup.by_type(CT.SKILL):
         results.append(lint(str(Path(comp.path).parent), config_rules, scan_state=scan_state))
@@ -352,7 +419,8 @@ def inspect_setup(
 
 
 def lint_directory(
-    scan_path: str, config_rules: dict[str, str | list] | None = None,
+    scan_path: str,
+    config_rules: dict[str, str | list[Any]] | None = None,
 ) -> list[InspectionResult]:
     """Lint all skills found under a directory."""
     path = Path(scan_path)

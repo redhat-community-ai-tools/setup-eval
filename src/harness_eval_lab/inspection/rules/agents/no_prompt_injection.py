@@ -45,8 +45,7 @@ class AgentNoPromptInjection:
                 if pattern.search(line):
                     is_quoted = stripped.startswith(">") or stripped.startswith('"')
                     is_example = any(
-                        w in line.lower()
-                        for w in ["for example", "e.g.", "such as", "like:"]
+                        w in line.lower() for w in ["for example", "e.g.", "such as", "like:"]
                     )
 
                     if in_code_fence:
@@ -59,13 +58,15 @@ class AgentNoPromptInjection:
                         message_id = "injection_detected"
                         severity_override = None
 
-                    context.report(ReportDescriptor(
-                        message_id=message_id,
-                        data={"label": label, "line": str(i + 1)},
-                        location=Location(
-                            file=agent.agent_md_path,
-                            start_line=i + 1,
-                        ),
-                        severity_override=severity_override,
-                    ))
+                    context.report(
+                        ReportDescriptor(
+                            message_id=message_id,
+                            data={"label": label, "line": str(i + 1)},
+                            location=Location(
+                                file=agent.agent_md_path,
+                                start_line=i + 1,
+                            ),
+                            severity_override=severity_override,
+                        )
+                    )
                     break

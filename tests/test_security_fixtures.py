@@ -56,14 +56,10 @@ class TestSecurityFixture:
         setup = discover_setup(name="security-issues", path=str(SECURITY_SETUP))
         results = inspect_setup(setup)
         security_findings = [
-            d
-            for r in results
-            for d in r.diagnostics
-            if d.rule_id.startswith("security/")
+            d for r in results for d in r.diagnostics if d.rule_id.startswith("security/")
         ]
         assert len(security_findings) >= 5, (
-            f"Expected at least 5 security findings across the setup, "
-            f"got {len(security_findings)}"
+            f"Expected at least 5 security findings across the setup, got {len(security_findings)}"
         )
 
 
@@ -76,11 +72,15 @@ class TestSecurityFixtureE2E:
         from harness_eval_lab.cli import cli
 
         runner = CliRunner()
-        result = runner.invoke(cli, [
-            "eval-setup-lint",
-            str(SECURITY_SETUP),
-            "--preset", "security",
-        ])
+        result = runner.invoke(
+            cli,
+            [
+                "eval-setup-lint",
+                str(SECURITY_SETUP),
+                "--preset",
+                "security",
+            ],
+        )
         assert result.exit_code == 0
         assert "security/" in result.output
 
@@ -90,12 +90,16 @@ class TestSecurityFixtureE2E:
         from harness_eval_lab.cli import cli
 
         runner = CliRunner()
-        result = runner.invoke(cli, [
-            "eval-setup-lint",
-            str(SECURITY_SETUP),
-            "--preset", "security",
-            "--fail-on-error",
-        ])
+        result = runner.invoke(
+            cli,
+            [
+                "eval-setup-lint",
+                str(SECURITY_SETUP),
+                "--preset",
+                "security",
+                "--fail-on-error",
+            ],
+        )
         assert result.exit_code == 1
 
     def test_cli_lint_json_output_parseable(self) -> None:
@@ -106,11 +110,15 @@ class TestSecurityFixtureE2E:
         from harness_eval_lab.cli import cli
 
         runner = CliRunner()
-        result = runner.invoke(cli, [
-            "eval-setup-lint",
-            str(SECURITY_SETUP),
-            "--format", "json",
-        ])
+        result = runner.invoke(
+            cli,
+            [
+                "eval-setup-lint",
+                str(SECURITY_SETUP),
+                "--format",
+                "json",
+            ],
+        )
         assert result.exit_code == 0
         data = json.loads(result.output)
         assert "inspection" in data

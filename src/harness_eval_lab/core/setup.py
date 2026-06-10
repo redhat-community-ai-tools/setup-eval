@@ -92,11 +92,14 @@ def _discover_claude_md(
         resolved = str(user_global.resolve())
         if resolved not in seen_paths:
             seen_paths.add(resolved)
-            results.append(_parse_file(
-                user_global, ComponentType.CLAUDE_MD,
-                name="CLAUDE.md (user-global)",
-                scope=ComponentScope.USER_GLOBAL,
-            ))
+            results.append(
+                _parse_file(
+                    user_global,
+                    ComponentType.CLAUDE_MD,
+                    name="CLAUDE.md (user-global)",
+                    scope=ComponentScope.USER_GLOBAL,
+                )
+            )
 
     # User-project CLAUDE.md files
     projects_dir = user_config_dir / "projects"
@@ -109,11 +112,14 @@ def _discover_claude_md(
                 resolved = str(project_claude.resolve())
                 if resolved not in seen_paths:
                     seen_paths.add(resolved)
-                    results.append(_parse_file(
-                        project_claude, ComponentType.CLAUDE_MD,
-                        name=f"CLAUDE.md (user-project: {project_dir.name})",
-                        scope=ComponentScope.USER_PROJECT,
-                    ))
+                    results.append(
+                        _parse_file(
+                            project_claude,
+                            ComponentType.CLAUDE_MD,
+                            name=f"CLAUDE.md (user-project: {project_dir.name})",
+                            scope=ComponentScope.USER_PROJECT,
+                        )
+                    )
 
     return results
 
@@ -145,9 +151,7 @@ def _discover_commands(root: Path) -> list[ParsedComponent]:
             elif item.is_dir():
                 cmd_md = item / "command.md"
                 if cmd_md.is_file():
-                    results.append(
-                        _parse_file(cmd_md, ComponentType.COMMAND, name=item.name)
-                    )
+                    results.append(_parse_file(cmd_md, ComponentType.COMMAND, name=item.name))
     return results
 
 
@@ -167,7 +171,6 @@ def _discover_agents(root: Path) -> list[ParsedComponent]:
         if f.is_file():
             results.append(_parse_file(f, ComponentType.AGENT))
     return results
-
 
 
 def _discover_mcp_configs(root: Path) -> list[ParsedComponent]:

@@ -19,9 +19,7 @@ def build_issue_prompt(
     categories: list[IssueCategory],
     context: str | None = None,
 ) -> str:
-    cats_text = "\n".join(
-        f"- **{c.name}**: {c.description}" for c in categories
-    )
+    cats_text = "\n".join(f"- **{c.name}**: {c.description}" for c in categories)
 
     context_section = ""
     if context:

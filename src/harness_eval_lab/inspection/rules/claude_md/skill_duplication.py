@@ -43,12 +43,14 @@ class ClaudeMdSkillDuplication:
 
                 similarity = tfidf_similarity(section_text, skill.body)
                 if similarity >= OVERLAP_THRESHOLD:
-                    context.report(ReportDescriptor(
-                        message_id="overlap",
-                        data={
-                            "section": section.get("header", "(untitled)"),
-                            "pct": str(int(similarity * 100)),
-                            "skill": skill.dir_name,
-                        },
-                        location=Location(file=cmd.file_path, start_line=1),
-                    ))
+                    context.report(
+                        ReportDescriptor(
+                            message_id="overlap",
+                            data={
+                                "section": section.get("header", "(untitled)"),
+                                "pct": str(int(similarity * 100)),
+                                "skill": skill.dir_name,
+                            },
+                            location=Location(file=cmd.file_path, start_line=1),
+                        )
+                    )

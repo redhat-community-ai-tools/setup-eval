@@ -13,8 +13,8 @@ from harness_eval_lab.inspection.types import (
 )
 
 _FILE_REF_PATTERNS = [
-    re.compile(r"\[.*?\]\(([^)]+)\)"),          # markdown links [text](path)
-    re.compile(r"`([^`]+\.\w{1,5})`"),           # inline code with extension `file.py`
+    re.compile(r"\[.*?\]\(([^)]+)\)"),  # markdown links [text](path)
+    re.compile(r"`([^`]+\.\w{1,5})`"),  # inline code with extension `file.py`
     re.compile(r"(?:scripts|references|assets)/[\w./-]+"),  # directory references
 ]
 

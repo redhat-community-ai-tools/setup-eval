@@ -12,7 +12,10 @@ from harness_eval_lab.inspection.types import (
 )
 
 _OBFUSCATION_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
-    ("eval with decode", re.compile(r"eval\s*\(\s*(?:atob|Buffer\.from|base64\.b64decode)\s*\(", re.I)),
+    (
+        "eval with decode",
+        re.compile(r"eval\s*\(\s*(?:atob|Buffer\.from|base64\.b64decode)\s*\(", re.I),
+    ),
     ("char code construction", re.compile(r"String\.fromCharCode\s*\(", re.I)),
     ("hex escape sequence", re.compile(r"(?:\\x[0-9a-fA-F]{2}){4,}")),
     ("unicode escape sequence", re.compile(r"(?:\\u[0-9a-fA-F]{4}){4,}")),

@@ -15,8 +15,13 @@ _FIRST_PERSON = re.compile(r"\bI\s+(?:will|can|am|help)\b", re.I)
 _SECOND_PERSON = re.compile(r"\bYou\s+(?:can|should|will|may)\b", re.I)
 
 _USE_CASE_PHRASES = [
-    "use when", "use for", "applies to", "relevant for",
-    "triggered by", "invoke when", "helpful for",
+    "use when",
+    "use for",
+    "applies to",
+    "relevant for",
+    "triggered by",
+    "invoke when",
+    "helpful for",
 ]
 
 MAX_DESCRIPTION_LENGTH = 1024
@@ -55,38 +60,48 @@ class DescriptionQuality:
 
         match = _FIRST_PERSON.search(description)
         if match:
-            context.report(ReportDescriptor(
-                message_id="first_person",
-                data={"match": match.group(0)},
-                location=loc,
-            ))
+            context.report(
+                ReportDescriptor(
+                    message_id="first_person",
+                    data={"match": match.group(0)},
+                    location=loc,
+                )
+            )
 
         match2 = _SECOND_PERSON.search(description)
         if match2:
-            context.report(ReportDescriptor(
-                message_id="second_person",
-                data={"match": match2.group(0)},
-                location=loc,
-            ))
+            context.report(
+                ReportDescriptor(
+                    message_id="second_person",
+                    data={"match": match2.group(0)},
+                    location=loc,
+                )
+            )
 
         desc_lower = description.lower()
         has_use_case = any(phrase in desc_lower for phrase in _USE_CASE_PHRASES)
         if not has_use_case:
-            context.report(ReportDescriptor(
-                message_id="no_use_case",
-                location=loc,
-            ))
+            context.report(
+                ReportDescriptor(
+                    message_id="no_use_case",
+                    location=loc,
+                )
+            )
 
         if len(description) > MAX_DESCRIPTION_LENGTH:
-            context.report(ReportDescriptor(
-                message_id="too_long",
-                data={"length": str(len(description))},
-                location=loc,
-            ))
+            context.report(
+                ReportDescriptor(
+                    message_id="too_long",
+                    data={"length": str(len(description))},
+                    location=loc,
+                )
+            )
 
         if len(description) < MIN_DESCRIPTION_LENGTH:
-            context.report(ReportDescriptor(
-                message_id="too_short",
-                data={"length": str(len(description))},
-                location=loc,
-            ))
+            context.report(
+                ReportDescriptor(
+                    message_id="too_short",
+                    data={"length": str(len(description))},
+                    location=loc,
+                )
+            )

@@ -42,35 +42,44 @@ class CommandNoCredentialAccess:
             for pattern in _SENSITIVE_PATHS:
                 match = pattern.search(line)
                 if match:
-                    context.report(ReportDescriptor(
-                        message_id="sensitive_path",
-                        data={"match": match.group(0), "line": str(i + 1)},
-                        location=Location(
-                            file=cmd.command_md_path, start_line=i + 1,
-                        ),
-                    ))
+                    context.report(
+                        ReportDescriptor(
+                            message_id="sensitive_path",
+                            data={"match": match.group(0), "line": str(i + 1)},
+                            location=Location(
+                                file=cmd.command_md_path,
+                                start_line=i + 1,
+                            ),
+                        )
+                    )
                     break
 
             for pattern in _SENSITIVE_ENV_VARS:
                 match = pattern.search(line)
                 if match:
-                    context.report(ReportDescriptor(
-                        message_id="sensitive_env",
-                        data={"match": match.group(0), "line": str(i + 1)},
-                        location=Location(
-                            file=cmd.command_md_path, start_line=i + 1,
-                        ),
-                    ))
+                    context.report(
+                        ReportDescriptor(
+                            message_id="sensitive_env",
+                            data={"match": match.group(0), "line": str(i + 1)},
+                            location=Location(
+                                file=cmd.command_md_path,
+                                start_line=i + 1,
+                            ),
+                        )
+                    )
                     break
 
             for pattern, label in _DANGEROUS_COMMANDS:
                 match = pattern.search(line)
                 if match:
-                    context.report(ReportDescriptor(
-                        message_id="dangerous_command",
-                        data={"match": label, "line": str(i + 1)},
-                        location=Location(
-                            file=cmd.command_md_path, start_line=i + 1,
-                        ),
-                    ))
+                    context.report(
+                        ReportDescriptor(
+                            message_id="dangerous_command",
+                            data={"match": label, "line": str(i + 1)},
+                            location=Location(
+                                file=cmd.command_md_path,
+                                start_line=i + 1,
+                            ),
+                        )
+                    )
                     break

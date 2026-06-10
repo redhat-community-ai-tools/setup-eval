@@ -32,11 +32,13 @@ class ReferencedSkillsExist:
         known_skills = {s.dir_name for s in context.all_skills}
         for skill_name in agent.referenced_skills:
             if skill_name not in known_skills:
-                context.report(ReportDescriptor(
-                    message_id="missing_skill",
-                    data={"skill": skill_name},
-                    location=Location(
-                        file=agent.agent_md_path,
-                        start_line=agent.frontmatter_start_line or 1,
-                    ),
-                ))
+                context.report(
+                    ReportDescriptor(
+                        message_id="missing_skill",
+                        data={"skill": skill_name},
+                        location=Location(
+                            file=agent.agent_md_path,
+                            start_line=agent.frontmatter_start_line or 1,
+                        ),
+                    )
+                )

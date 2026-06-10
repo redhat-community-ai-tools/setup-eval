@@ -35,11 +35,13 @@ class DisallowedToolsParseable:
 
         for entry in agent.disallowed_tools:
             if not _VALID_PATTERN.match(entry):
-                context.report(ReportDescriptor(
-                    message_id="unparseable",
-                    data={"entry": entry},
-                    location=Location(
-                        file=agent.agent_md_path,
-                        start_line=agent.frontmatter_start_line or 1,
-                    ),
-                ))
+                context.report(
+                    ReportDescriptor(
+                        message_id="unparseable",
+                        data={"entry": entry},
+                        location=Location(
+                            file=agent.agent_md_path,
+                            start_line=agent.frontmatter_start_line or 1,
+                        ),
+                    )
+                )

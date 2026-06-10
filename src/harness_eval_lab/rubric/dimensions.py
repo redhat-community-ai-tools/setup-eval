@@ -28,13 +28,34 @@ SKILL_CATEGORIES = [
 ]
 
 COMMAND_CATEGORIES = [
-    IssueCategory(name="description_quality", description="Flag if the description is missing, too vague, or doesn't clearly say what the command does."),
-    IssueCategory(name="instruction_clarity", description="Flag if instructions are ambiguous or Claude wouldn't know what to do or in what order."),
-    IssueCategory(name="script_integrity", description="Flag if referenced scripts don't exist or the discovery pattern is broken."),
-    IssueCategory(name="scope", description="Flag if this should be a skill (auto-triggered) instead of a command (user-triggered), or vice versa."),
-    IssueCategory(name="token_efficiency", description="Flag if the command is bloated. Under 15KB is fine; 15-30KB should be split; over 30KB must be split."),
-    IssueCategory(name="redundancy", description="Flag if Claude already does this without the command. Built-in capabilities include plan mode, commit messages, code explanation, and code review."),
-    IssueCategory(name="robustness", description="Flag if the command hardcodes assumptions or doesn't handle missing dependencies."),
+    IssueCategory(
+        name="description_quality",
+        description="Flag if the description is missing, too vague, or doesn't clearly say what the command does.",
+    ),
+    IssueCategory(
+        name="instruction_clarity",
+        description="Flag if instructions are ambiguous or Claude wouldn't know what to do or in what order.",
+    ),
+    IssueCategory(
+        name="script_integrity",
+        description="Flag if referenced scripts don't exist or the discovery pattern is broken.",
+    ),
+    IssueCategory(
+        name="scope",
+        description="Flag if this should be a skill (auto-triggered) instead of a command (user-triggered), or vice versa.",
+    ),
+    IssueCategory(
+        name="token_efficiency",
+        description="Flag if the command is bloated. Under 15KB is fine; 15-30KB should be split; over 30KB must be split.",
+    ),
+    IssueCategory(
+        name="redundancy",
+        description="Flag if Claude already does this without the command. Built-in capabilities include plan mode, commit messages, code explanation, and code review.",
+    ),
+    IssueCategory(
+        name="robustness",
+        description="Flag if the command hardcodes assumptions or doesn't handle missing dependencies.",
+    ),
 ]
 
 CLAUDE_MD_CATEGORIES = [
@@ -84,10 +105,21 @@ AGENT_CATEGORIES = [
 ]
 
 HOOKS_CATEGORIES = [
-    IssueCategory(name="safety", description="Flag dangerous patterns (rm -rf, force push, curl|bash) or destructive state modifications."),
-    IssueCategory(name="reliability", description="Flag if referenced scripts don't exist or commands are malformed."),
-    IssueCategory(name="scope", description="Flag if the hook is over-broad or if the behavior is advisory (should be CLAUDE.md/skill instead)."),
-    IssueCategory(name="performance", description="Flag if the hook is slow or blocks unnecessarily."),
+    IssueCategory(
+        name="safety",
+        description="Flag dangerous patterns (rm -rf, force push, curl|bash) or destructive state modifications.",
+    ),
+    IssueCategory(
+        name="reliability",
+        description="Flag if referenced scripts don't exist or commands are malformed.",
+    ),
+    IssueCategory(
+        name="scope",
+        description="Flag if the hook is over-broad or if the behavior is advisory (should be CLAUDE.md/skill instead).",
+    ),
+    IssueCategory(
+        name="performance", description="Flag if the hook is slow or blocks unnecessarily."
+    ),
 ]
 
 CATEGORIES_BY_TYPE: dict[str, list[IssueCategory]] = {

@@ -41,8 +41,10 @@ class CommandScriptExists:
 
             script_path = cmd_dir / script
             if not script_path.exists():
-                context.report(ReportDescriptor(
-                    message_id="missing_script",
-                    data={"script": script},
-                    location=Location(file=cmd.command_md_path),
-                ))
+                context.report(
+                    ReportDescriptor(
+                        message_id="missing_script",
+                        data={"script": script},
+                        location=Location(file=cmd.command_md_path),
+                    )
+                )

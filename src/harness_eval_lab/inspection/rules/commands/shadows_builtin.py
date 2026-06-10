@@ -11,9 +11,22 @@ from harness_eval_lab.inspection.types import (
 )
 
 BUILTIN_COMMANDS = {
-    "init", "review", "security-review", "help", "clear", "compact",
-    "config", "cost", "doctor", "login", "logout", "memory", "model",
-    "permissions", "status", "vim",
+    "init",
+    "review",
+    "security-review",
+    "help",
+    "clear",
+    "compact",
+    "config",
+    "cost",
+    "doctor",
+    "login",
+    "logout",
+    "memory",
+    "model",
+    "permissions",
+    "status",
+    "vim",
 }
 
 
@@ -36,8 +49,10 @@ class CommandShadowsBuiltin:
             return
 
         if cmd.dir_name.lower() in BUILTIN_COMMANDS:
-            context.report(ReportDescriptor(
-                message_id="shadows",
-                data={"name": cmd.dir_name},
-                location=Location(file=cmd.command_md_path, start_line=1),
-            ))
+            context.report(
+                ReportDescriptor(
+                    message_id="shadows",
+                    data={"name": cmd.dir_name},
+                    location=Location(file=cmd.command_md_path, start_line=1),
+                )
+            )

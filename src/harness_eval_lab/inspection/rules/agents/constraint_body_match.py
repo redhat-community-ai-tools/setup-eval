@@ -14,13 +14,46 @@ from harness_eval_lab.inspection.types import (
 
 _CONSTRAINT_MAPPINGS: list[tuple[re.Pattern, str, str]] = [
     (re.compile(r"\b(?:cannot|do not|must not|never)\s+push\b", re.I), "Bash(git push *)", "push"),
-    (re.compile(r"\b(?:cannot|do not|must not|never)\s+(?:create|open)\s+(?:a\s+)?(?:PR|pull request)", re.I), "Bash(gh pr create *)", "create PRs"),
-    (re.compile(r"\b(?:cannot|do not|must not|never)\s+merge\b", re.I), "Bash(gh pr merge *)", "merge"),
-    (re.compile(r"\b(?:cannot|do not|must not|never)\s+(?:write|modify|edit)\s+(?:files?|code)\b", re.I), "Write", "write files"),
-    (re.compile(r"\b(?:cannot|do not|must not|never)\s+(?:use\s+)?sed\b", re.I), "Bash(sed *)", "use sed"),
-    (re.compile(r"\b(?:cannot|do not|must not|never)\s+delete\b", re.I), "Bash(rm *)", "delete files"),
-    (re.compile(r"\b(?:cannot|do not|must not|never)\s+install\b", re.I), "Bash(pip install *)", "install packages"),
-    (re.compile(r"\b(?:cannot|do not|must not|never)\s+commit\b", re.I), "Bash(git commit *)", "commit"),
+    (
+        re.compile(
+            r"\b(?:cannot|do not|must not|never)\s+(?:create|open)\s+(?:a\s+)?(?:PR|pull request)",
+            re.I,
+        ),
+        "Bash(gh pr create *)",
+        "create PRs",
+    ),
+    (
+        re.compile(r"\b(?:cannot|do not|must not|never)\s+merge\b", re.I),
+        "Bash(gh pr merge *)",
+        "merge",
+    ),
+    (
+        re.compile(
+            r"\b(?:cannot|do not|must not|never)\s+(?:write|modify|edit)\s+(?:files?|code)\b", re.I
+        ),
+        "Write",
+        "write files",
+    ),
+    (
+        re.compile(r"\b(?:cannot|do not|must not|never)\s+(?:use\s+)?sed\b", re.I),
+        "Bash(sed *)",
+        "use sed",
+    ),
+    (
+        re.compile(r"\b(?:cannot|do not|must not|never)\s+delete\b", re.I),
+        "Bash(rm *)",
+        "delete files",
+    ),
+    (
+        re.compile(r"\b(?:cannot|do not|must not|never)\s+install\b", re.I),
+        "Bash(pip install *)",
+        "install packages",
+    ),
+    (
+        re.compile(r"\b(?:cannot|do not|must not|never)\s+commit\b", re.I),
+        "Bash(git commit *)",
+        "commit",
+    ),
 ]
 
 
@@ -49,12 +82,14 @@ class ConstraintBodyMatch:
                 if pattern.search(line):
                     tool_base = expected_tool.split("(")[0].lower()
                     if tool_base not in disallowed_str:
-                        context.report(ReportDescriptor(
-                            message_id="unmatched_constraint",
-                            data={"constraint": label},
-                            location=Location(
-                                file=agent.agent_md_path,
-                                start_line=(agent.body_start_line or 1) + line_idx,
-                            ),
-                        ))
+                        context.report(
+                            ReportDescriptor(
+                                message_id="unmatched_constraint",
+                                data={"constraint": label},
+                                location=Location(
+                                    file=agent.agent_md_path,
+                                    start_line=(agent.body_start_line or 1) + line_idx,
+                                ),
+                            )
+                        )
                     break

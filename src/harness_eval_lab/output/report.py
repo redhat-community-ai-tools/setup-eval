@@ -46,19 +46,10 @@ def format_terminal(
         lines.append("")
         lines.append("Context Utilization:")
         lines.append(f"{'─' * 60}")
-        lines.append(
-            f"  Always-loaded: "
-            f"{system.context_utilization.always_loaded_tokens:,} tokens"
-        )
-        lines.append(
-            f"  Peak (all loaded): "
-            f"{system.context_utilization.peak_tokens:,} tokens"
-        )
+        lines.append(f"  Always-loaded: {system.context_utilization.always_loaded_tokens:,} tokens")
+        lines.append(f"  Peak (all loaded): {system.context_utilization.peak_tokens:,} tokens")
         lines.append("")
-        lines.append(
-            f"  {'Model':<25} {'Window':>10} "
-            f"{'Always':>8} {'Peak':>8} {'Left':>8}"
-        )
+        lines.append(f"  {'Model':<25} {'Window':>10} {'Always':>8} {'Peak':>8} {'Left':>8}")
         lines.append(f"  {'─' * 55}")
         for mu in system.context_utilization.models:
             flag = " (!)" if mu.warning else ""

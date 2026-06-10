@@ -52,10 +52,12 @@ def apply_fixes(diagnostics: list[Finding]) -> list[FixResult]:
             rule_ids.append(diag.rule_id)
 
         path.write_text("\n".join(lines))
-        results.append(FixResult(
-            file_path=file_path,
-            fixes_applied=len(rule_ids),
-            rule_ids=rule_ids,
-        ))
+        results.append(
+            FixResult(
+                file_path=file_path,
+                fixes_applied=len(rule_ids),
+                rule_ids=rule_ids,
+            )
+        )
 
     return results

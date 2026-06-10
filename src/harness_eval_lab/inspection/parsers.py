@@ -71,10 +71,15 @@ def parse_skill(skill_path: str) -> ParsedSkill:
 
     if skill_md is None:
         return ParsedSkill(
-            dir_path=str(skill_dir), dir_name=skill_dir.name,
+            dir_path=str(skill_dir),
+            dir_name=skill_dir.name,
             skill_md_path=str(skill_dir / "SKILL.md"),
-            raw_content="", frontmatter={}, raw_frontmatter="",
-            frontmatter_start_line=0, body="", body_start_line=0,
+            raw_content="",
+            frontmatter={},
+            raw_frontmatter="",
+            frontmatter_start_line=0,
+            body="",
+            body_start_line=0,
             files=list_files(skill_dir),
             parse_errors=errors,
         )
@@ -82,11 +87,15 @@ def parse_skill(skill_path: str) -> ParsedSkill:
     raw_content, fm, parse_errors = _read_and_parse(skill_md)
 
     return ParsedSkill(
-        dir_path=str(skill_dir), dir_name=skill_dir.name,
-        skill_md_path=str(skill_md), raw_content=raw_content,
-        frontmatter=fm.frontmatter, raw_frontmatter=fm.raw_frontmatter,
+        dir_path=str(skill_dir),
+        dir_name=skill_dir.name,
+        skill_md_path=str(skill_md),
+        raw_content=raw_content,
+        frontmatter=fm.frontmatter,
+        raw_frontmatter=fm.raw_frontmatter,
         frontmatter_start_line=fm.frontmatter_start_line,
-        body=fm.body, body_start_line=fm.body_start_line,
+        body=fm.body,
+        body_start_line=fm.body_start_line,
         files=list_files(skill_dir),
         parse_errors=parse_errors,
         tokens=count_tokens(raw_content),
@@ -99,10 +108,15 @@ def parse_command(command_path: str) -> ParsedCommand:
 
     if cmd_md is None:
         return ParsedCommand(
-            dir_path=str(cmd_dir), dir_name=cmd_dir.name,
+            dir_path=str(cmd_dir),
+            dir_name=cmd_dir.name,
             command_md_path=str(cmd_dir / "command.md"),
-            raw_content="", frontmatter={}, body="", body_start_line=0,
-            script_references=[], files=list_files(cmd_dir),
+            raw_content="",
+            frontmatter={},
+            body="",
+            body_start_line=0,
+            script_references=[],
+            files=list_files(cmd_dir),
             parse_errors=errors,
         )
 
@@ -110,9 +124,12 @@ def parse_command(command_path: str) -> ParsedCommand:
     script_refs = re.findall(r"[\w./-]+\.py\b", fm.body)
 
     return ParsedCommand(
-        dir_path=str(cmd_dir), dir_name=cmd_dir.name,
-        command_md_path=str(cmd_md), raw_content=raw_content,
-        frontmatter=fm.frontmatter, body=fm.body,
+        dir_path=str(cmd_dir),
+        dir_name=cmd_dir.name,
+        command_md_path=str(cmd_md),
+        raw_content=raw_content,
+        frontmatter=fm.frontmatter,
+        body=fm.body,
         body_start_line=fm.body_start_line,
         script_references=script_refs,
         files=list_files(cmd_dir),
@@ -126,8 +143,11 @@ def parse_claude_md(file_path: str) -> ParsedClaudeMd:
     path = Path(file_path)
     if not path.exists():
         return ParsedClaudeMd(
-            file_path=file_path, raw_content="", line_count=0,
-            sections=[], parse_errors=[f"File not found: {file_path}"],
+            file_path=file_path,
+            raw_content="",
+            line_count=0,
+            sections=[],
+            parse_errors=[f"File not found: {file_path}"],
         )
 
     raw_content = path.read_text()
@@ -140,24 +160,31 @@ def parse_claude_md(file_path: str) -> ParsedClaudeMd:
     for line in lines:
         if line.startswith("#"):
             if current_lines:
-                sections.append({
-                    "header": current_header,
-                    "content": "\n".join(current_lines),
-                })
+                sections.append(
+                    {
+                        "header": current_header,
+                        "content": "\n".join(current_lines),
+                    }
+                )
             current_header = line.lstrip("#").strip()
             current_lines = []
         else:
             current_lines.append(line)
 
     if current_lines:
-        sections.append({
-            "header": current_header,
-            "content": "\n".join(current_lines),
-        })
+        sections.append(
+            {
+                "header": current_header,
+                "content": "\n".join(current_lines),
+            }
+        )
 
     return ParsedClaudeMd(
-        file_path=file_path, raw_content=raw_content, line_count=len(lines),
-        sections=sections, tokens=count_tokens(raw_content),
+        file_path=file_path,
+        raw_content=raw_content,
+        line_count=len(lines),
+        sections=sections,
+        tokens=count_tokens(raw_content),
     )
 
 
@@ -166,7 +193,9 @@ def parse_hooks(settings_path: str) -> ParsedHooks:
     path = Path(settings_path)
     if not path.exists():
         return ParsedHooks(
-            file_path=settings_path, hooks=[], raw_content="",
+            file_path=settings_path,
+            hooks=[],
+            raw_content="",
             parse_errors=[f"File not found: {settings_path}"],
         )
 
@@ -175,7 +204,9 @@ def parse_hooks(settings_path: str) -> ParsedHooks:
         data = json_mod.loads(raw_content)
     except json_mod.JSONDecodeError as e:
         return ParsedHooks(
-            file_path=settings_path, hooks=[], raw_content=raw_content,
+            file_path=settings_path,
+            hooks=[],
+            raw_content=raw_content,
             parse_errors=[f"JSON parse error: {e}"],
         )
 
@@ -192,29 +223,32 @@ def parse_hooks(settings_path: str) -> ParsedHooks:
                 nested = hook_entry.get("hooks", [])
                 if isinstance(nested, list) and nested:
                     for sub_hook in nested:
-                        extra = {
-                            k: v for k, v in hook_entry.items()
-                            if k != "hooks"
-                        }
+                        extra = {k: v for k, v in hook_entry.items() if k != "hooks"}
                         if isinstance(sub_hook, str):
-                            hooks.append({
-                                "event": event,
-                                "command": sub_hook,
-                                **extra,
-                            })
+                            hooks.append(
+                                {
+                                    "event": event,
+                                    "command": sub_hook,
+                                    **extra,
+                                }
+                            )
                         elif isinstance(sub_hook, dict) and "command" in sub_hook:
-                            hooks.append({
-                                "event": event,
-                                "command": sub_hook["command"],
-                                **extra,
-                            })
+                            hooks.append(
+                                {
+                                    "event": event,
+                                    "command": sub_hook["command"],
+                                    **extra,
+                                }
+                            )
                 elif "command" in hook_entry:
                     hooks.append({"event": event, **hook_entry})
                 else:
                     hooks.append({"event": event, **hook_entry})
 
     return ParsedHooks(
-        file_path=settings_path, hooks=hooks, raw_content=raw_content,
+        file_path=settings_path,
+        hooks=hooks,
+        raw_content=raw_content,
     )
 
 
@@ -224,12 +258,21 @@ def parse_agent(agent_path: str) -> ParsedAgent:
 
     if not path.exists() or not path.is_file():
         return ParsedAgent(
-            dir_path=str(path.parent), file_name=path.name,
-            agent_md_path=str(path), raw_content="",
-            frontmatter={}, raw_frontmatter="", frontmatter_start_line=0,
-            body="", body_start_line=0,
-            referenced_skills=[], disallowed_tools=[], allowed_tools=[],
-            model=None, sibling_files={}, files=[],
+            dir_path=str(path.parent),
+            file_name=path.name,
+            agent_md_path=str(path),
+            raw_content="",
+            frontmatter={},
+            raw_frontmatter="",
+            frontmatter_start_line=0,
+            body="",
+            body_start_line=0,
+            referenced_skills=[],
+            disallowed_tools=[],
+            allowed_tools=[],
+            model=None,
+            sibling_files={},
+            files=[],
             parse_errors=[f"File not found: {path}"],
         )
 
@@ -260,19 +303,23 @@ def parse_agent(agent_path: str) -> ParsedAgent:
         sibling_dir = scaffold_root / sibling_name
         if sibling_dir.is_dir():
             sibling_files[sibling_name] = sorted(
-                str(p.relative_to(scaffold_root))
-                for p in sibling_dir.rglob("*") if p.is_file()
+                str(p.relative_to(scaffold_root)) for p in sibling_dir.rglob("*") if p.is_file()
             )
 
     return ParsedAgent(
-        dir_path=str(agent_dir), file_name=path.name,
-        agent_md_path=str(path), raw_content=raw_content,
-        frontmatter=fm.frontmatter, raw_frontmatter=fm.raw_frontmatter,
+        dir_path=str(agent_dir),
+        file_name=path.name,
+        agent_md_path=str(path),
+        raw_content=raw_content,
+        frontmatter=fm.frontmatter,
+        raw_frontmatter=fm.raw_frontmatter,
         frontmatter_start_line=fm.frontmatter_start_line,
-        body=fm.body, body_start_line=fm.body_start_line,
+        body=fm.body,
+        body_start_line=fm.body_start_line,
         referenced_skills=referenced_skills,
         disallowed_tools=disallowed_tools,
-        allowed_tools=allowed_tools, model=model,
+        allowed_tools=allowed_tools,
+        model=model,
         sibling_files=sibling_files,
         files=list_files(agent_dir),
         parse_errors=parse_errors,
