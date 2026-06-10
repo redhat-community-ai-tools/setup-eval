@@ -42,6 +42,33 @@ def format_terminal(
             pct = tokens / system.budget.total_tokens * 100 if system.budget.total_tokens else 0
             lines.append(f"    {type_name:<12} {tokens:>6} tokens ({pct:.0f}%)")
 
+    if system.context_utilization.models:
+        lines.append("")
+        lines.append("Context Utilization:")
+        lines.append(f"{'─' * 60}")
+        lines.append(
+            f"  Always-loaded: "
+            f"{system.context_utilization.always_loaded_tokens:,} tokens"
+        )
+        lines.append(
+            f"  Peak (all loaded): "
+            f"{system.context_utilization.peak_tokens:,} tokens"
+        )
+        lines.append("")
+        lines.append(
+            f"  {'Model':<25} {'Window':>10} "
+            f"{'Always':>8} {'Peak':>8} {'Left':>8}"
+        )
+        lines.append(f"  {'─' * 55}")
+        for mu in system.context_utilization.models:
+            flag = " (!)" if mu.warning else ""
+            lines.append(
+                f"  {mu.model:<25} {mu.context_window:>10,} "
+                f"{mu.always_loaded_pct:>7.1%} "
+                f"{mu.peak_load_pct:>7.1%} "
+                f"{mu.remaining_pct:>7.1%}{flag}"
+            )
+
     if system.triggers.skill_count > 0:
         lines.append("")
         lines.append("Trigger Analysis:")
@@ -121,6 +148,21 @@ def format_json(
             "always_loaded_ratio": round(system.budget.always_loaded_ratio, 2),
             "by_type": system.budget.by_type,
             "heaviest": system.budget.heaviest_component_name,
+        },
+        "context_utilization": {
+            "always_loaded_tokens": system.context_utilization.always_loaded_tokens,
+            "peak_tokens": system.context_utilization.peak_tokens,
+            "models": [
+                {
+                    "model": mu.model,
+                    "context_window": mu.context_window,
+                    "always_loaded_pct": round(mu.always_loaded_pct, 4),
+                    "peak_load_pct": round(mu.peak_load_pct, 4),
+                    "remaining_pct": round(mu.remaining_pct, 4),
+                    "warning": mu.warning,
+                }
+                for mu in system.context_utilization.models
+            ],
         },
         "triggers": {
             "skill_count": system.triggers.skill_count,

@@ -5,6 +5,13 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from harness_eval_lab.analysis.budget import BudgetReport, analyze_budget
+from harness_eval_lab.analysis.context_utilization import (
+    ALWAYS_LOADED_WARNING_THRESHOLD,
+    PEAK_CRITICAL_THRESHOLD,
+    PEAK_WARNING_THRESHOLD,
+    ContextUtilizationReport,
+    analyze_context_utilization,
+)
 from harness_eval_lab.analysis.dependencies import DependencyReport, analyze_dependencies
 from harness_eval_lab.analysis.triggers import TriggerReport, analyze_triggers
 from harness_eval_lab.core.types import Setup
@@ -19,6 +26,7 @@ class SystemReport:
     budget: BudgetReport
     triggers: TriggerReport
     dependencies: DependencyReport
+    context_utilization: ContextUtilizationReport
     findings: list[str] = field(default_factory=list)
 
 
@@ -27,6 +35,7 @@ def analyze_system(setup: Setup) -> SystemReport:
     budget = analyze_budget(setup)
     triggers = analyze_triggers(setup)
     dependencies = analyze_dependencies(setup)
+    context_utilization = analyze_context_utilization(setup, budget)
 
     findings: list[str] = []
 
@@ -53,11 +62,38 @@ def analyze_system(setup: Setup) -> SystemReport:
             f"{pair[2]:.0%} description similarity, may load together."
         )
 
+    seen_windows: dict[int, list[str]] = {}
+    for mu in context_utilization.models:
+        seen_windows.setdefault(mu.context_window, []).append(mu.model)
+
+    for window, names in sorted(seen_windows.items()):
+        representative = next(
+            mu for mu in context_utilization.models if mu.context_window == window
+        )
+        label = names[0] if len(names) == 1 else f"{names[0]} and {len(names) - 1} others"
+        if representative.peak_load_pct > PEAK_CRITICAL_THRESHOLD:
+            findings.append(
+                f"Context critical: setup uses {representative.peak_load_pct:.0%} "
+                f"of {label}'s {window:,}-token window."
+            )
+        elif representative.peak_load_pct > PEAK_WARNING_THRESHOLD:
+            findings.append(
+                f"Context pressure: setup uses {representative.peak_load_pct:.0%} "
+                f"of {label}'s {window:,}-token window."
+            )
+        if representative.always_loaded_pct > ALWAYS_LOADED_WARNING_THRESHOLD:
+            findings.append(
+                f"Always-loaded pressure on {label}: "
+                f"{representative.always_loaded_pct:.0%} of context consumed "
+                f"before any skill loads."
+            )
+
     return SystemReport(
         setup_name=setup.name,
         component_count=len(setup.components),
         budget=budget,
         triggers=triggers,
         dependencies=dependencies,
+        context_utilization=context_utilization,
         findings=findings,
     )
