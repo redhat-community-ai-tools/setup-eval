@@ -28,59 +28,73 @@ It checks whether each component follows Claude Code best practices, whether com
 
 ## Install
 
+### As a CLI tool
+
 ```bash
 uv sync
 ```
 
-With LLM support (for `review` CLI and `eval-skill --rubric`):
+Optional extras:
 
 ```bash
-uv sync --extra llm
-```
-
-With YARA signature scanning (for `security`):
-
-```bash
-uv sync --extra security
-```
-
-## Usage
-
-### As a CLI
-
-```bash
-# Fast lint: static analysis + system analysis (no LLM, CI-suitable)
-harness-eval-lab eval-setup-lint /path/to/project
-harness-eval-lab eval-setup-lint /path/to/project --preset strict --format json
-harness-eval-lab eval-setup-lint /path/to/project --fail-on-error
-
-# Qualitative review: LLM-based per-component review (requires API key)
-export GEMINI_API_KEY=your-key  # or ANTHROPIC_API_KEY
-harness-eval-lab eval-setup-review /path/to/project
-harness-eval-lab eval-setup-review /path/to/project --provider anthropic --model claude-sonnet-4-20250514
-
-# Security audit: all security rules + optional LLM semantic review
-harness-eval-lab eval-setup-security /path/to/project
-harness-eval-lab eval-setup-security /path/to/project --review --provider gemini
-
-# Deep-evaluate one skill (with setup context)
-harness-eval-lab eval-skill /path/to/skills/my-skill --context /path/to/project
-harness-eval-lab eval-skill /path/to/skills/my-skill --context /path/to/project --rubric
+uv sync --extra llm       # LLM support (for review CLI and eval-skill --rubric)
+uv sync --extra security  # YARA signature scanning (for security)
 ```
 
 ### As a Claude Code plugin
 
-Install by adding the plugin directory, then use:
+Run the install script from a clone of this repo, pointing at your workspace:
 
-- `/eval-setup-lint` - fast static analysis (no LLM)
+```bash
+git clone https://github.com/redhat-community-ai-tools/harness-eval-lab.git
+cd harness-eval-lab
+python install.py --target /path/to/your-workspace
+```
+
+This installs:
+- 4 skills into `skills/` (the evaluation engines)
+- 4 commands into `.claude/commands/` (so they appear in `/` autocomplete)
+- The `harness-eval-lab` Python package (required by the skill scripts)
+
+**Restart Claude Code after installing.** The new commands appear on the next session.
+
+To uninstall:
+
+```bash
+python install.py --target /path/to/your-workspace --uninstall
+```
+
+## Usage
+
+### CLI
+
+```bash
+harness-eval-lab eval-setup-lint /path/to/project
+harness-eval-lab eval-setup-lint /path/to/project --preset strict --format json
+harness-eval-lab eval-setup-lint /path/to/project --fail-on-error
+
+export GEMINI_API_KEY=your-key  # or ANTHROPIC_API_KEY
+harness-eval-lab eval-setup-review /path/to/project
+harness-eval-lab eval-setup-review /path/to/project --provider anthropic --model claude-sonnet-4-20250514
+
+harness-eval-lab eval-setup-security /path/to/project
+harness-eval-lab eval-setup-security /path/to/project --review --provider gemini
+
+harness-eval-lab eval-skill /path/to/skills/my-skill --context /path/to/project
+harness-eval-lab eval-skill /path/to/skills/my-skill --context /path/to/project --rubric
+```
+
+### Claude Code commands (after plugin install)
+
+- `/eval-setup-lint` - fast static analysis, no LLM, CI-suitable
 - `/eval-setup-review` - full qualitative review with KEEP/REVIEW/REMOVE verdicts
 - `/eval-setup-security` - deep security audit with deterministic scan + semantic review
 - `/eval-skill <skill-name>` - deep-evaluate one skill in context
 
-**Note on `/eval-setup-security`:** The YARA signature scanning check requires the `yara-python` package. If it is not installed, the YARA check will be skipped automatically and the report will note it was skipped. All other security checks run without extra dependencies. To enable YARA scanning, install it before running the command:
+**Note on `/eval-setup-security`:** The YARA signature scanning check requires `yara-python`. If not installed, the YARA check is skipped automatically and the report notes it. All other security checks run without extra dependencies. To enable YARA scanning:
 
 ```bash
-uv sync --extra security   # or: pip install yara-python
+pip install yara-python
 ```
 
 ## CLI Commands
