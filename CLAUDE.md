@@ -7,10 +7,21 @@ AI agent setup evaluation tool. See [`README.md`](README.md) for usage, features
 - Python 3.11+, managed with `uv`
 - Run tests: `uv run pytest`
 - Lint: `uv run ruff check src/ tests/`
-- Type check: `uv run mypy src/`
 - Format: `uv run ruff format src/ tests/`
+- Format check (dry run): `uv run ruff format --check src/ tests/`
+- Type check: `uv run mypy src/`
 - See [`how-to-contribute.md`](how-to-contribute.md) for adding rules, plans, and PRs
 - See [`CHANGELOG.md`](CHANGELOG.md) for release history
+
+## Before pushing
+
+The CI runs 4 jobs: lint, typecheck, test, dogfood. All must pass. Run this before pushing:
+
+```bash
+uv run ruff format src/ tests/ && uv run ruff check src/ tests/ && uv run pytest tests/ -q
+```
+
+The most common CI failure is forgetting `ruff format`. The `ruff check` (lint rules) and `ruff format` (code style) are separate checks. Both must pass.
 
 ## Project structure
 
