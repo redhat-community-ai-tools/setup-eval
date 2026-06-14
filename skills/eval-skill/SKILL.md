@@ -84,6 +84,14 @@ The report must include:
 - +/!/x sections (good, improve, broken)
 - Final verdict with suggestions
 
+At the very end of the report, include a timing line:
+
+```
+Completed in [duration] seconds.
+```
+
+Where [duration] is the wall-clock time from when you started Step 3 to when you finished formatting.
+
 **If the user chose terminal:** print the report in the conversation.
 
 **If the user chose file:** write the report as markdown to the path they specified (or suggest `eval-skill-report.md` in the current directory). Tell them the file path when done.

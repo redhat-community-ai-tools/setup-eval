@@ -1,6 +1,6 @@
 ---
 name: eval-setup-lint
-description: Run deterministic static analysis on the full agent setup (CLAUDE.md, skills, commands, hooks, agents, MCP configs). 35 rules + system-level analysis (token budget, trigger overlaps, dependencies, context utilization). No LLM. Use when the user wants a fast lint check, CI gate, or structural health report.
+description: Run deterministic static analysis on the full agent setup (CLAUDE.md, skills, commands, hooks, agents, MCP configs). 39 rules + system-level analysis (token budget, trigger overlaps, dependencies, context utilization). No LLM. Use when the user wants a fast lint check, CI gate, or structural health report.
 allowed-tools:
   - Bash
   - Read
@@ -8,7 +8,7 @@ allowed-tools:
 
 # Lint Setup
 
-Run deterministic static analysis on the user's agent setup. No LLM involved. Fast, reproducible, CI-suitable.
+Run 39 deterministic rules + system-level analysis on the user's agent setup. No LLM involved. Fast, reproducible, CI-suitable.
 
 ## Hard Rules
 
@@ -47,6 +47,14 @@ Read the JSON output.
 Read `report-format.md` and format the results following that structure.
 
 Include all sections: inventory, token budget, context utilization, trigger analysis, dependencies, findings, and inspection summary.
+
+At the very end of the report, include a timing line:
+
+```
+Completed in [duration] seconds.
+```
+
+Where [duration] is the wall-clock time from when you started Step 2 to when you finished formatting.
 
 **If the user chose terminal:** print the report in the conversation.
 
