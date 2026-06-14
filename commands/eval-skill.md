@@ -10,4 +10,4 @@ Pass through any arguments from $ARGUMENTS (e.g., a skill name or path to evalua
 
 If the Skill tool is not available or the skill is not found, tell the user:
 - Check that `skills/eval-skill/SKILL.md` exists in the workspace
-- If not, re-run `python install.py --target <workspace>` from the harness-eval-lab repo
+- If not, reinstall the harness-eval-lab plugin

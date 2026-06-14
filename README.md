@@ -43,26 +43,24 @@ uv sync --extra security  # YARA signature scanning (for security)
 
 ### As a Claude Code plugin
 
-Run the install script from a clone of this repo, pointing at your workspace:
+Install directly from within Claude Code:
 
-```bash
-git clone https://github.com/redhat-community-ai-tools/harness-eval-lab.git
-cd harness-eval-lab
-python install.py --target /path/to/your-workspace
+```
+/plugin marketplace add redhat-community-ai-tools/harness-eval-lab
+/plugin install harness-eval-lab
 ```
 
-This installs:
-- 4 skills into `skills/` (the evaluation engines)
-- 4 commands into `.claude/commands/` (so they appear in `/` autocomplete)
-- The `harness-eval-lab` Python package (required by the skill scripts)
-
-**Restart Claude Code after installing.** The new commands appear on the next session.
-
-To uninstall:
+Or test locally during development:
 
 ```bash
-python install.py --target /path/to/your-workspace --uninstall
+claude --plugin-dir /path/to/harness-eval-lab
 ```
+
+After installing, these commands become available in `/` autocomplete:
+- `/eval-setup-lint` - fast static analysis, no LLM, CI-suitable
+- `/eval-setup-review` - full qualitative review with KEEP/REVIEW/REMOVE verdicts
+- `/eval-setup-security` - deep security audit with deterministic scan + semantic review
+- `/eval-skill <skill-name>` - deep-evaluate one skill in context
 
 ## Usage
 
@@ -83,13 +81,6 @@ harness-eval-lab eval-setup-security /path/to/project --review --provider gemini
 harness-eval-lab eval-skill /path/to/skills/my-skill --context /path/to/project
 harness-eval-lab eval-skill /path/to/skills/my-skill --context /path/to/project --rubric
 ```
-
-### Claude Code commands (after plugin install)
-
-- `/eval-setup-lint` - fast static analysis, no LLM, CI-suitable
-- `/eval-setup-review` - full qualitative review with KEEP/REVIEW/REMOVE verdicts
-- `/eval-setup-security` - deep security audit with deterministic scan + semantic review
-- `/eval-skill <skill-name>` - deep-evaluate one skill in context
 
 **Note on `/eval-setup-security`:** The YARA signature scanning check requires `yara-python`. If not installed, the YARA check is skipped automatically and the report notes it. All other security checks run without extra dependencies. To enable YARA scanning:
 
