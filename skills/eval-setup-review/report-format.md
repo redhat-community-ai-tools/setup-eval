@@ -1,35 +1,37 @@
-# Report Format (Layer 2)
+# Report Format (Review)
 
-Note: The inventory table, token budget, and context utilization sections share the same format as the Layer 1 lint report (`skills/eval-setup-lint/report-format.md`). Layer 2 adds per-component analysis, cross-type optimization, and the summary areas.
+## Section Order
 
-## Structure
+The report must follow this exact section order:
 
-```
-## How This Evaluation Works
-
-This report evaluates the Claude Code setup across 5 areas:
-
-- **Structure** - Do all components parse correctly? Are required fields present? Do references resolve?
-- **Security** - Any credential exposure, injection risk, or dangerous hooks?
-- **Coherence** - Do components work together? Any duplicates, conflicts, or broken dependencies?
-- **Efficiency** - Is the token budget well-distributed? Always-loaded vs on-demand? Context utilization across models?
-- **Redundancy** - Does each component teach Claude something it doesn't already know?
-
-Two layers produce the evidence:
-
-**Layer 1 (Static Analysis)** runs 39 deterministic rules + system-level analysis. No AI involved.
-**Layer 2 (Qualitative Review)** Claude reads every file and checks for issues
-that deterministic rules can't catch.
+1. What This Evaluation Checks (hardcoded intro)
+2. Inventory
+3. Token Budget
+4. Evaluation Summary
+5. Cross-Type Optimization
+6. Suggestions
+7. Per-Component Analysis
 
 ---
 
-## Setup Health Summary
+## What This Evaluation Checks
 
-Structure:   [N] errors ([specifics]) / Clean. No issues found.
-Security:    [N] issues ([specifics]) / Clean. No issues found.
-Coherence:   [N] overlaps/conflicts ([specifics]) / Clean.
-Efficiency:  [N]% always-loaded. Heaviest: [name] at [N] tokens. [Context utilization highlights if any warnings.]
-Redundancy:  [N] components with default-behavior content ([which]).
+Always start the report with this exact text (hardcoded, do not modify):
+
+```
+## What This Evaluation Checks
+
+This review combines two passes:
+
+**Lint (deterministic)** runs 39 rules checking structure, frontmatter, token budget,
+broken references, duplicate detection, security patterns (injection, credentials,
+exfiltration, obfuscation, reverse shells), AST behavioral analysis, taint tracking,
+MCP permission analysis, and tool poisoning detection.
+
+**Review (qualitative)** reads every file and evaluates specificity, redundancy,
+trigger quality, token efficiency, instruction clarity, content quality, and
+cross-component coherence. Produces KEEP/REVIEW/REMOVE verdicts.
+```
 
 ---
 
@@ -42,6 +44,8 @@ Redundancy:  [N] components with default-behavior content ([which]).
 | CLAUDE.md | [N] | [N] | [N] | [N] |
 | Hooks | [N] | [N] | [N] | [N] |
 | Agents | [N or 0] | [N] | [N] | [N] |
+| Rules | [N or 0] | [N] | [N] | [N] |
+| Output Styles | [N or 0] | [N] | [N] | [N] |
 
 ## Token Budget
 
@@ -53,27 +57,25 @@ Redundancy:  [N] components with default-behavior content ([which]).
 
 ---
 
-## Per-Component Analysis
+## Evaluation Summary
 
-For each component, provide:
+This section comes BEFORE per-component analysis. It gives the bird's-eye view.
 
-### component-name                              [KEEP/REVIEW/REMOVE]
-  Tokens: [N]
-  Type: [skill/command/agent/claude_md/hooks]
+```
+## Evaluation Summary
 
-  Layer 1: [pass/fail checklist for relevant rules]
+[one-sentence overall assessment]
 
-  Qualitative Assessment:
-    [2-3 sentences: what this component does, whether it adds value,
-    whether it's well-built. Reference specific content.]
+Structure:   [summary]
+Security:    [summary]
+Coherence:   [summary]
+Efficiency:  [summary]
+Redundancy:  [summary]
 
-  Issues found:
-    [category] [description] -> [suggestion]
-  Or: No issues found.
-
-For clean components with no issues, use a compact one-line format:
-### component-name                              KEEP
-  Tokens: [N] | Layer 1: all pass | [one-line assessment]
+Reviewed [N] skills, [M] commands, CLAUDE.md, [H] hooks, [A] agents, [R] rules, [O] output styles.
+Total: [tokens] tokens.
+Cross-type: [count]/21 checks flagged.
+```
 
 ---
 
@@ -87,29 +89,40 @@ For clean components with no issues, use a compact one-line format:
 
 [Numbered actionable items. Each is one line. Only recommend changes
 that make a real difference.]
+
+---
+
+## Per-Component Analysis
+
+For each component, provide:
+
+### component-name                              [KEEP/REVIEW/REMOVE]
+  Tokens: [N]
+  Type: [skill/command/agent/claude_md/hooks/rule/output_style]
+
+  Lint: [N] failures
+    FAIL  [rule-name] — [one sentence explaining WHY it failed]
+    FAIL  [rule-name] — [one sentence explaining WHY it failed]
+  Or: Lint: all pass
+
+  Qualitative Assessment:
+    [2-3 sentences: what this component does, whether it adds value,
+    whether it's well-built. Reference specific content.]
+
+  Issues found:
+    [category] [description] -> [suggestion]
+  Or: No issues found.
+
+For clean components with no issues, use a compact one-line format:
+### component-name                              KEEP
+  Tokens: [N] | Lint: all pass | [one-line assessment]
+
+---
+
+## Timing
+
+At the very end:
+
 ```
-
-## Terminal Summary
-
-Always print this at the end:
-
-```
-## Evaluation Summary
-
-[one-sentence overall assessment]
-
-Structure:   [summary]
-Security:    [summary]
-Coherence:   [summary]
-Efficiency:  [summary]
-Redundancy:  [summary]
-
-Reviewed [N] skills, [M] commands, CLAUDE.md, [H] hooks, [A] agents.
-Total: [tokens] tokens.
-Cross-type: [count]/21 checks flagged.
-
-Suggestions:
-  1. [one-line]
-  2. [one-line]
-  3. [one-line]
+Duration: [X minutes Y seconds]
 ```

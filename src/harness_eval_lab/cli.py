@@ -40,7 +40,7 @@ def cli() -> None:
 def eval_setup_lint(
     path: str, preset: str, fmt: str, fix: bool, fail_on_error: bool, user_config: str | None
 ) -> None:
-    """Layer 1: 39 rules + system analysis. No LLM, deterministic, fast."""
+    """Lint: 39 rules + system analysis. No LLM, deterministic, fast."""
     from harness_eval_lab.analysis.system import analyze_system
     from harness_eval_lab.config.presets import PRESETS
     from harness_eval_lab.inspection.engine import inspect_setup
@@ -116,7 +116,7 @@ def eval_setup_lint(
 def eval_setup_review(
     path: str, fmt: str, provider: str, model: str | None, user_config: str | None
 ) -> None:
-    """Layer 2: LLM rubric scoring per component. Requires API key in environment."""
+    """Review: LLM rubric scoring per component. Requires API key in environment."""
     from harness_eval_lab.rubric.scorer import RubricChecker
     from harness_eval_lab.utils.llm import create_client
 

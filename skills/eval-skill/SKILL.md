@@ -8,7 +8,7 @@ allowed-tools:
 
 # Evaluate Skill
 
-Deep-evaluate a single skill using two layers: static analysis (Layer 1) and qualitative issue detection (Layer 2), both individually and in context of the full setup.
+Deep-evaluate a single skill using lint (deterministic rules) and qualitative review, both individually and in context of the full setup.
 
 ## Hard Rules
 
@@ -17,6 +17,7 @@ Deep-evaluate a single skill using two layers: static analysis (Layer 1) and qua
 3. **Read before you judge.** Read the actual SKILL.md content (and reference files if they exist).
 4. **Don't manufacture problems.** If the skill is good, say so. Only report real issues.
 5. **Always end with a short summary.**
+6. **Record the exact start time** and compute the exact duration at the end.
 
 ## Step 1: Ask Output Preference
 
@@ -32,7 +33,7 @@ Wait for their answer before proceeding.
 
 Determine the skill path. If the user says a skill name, find it under `skills/<name>/SKILL.md`.
 
-## Step 3: Run Layer 1 (Static Analysis)
+## Step 3: Run Lint (Static Analysis)
 
 Determine the setup context path (usually the current working directory).
 
@@ -42,9 +43,9 @@ uv run python skills/eval-skill/scripts/run_skill_eval.py <skill-path> <context-
 
 If no context path, pass `-` as the second argument.
 
-Read the JSON output. It contains diagnostics, token count, and contextual findings from Layer 1.
+Read the JSON output. It contains diagnostics, token count, and contextual findings.
 
-## Step 4: Read Actual Files (Layer 2 Preparation)
+## Step 4: Read Actual Files
 
 Read the skill's actual content:
 1. The SKILL.md file
@@ -56,15 +57,15 @@ Also read for context (don't check these, they're context for evaluating the tar
 5. CLAUDE.md
 6. Hooks in .claude/settings.json
 
-## Step 5: Individual Rubric (Layer 2)
+## Step 5: Individual Rubric (Qualitative Review)
 
 Read `rubric/skills-rubric.md` for the issue categories and what to flag.
 
-Check the skill against all 5 categories. For each issue found, cite specific evidence from the content.
+Check the skill against all categories. For each issue found, cite specific evidence from the content.
 
 Verdict: **KEEP** (no issues or minor only), **REVIEW** (multiple issues), **REMOVE** (fundamentally broken/redundant)
 
-## Step 6: Contextual Analysis (Layer 2)
+## Step 6: Contextual Analysis
 
 Read `rubric/contextual-analysis.md` and evaluate all 5 contextual dimensions.
 
@@ -78,19 +79,17 @@ Check redundancy against three sources:
 Read `report-format.md` for the full report structure.
 
 The report must include:
-- Layer 1 results (rule checklist with PASS/FAIL)
-- Layer 2 individual issues (by category)
-- Layer 2 contextual analysis
+- Lint results: each failed rule with WHY it failed
+- Qualitative review issues (by category)
+- Contextual analysis
 - +/!/x sections (good, improve, broken)
 - Final verdict with suggestions
 
-At the very end of the report, include a timing line:
+At the very end:
 
 ```
-Completed in [duration] seconds.
+Duration: [X minutes Y seconds]
 ```
-
-Where [duration] is the wall-clock time from when you started Step 3 to when you finished formatting.
 
 **If the user chose terminal:** print the report in the conversation.
 

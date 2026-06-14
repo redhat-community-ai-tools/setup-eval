@@ -9,22 +9,22 @@
 
 ---
 
-## Layer 1: Rules (Static Analysis)
+## Lint Results (Static Analysis)
 
-  [For each rule, show PASS or FAIL with message]
-  SKILL.md exists                          PASS
-  Frontmatter has description              PASS
-  Description has use-case context          FAIL - lacks "use when" phrasing
-  Frontmatter format valid                 PASS
-  Token budget                             PASS - [N] tokens
-  No broken file references                PASS
-  No near-duplicates                       PASS
-  No prompt injection patterns             PASS
-  No credential references                 PASS
+  [For each rule, show PASS or FAIL with WHY it failed]
+  PASS  SKILL.md exists
+  PASS  Frontmatter has description
+  FAIL  Description has use-case context — lacks "use when" phrasing, Claude won't know when to activate
+  PASS  Frontmatter format valid
+  PASS  Token budget — [N] tokens
+  FAIL  Broken file references — 3 referenced files don't exist (scripts/foo.sh, etc.)
+  PASS  No near-duplicates
+  PASS  No prompt injection patterns
+  PASS  No credential references
 
 ---
 
-## Layer 2: Issue Detection
+## Qualitative Review
 
 ### Individual Assessment                        [VERDICT]
 
@@ -54,4 +54,6 @@
 Suggestions:
   1. [suggestion]
   2. [suggestion]
+
+Duration: [X minutes Y seconds]
 ```

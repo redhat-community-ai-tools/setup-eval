@@ -138,7 +138,7 @@ class TestSecurityFixtureE2E:
 
 
 class TestMockLLMReview:
-    """Test Layer 2 with mocked LLM responses (no real API calls)."""
+    """Test review with mocked LLM responses (no real API calls)."""
 
     def test_rubric_checker_parses_multi_issue_response(self) -> None:
         from harness_eval_lab.rubric.scorer import RubricChecker

@@ -48,13 +48,13 @@ Read `report-format.md` and format the results following that structure.
 
 Include all sections: inventory, token budget, context utilization, trigger analysis, dependencies, findings, and inspection summary.
 
-At the very end of the report, include a timing line:
+At the very end of the report, include the exact timing:
 
 ```
-Completed in [duration] seconds.
+Duration: [X minutes Y seconds]
 ```
 
-Where [duration] is the wall-clock time from when you started Step 2 to when you finished formatting.
+Record the timestamp of your first tool call in Step 2 and compute the exact difference when you finish.
 
 **If the user chose terminal:** print the report in the conversation.
 

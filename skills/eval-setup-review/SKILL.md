@@ -12,10 +12,11 @@ Full qualitative review of the user's agent setup. Claude reads every file and e
 
 ## Hard Rules
 
-1. **Never give a verdict without reading the files.** Layer 1 counts are input data, not the verdict. A component with warnings can still be healthy.
+1. **Never give a verdict without reading the files.** Lint counts are input data, not the verdict. A component with warnings can still be healthy.
 2. **Read before you judge.** Read every file's actual content before assessing.
 3. **Don't manufacture problems.** If the setup is good, say so.
 4. **Always end with the evidence-based summary.**
+5. **Record the exact start time** (note the timestamp from your first tool call in Step 2) and compute the exact duration at the end.
 
 ## Step 1: Ask Output Preference
 
@@ -27,7 +28,7 @@ Before doing anything else, ask the user:
 
 Wait for their answer before proceeding.
 
-## Step 2: Run Layer 1 for Context
+## Step 2: Run Lint for Context
 
 Determine the setup path. If the user doesn't specify one, use the current working directory.
 
@@ -35,9 +36,9 @@ Determine the setup path. If the user doesn't specify one, use the current worki
 uv run python skills/eval-setup-lint/scripts/run_assessment.py <setup-path> recommended
 ```
 
-Read the JSON output. This gives you per-component diagnostics, token budget, context utilization, trigger overlaps, and dependency findings.
+Read the JSON output. This gives you per-component diagnostics, token budget, trigger overlaps, and dependency findings.
 
-Do NOT present the Layer 1 report separately. Use it as context for the qualitative review.
+Do NOT present the lint report separately. Use it as context for the qualitative review.
 
 ## Step 3: Read Actual Files
 
@@ -46,10 +47,18 @@ Read the actual content of every component: SKILL.md files (including reference 
 ## Step 4: Analyze Each Component
 
 For each component, provide:
-- Layer 1 results (which rules passed/failed)
+- Lint results: list each rule that failed and explain WHY it failed in one sentence
 - A 2-3 sentence qualitative assessment (what it does, whether it adds value, whether it's well-built)
 - Issues found, citing specific content
 - Per-component verdict: KEEP, REVIEW, or REMOVE
+
+For lint failures, use this format:
+```
+Lint: 3 failures
+  FAIL  broken-references — 5 referenced files don't exist in this directory (scripts/foo.sh, etc.)
+  FAIL  token-budget — SKILL.md is 915 lines, 3.6x over the 500-line recommendation
+  FAIL  mcp-least-privilege — allowed-tools declares Bash but no script uses shell commands
+```
 
 Use the per-component rubric files for detailed criteria:
 - Skills: read `rubric/skills-rubric.md`
@@ -64,22 +73,22 @@ Read `rubric/cross-type-checks.md` and answer all 21 checks with YES/NO and a on
 
 ## Step 6: Produce the Report
 
-Read `report-format.md` for the full report structure. The report must include:
-1. The setup health summary (the headline)
+Read `report-format.md` for the full report structure. The report sections must appear in this order:
+1. What this evaluation checks (hardcoded intro)
 2. Inventory table
 3. Token budget breakdown
-4. Per-component analysis (Layer 1 + qualitative review)
+4. Evaluation summary (the headline verdict)
 5. Cross-type optimization (21 checks)
 6. Numbered suggestions
-7. Terminal summary
+7. Per-component analysis (lint + qualitative review)
 
-At the very end of the report, include a timing line:
+At the very end of the report, include the exact timing:
 
 ```
-Completed in [duration] seconds.
+Duration: [X minutes Y seconds]
 ```
 
-Where [duration] is the wall-clock time from when you started Step 2 to when you finished formatting.
+Compute this from the timestamp of your first tool call in Step 2 to the timestamp when you finish writing the report.
 
 **If the user chose terminal:** print the report in the conversation.
 
