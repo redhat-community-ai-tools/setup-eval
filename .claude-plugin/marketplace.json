@@ -14,10 +14,8 @@
       },
       "category": "development",
       "source": {
-        "source": "git-subdir",
-        "url": "https://github.com/redhat-community-ai-tools/harness-eval-lab.git",
-        "path": ".",
-        "ref": "main"
+        "source": "github",
+        "repo": "redhat-community-ai-tools/harness-eval-lab"
       },
       "homepage": "https://github.com/redhat-community-ai-tools/harness-eval-lab"
     }
