@@ -64,6 +64,9 @@ def _resolve_severity(
     if severity_config == "off":
         return None
 
+    if severity_config is None and config_rules:
+        return None
+
     if isinstance(severity_config, list) and len(severity_config) > 0:
         sev_str = severity_config[0]
         options = severity_config[1:]
@@ -412,13 +415,23 @@ def lint_agent(
     )
 
 
+_SECURITY_ONLY_RULES = {
+    "security/no-prompt-injection",
+    "security/no-credential-access",
+    "security/reverse-shell",
+    "security/obfuscation",
+    "security/data-exfiltration",
+    "security/mcp-tool-poisoning",
+}
+
+
 def lint_text_file(
     file_path: str,
     component_type: ComponentType,
     config_rules: dict[str, str | list[Any]] | None = None,
     scan_state: dict[str, Any] | None = None,
 ) -> InspectionResult:
-    """Lint a generic text file (rule, output-style) using security rules."""
+    """Lint a generic text file (rule, output-style) using security-only rules."""
     path = Path(file_path)
     if not path.exists():
         return _build_result(file_path, path.stem, 0, component_type.value, [], 0)
@@ -427,6 +440,14 @@ def lint_text_file(
 
     raw_content = path.read_text(encoding="utf-8", errors="replace")
     tokens = count_tokens(raw_content)
+
+    security_config: dict[str, str | list[Any]] = {}
+    base = config_rules or {}
+    for rule_id in _SECURITY_ONLY_RULES:
+        if rule_id in base:
+            security_config[rule_id] = base[rule_id]
+        else:
+            security_config[rule_id] = "warning"
 
     dummy_skill = ParsedSkill(
         dir_path=str(path.parent),
@@ -448,7 +469,7 @@ def lint_text_file(
         raw_content,
         skill=dummy_skill,
         target=dummy_skill,
-        config_rules=config_rules,
+        config_rules=security_config,
         scan_state=scan_state,
     )
 

@@ -18,6 +18,28 @@ _FILE_REF_PATTERNS = [
     re.compile(r"(?:scripts|references|assets)/[\w./-]+"),  # directory references
 ]
 
+_VERSION_RE = re.compile(r"^\d+(\.\d+)+$")
+_GIT_REF_RE = re.compile(r"(\.\.\.?|@\{|HEAD|upstream|origin|main|master)")
+_TEMPLATE_VAR_RE = re.compile(r"\$\{|<[a-z_-]+>|\{\{")
+_GLOB_RE = re.compile(r"[*?]")
+_COMMAND_RE = re.compile(r"^(git|bash|uv|npm|curl|grep|tail|mv|cat|echo|find|sed|awk)\s")
+
+
+def _is_not_a_file_ref(ref: str) -> bool:
+    if _VERSION_RE.match(ref):
+        return True
+    if _GIT_REF_RE.search(ref):
+        return True
+    if _TEMPLATE_VAR_RE.search(ref):
+        return True
+    if _GLOB_RE.search(ref):
+        return True
+    if _COMMAND_RE.match(ref):
+        return True
+    if " " in ref and not ref.startswith(("scripts/", "references/", "assets/")):
+        return True
+    return ref.startswith("~")
+
 
 class BrokenReferences:
     meta: RuleMeta = RuleMeta(
@@ -47,6 +69,8 @@ class BrokenReferences:
                     ref = ref.strip()
 
                     if ref.startswith(("http://", "https://", "#", "mailto:")):
+                        continue
+                    if _is_not_a_file_ref(ref):
                         continue
                     if ref in checked:
                         continue

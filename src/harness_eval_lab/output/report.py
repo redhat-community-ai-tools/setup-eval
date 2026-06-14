@@ -153,7 +153,12 @@ def format_terminal(
             lines.append(f"  {'─' * 56}")
             for r in results:
                 if not r.diagnostics:
-                    lines.append(f"    {r.target_name:<40} PASS")
+                    if r.rules_run:
+                        rule_names = ", ".join(_shorten_rule_id(rr.rule_id) for rr in r.rules_run)
+                        lines.append(f"    {r.target_name:<40} PASS ({len(r.rules_run)} rules)")
+                        lines.append(f"      checked: {rule_names}")
+                    else:
+                        lines.append(f"    {r.target_name:<40} PASS")
                 else:
                     parts = []
                     if r.error_count:
@@ -166,14 +171,6 @@ def format_terminal(
                     lines.append(f"    {r.target_name:<40} {status}")
                     for cline in _compress_findings(r.diagnostics):
                         lines.append(f"      {cline}")
-
-                if r.rules_run:
-                    for rr in r.rules_run:
-                        short_id = _shorten_rule_id(rr.rule_id)
-                        if rr.passed:
-                            lines.append(f"      PASS     {short_id}")
-                        else:
-                            lines.append(f"      FAIL     {short_id}")
 
     if system.uncategorized_files:
         lines.append("")

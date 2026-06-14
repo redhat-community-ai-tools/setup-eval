@@ -219,6 +219,11 @@ def _discover_uncategorized(
     known_paths = {str(Path(c.path).resolve()) for c in known_components}
     results = []
 
+    skill_dirs = set()
+    for c in known_components:
+        if c.component_type == ComponentType.SKILL:
+            skill_dirs.add(str(Path(c.path).parent.resolve()))
+
     scan_dirs = [root / ".claude", root / "skills", root / "commands"]
 
     for scan_dir in scan_dirs:
@@ -233,6 +238,8 @@ def _discover_uncategorized(
             if resolved in known_paths:
                 continue
             if f.name.startswith("."):
+                continue
+            if any(resolved.startswith(sd + "/") for sd in skill_dirs):
                 continue
             results.append(
                 _parse_file(f, ComponentType.UNCATEGORIZED, name=str(f.relative_to(root)))
