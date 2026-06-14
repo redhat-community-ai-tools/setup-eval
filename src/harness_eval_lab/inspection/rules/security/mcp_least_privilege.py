@@ -145,6 +145,9 @@ class McpLeastPrivilege:
                     )
                 )
 
+        if not actual:
+            return
+
         for cap in allowed:
             if cap not in actual:
                 context.report(
