@@ -1,17 +1,30 @@
 # harness-eval-lab
 
-Evaluate AI agent setups for best practices, redundancy, and cross-component issues.
+Evaluate AI agent setups for best practices, redundancy, security, and cross-component issues.
 
 ## What it does
 
 Most agent evaluation tools test whether a **skill** completes a task correctly. This tool evaluates the **entire setup** that surrounds the agent: CLAUDE.md, skills, commands, hooks, MCP configs, and sub-agents.
 
-It checks whether each component follows Claude Code best practices, whether components work well together, and whether anything is redundant or conflicting.
+It checks whether each component follows Claude Code best practices, whether components work well together, and whether anything is redundant, conflicting, or insecure.
 
-Two evaluation layers:
+## Overview
 
-- **Layer 1 (`lint`):** 35 deterministic Python rules + system-level analysis (token budget, trigger overlaps, dependencies, context utilization). No LLM. Fast. Good for CI.
-- **Layer 2 (`review`):** LLM-based qualitative review. Checks each component against best practices, runs 21 cross-type optimization checks (should this skill be a hook? are these two commands redundant?), and flags conflicts and redundancy. Produces KEEP/REVIEW/REMOVE verdicts. Works in CLI (via API key) and as a Claude Code plugin (in-session).
+```
+ ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
+ │ eval-setup-lint │  │ eval-setup-     │  │ eval-setup-     │  │ eval-skill      │
+ │                 │  │ review          │  │ security        │  │                 │
+ │ 39 rules        │  │ per-component   │  │ all security    │  │ deep-dive on    │
+ │ system analysis │  │ rubrics         │  │ rules           │  │ one skill       │
+ │ token budget    │  │ 21 cross-type   │  │ AST + taint     │  │ lint + rubric   │
+ │ trigger overlap │  │ checks          │  │ YARA + CVE      │  │ + contextual    │
+ │ dependencies    │  │ instruction     │  │ 4-check         │  │ analysis        │
+ │ context util    │  │ clarity         │  │ semantic review  │  │                 │
+ │                 │  │ KEEP / REVIEW   │  │ SAFE / CAUTION  │  │ KEEP / REVIEW   │
+ │ no LLM, fast   │  │ / REMOVE        │  │ / UNSAFE        │  │ / REMOVE        │
+ └─────────────────┘  └─────────────────┘  └─────────────────┘  └─────────────────┘
+   "does it pass?"      "is it effective?"     "is it safe?"       "how is this skill?"
+```
 
 ## Install
 
@@ -19,10 +32,16 @@ Two evaluation layers:
 uv sync
 ```
 
-With LLM support (for `review` and `eval-skill --review`):
+With LLM support (for `review` CLI and `eval-skill --rubric`):
 
 ```bash
 uv sync --extra llm
+```
+
+With YARA signature scanning (for `security`):
+
+```bash
+uv sync --extra security
 ```
 
 ## Usage
@@ -30,59 +49,65 @@ uv sync --extra llm
 ### As a CLI
 
 ```bash
-# Layer 1: static analysis + system analysis (no LLM, fast, CI-suitable)
+# Fast lint: static analysis + system analysis (no LLM, CI-suitable)
 harness-eval-lab eval-setup-lint /path/to/project
 harness-eval-lab eval-setup-lint /path/to/project --preset strict --format json
 harness-eval-lab eval-setup-lint /path/to/project --fail-on-error
 
-# Layer 2: LLM-based review per component (requires API key)
+# Qualitative review: LLM-based per-component review (requires API key)
 export GEMINI_API_KEY=your-key  # or ANTHROPIC_API_KEY
 harness-eval-lab eval-setup-review /path/to/project
 harness-eval-lab eval-setup-review /path/to/project --provider anthropic --model claude-sonnet-4-20250514
 
+# Security audit: all security rules + optional LLM semantic review
+harness-eval-lab eval-setup-security /path/to/project
+harness-eval-lab eval-setup-security /path/to/project --review --provider gemini
+
 # Deep-evaluate one skill (with setup context)
 harness-eval-lab eval-skill /path/to/skills/my-skill --context /path/to/project
-harness-eval-lab eval-skill /path/to/skills/my-skill --context /path/to/project --review
+harness-eval-lab eval-skill /path/to/skills/my-skill --context /path/to/project --rubric
 ```
 
 ### As a Claude Code plugin
 
 Install by adding the plugin directory, then use:
 
-- `/eval-setup-lint` - Layer 1: fast static analysis (no LLM)
-- `/eval-setup-review` - Layer 2: full qualitative review with KEEP/REVIEW/REMOVE verdicts
+- `/eval-setup-lint` - fast static analysis (no LLM)
+- `/eval-setup-review` - full qualitative review with KEEP/REVIEW/REMOVE verdicts
+- `/eval-setup-security` - deep security audit with deterministic scan + semantic review
 - `/eval-skill <skill-name>` - deep-evaluate one skill in context
 
 ## CLI Commands
 
-| Command | Description |
-|---------|-------------|
-| `eval-setup-lint` | Layer 1: 35 rules + system analysis (budget, triggers, dependencies, context utilization). No LLM, CI-suitable. |
-| `eval-setup-review` | Layer 2: LLM-based best-practices review per component. Requires API key. |
-| `eval-skill` | Deep-evaluate a single skill individually and in context |
+| Command | Description | Needs LLM? |
+|---------|-------------|------------|
+| `eval-setup-lint` | 39 deterministic rules + system analysis (budget, triggers, deps, context utilization). | No |
+| `eval-setup-review` | Per-component rubric review, 21 cross-type checks, KEEP/REVIEW/REMOVE verdicts. | Yes (API key) |
+| `eval-setup-security` | All security rules + YARA + CVE lookups + optional LLM semantic review. | Optional (`--review`) |
+| `eval-skill` | Deep-evaluate a single skill individually and in context of the setup. | Optional (`--rubric`) |
 
 ## Plugin Skills
 
-| Skill | Description |
-|-------|-------------|
-| `/eval-setup-lint` | Layer 1 only: 35 rules, system analysis. No LLM, fast, CI-suitable. |
-| `/eval-setup-review` | Layer 2 + Layer 1 context: best-practices review, 21 cross-type checks, redundancy/conflict detection, KEEP/REVIEW/REMOVE verdicts. |
-| `/eval-skill` | Layer 1 + Layer 2: deep-evaluate one skill against best practices + contextual analysis |
+| Skill | Description | Needs LLM? |
+|-------|-------------|------------|
+| `/eval-setup-lint` | 39 rules, system analysis. Fast, CI-suitable. | No |
+| `/eval-setup-review` | Per-component rubrics, 21 cross-type checks, KEEP/REVIEW/REMOVE verdicts. | Yes (Claude in-session) |
+| `/eval-setup-security` | Deterministic security scan + semantic security review with 4-check checklist. | Yes (Claude in-session) |
+| `/eval-skill` | Deep-evaluate one skill against rubric + contextual analysis. | Yes (Claude in-session) |
 
-## Inspection Rules (35)
+## Inspection Rules (39)
 
 | Category | Rules | What they check |
 |----------|-------|-----------------|
 | Structural | 1 | SKILL.md exists |
 | Frontmatter | 3 | Description required/quality (POV, use-case, length), format valid |
 | Content | 3 | Duplicate detection (TF-IDF), broken references, token budget |
-| Security | 5 | Credential access, prompt injection (17 patterns), data exfiltration, obfuscation, reverse shells |
+| Security | 9 | Credential access, prompt injection (17 patterns), data exfiltration, obfuscation, reverse shells, AST behavioral analysis, taint tracking, MCP least-privilege, MCP tool poisoning |
+| Security (opt-in) | 2 | YARA signature scanning, CVE lookups via OSV.dev (only in `eval-setup-security`) |
 | Commands | 7 | Description, script exists, duplicates, credentials, injection, skill overlap, shadows built-in |
 | CLAUDE.md | 3 | Exists, skill duplication, generic advice detection |
 | Hooks | 1 | Structure validation, dangerous patterns |
-| Agents | 9 | Description, skills exist, tool format, constraint matching, credentials, injection |
-
-Three additional security rules were added for data exfiltration (webhooks, DNS tunneling, base64 piping), obfuscation detection (eval+decode, zero-width characters, unicode escapes), and reverse shell patterns.
+| Agents | 9 | Description, skills exist, tool format, constraint matching, credentials, injection, exfiltration, obfuscation, reverse shells |
 
 Four presets: `recommended` (default), `strict`, `security`, `pre-workflow`.
 
@@ -102,10 +127,11 @@ Every plan doc has a **Status** at the top:
 | Plan | What it addresses |
 |------|-------------------|
 | [adjusting-to-dynamic-workflows](future-plans/adjusting-to-dynamic-workflows/) | Adapting to Claude Code's dynamic workflows (pre-flight checks, workflow evaluation, quality gates) |
-| [test-coverage](future-plans/test-coverage/) | Expanding tests to cover all 35 rules with edge cases |
+| [test-coverage](future-plans/test-coverage/) | Expanding tests to cover all rules with edge cases |
 | [runner-abstraction](future-plans/runner-abstraction/) | Evaluating setups for other agent tools (Cursor, Copilot, Windsurf) |
 | [impact-dimension](future-plans/impact-dimension/) | Measuring whether a setup actually helps the agent (A/B testing) |
 | [scoring-calibration](future-plans/scoring-calibration/) | Validating review accuracy against human judgment |
+| [setup-recommend](future-plans/setup-recommend/) | Recommending missing components based on project stack profiling |
 
 ## Contributing
 

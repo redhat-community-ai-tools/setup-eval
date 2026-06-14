@@ -15,10 +15,10 @@ AI agent setup evaluation tool. See [`README.md`](README.md) for usage, features
 ## Project structure
 
 - `src/harness_eval_lab/` - main package
-  - `cli.py` - Click CLI (3 commands)
+  - `cli.py` - Click CLI (4 commands: eval-setup-lint, eval-setup-review, eval-setup-security, eval-skill)
   - `config/` - rule presets (recommended/strict/security/pre-workflow)
   - `core/` - setup discovery, fingerprinting, component types
-  - `inspection/` - static analysis: parsers, lint engine, 35 rules, suppression, auto-fix
+  - `inspection/` - static analysis: parsers, lint engine, 39 rules, suppression, auto-fix
   - `rubric/` - LLM-based issue detection; prompts in `rubric/prompts/`
   - `analysis/` - system-level analysis (budget, triggers, dependencies, context utilization)
   - `output/` - report generation (terminal + JSON)
@@ -37,3 +37,4 @@ AI agent setup evaluation tool. See [`README.md`](README.md) for usage, features
 - Tests go in `tests/` mirroring the source structure
 - LLM prompts live in `src/harness_eval_lab/rubric/prompts/` as markdown files, not inline strings
 - `skills/eval-skill/rubric/skills-rubric.md` is a symlink to `skills/eval-setup-review/rubric/skills-rubric.md`; edit the source, not the link
+- YARA and CVE rules only run in the `security` preset (used by `eval-setup-security`), never in lint
