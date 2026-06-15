@@ -56,6 +56,8 @@ Install directly from within Claude Code:
 /reload-plugins
 ```
 
+**Updating:** Re-run the install command periodically to get the latest rules and improvements. Follow the [repository](https://github.com/redhat-community-ai-tools/harness-eval-lab) for release announcements.
+
 Or test locally during development:
 
 ```bash
