@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-15
+
 ### Added
 - CI pipeline: GitHub Actions with lint, typecheck, test, and dogfood jobs
 - CI enforces minimum 70% test coverage via `--cov-fail-under=70`
