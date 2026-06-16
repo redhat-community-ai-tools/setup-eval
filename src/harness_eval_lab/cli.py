@@ -579,13 +579,16 @@ def _inspect_single_file(target, config_rules):
         return [lint_command(str(target.parent), config_rules)]
     elif name == "claude.md":
         return [lint_claude_md(str(target), config_rules)]
-    elif name == "settings.json":
+    elif name in ("settings.json", "hooks.json"):
         return [lint_hooks(str(target), config_rules)]
+    elif target.suffix == ".mdc" or name == ".cursorrules":
+        return [lint_claude_md(str(target), config_rules)]
     elif target.suffix == ".md":
         return [lint_agent(str(target), config_rules)]
     click.echo(
         f"Warning: could not detect component type for '{target.name}'. "
-        f"Expected: SKILL.md, command.md, CLAUDE.md, settings.json, or an agent .md file.",
+        f"Expected: SKILL.md, command.md, CLAUDE.md, .mdc, .cursorrules, "
+        f"settings.json, hooks.json, or an agent .md file.",
         err=True,
     )
     return []

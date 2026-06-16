@@ -1,0 +1,16 @@
+---
+description: Enforce coding standards for Python projects
+globs: "**/*.py"
+alwaysApply: false
+---
+
+# Coding Standards
+
+Follow PEP 8 and project conventions. Use type hints for all function signatures.
+
+## Rules
+
+- Use snake_case for functions and variables
+- Use PascalCase for classes
+- Maximum line length: 100 characters
+- All public functions must have docstrings

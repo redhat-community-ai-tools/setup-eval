@@ -15,6 +15,14 @@ RELEVANT_PATTERNS = [
     ".claude/agents/**/*.md",
     ".mcp.json",
     "**/.mcp.json",
+    ".cursor/rules/*.mdc",
+    ".cursor/rules/**/*.mdc",
+    ".cursorrules",
+    "**/.cursorrules",
+    ".cursor/commands/*.md",
+    ".cursor/skills/**/*.md",
+    ".cursor/hooks.json",
+    ".cursor/mcp.json",
 ]
 
 

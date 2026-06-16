@@ -11,7 +11,9 @@ Evaluate AI agent setups for best practices, redundancy, security, and cross-com
 
 Most agent evaluation tools test whether a **skill** completes a task correctly. This tool evaluates the **entire setup** that surrounds the agent: CLAUDE.md, skills, commands, hooks, MCP configs, and sub-agents.
 
-It checks whether each component follows Claude Code best practices, whether components work well together, and whether anything is redundant, conflicting, or insecure.
+It checks whether each component follows best practices, whether components work well together, and whether anything is redundant, conflicting, or insecure.
+
+**Supported tools:** Claude Code and Cursor. The tool auto-detects which tool(s) a project uses and evaluates all discovered components.
 
 ## Overview
 
@@ -57,6 +59,23 @@ Install directly from within Claude Code:
 ```
 
 **Updating:** Re-run the install command periodically to get the latest rules and improvements. Follow the [repository](https://github.com/redhat-community-ai-tools/harness-eval-lab) for release announcements.
+
+### For Cursor users
+
+Clone the repo and run the CLI:
+
+```bash
+git clone https://github.com/redhat-community-ai-tools/harness-eval-lab.git
+cd harness-eval-lab
+uv sync
+uv run harness-eval-lab eval-setup-lint /path/to/your/project
+```
+
+Cursor commands are also included. Copy the `.cursor/commands/` directory from this repo into your project's `.cursor/commands/` to get the 4 eval commands available in Cursor's command palette:
+- `eval-setup-lint` - fast static analysis (no LLM)
+- `eval-setup-review` - full LLM review
+- `eval-setup-security` - deep security audit
+- `eval-skill` - deep-evaluate one skill
 
 Or test locally during development:
 

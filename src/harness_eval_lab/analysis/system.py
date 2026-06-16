@@ -29,6 +29,7 @@ class SystemReport:
     context_utilization: ContextUtilizationReport
     findings: list[str] = field(default_factory=list)
     uncategorized_files: list[str] = field(default_factory=list)
+    detected_tools: tuple[str, ...] = ()
 
 
 def analyze_system(setup: Setup) -> SystemReport:
@@ -102,4 +103,5 @@ def analyze_system(setup: Setup) -> SystemReport:
         context_utilization=context_utilization,
         findings=findings,
         uncategorized_files=uncategorized,
+        detected_tools=setup.detected_tools,
     )

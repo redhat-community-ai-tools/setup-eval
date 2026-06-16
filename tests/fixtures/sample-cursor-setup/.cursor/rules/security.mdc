@@ -1,0 +1,15 @@
+---
+description: Security checks for credential exposure and dangerous patterns
+globs: "**/*.py,**/.env*"
+alwaysApply: true
+---
+
+# Security Rules
+
+Scan for credential leaks and insecure patterns.
+
+## Checks
+
+- Never hardcode API keys or tokens
+- Use environment variables for secrets
+- Check .gitignore covers sensitive files

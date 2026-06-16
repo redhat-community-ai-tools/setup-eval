@@ -1,0 +1,103 @@
+"""Tests for Cursor IDE file discovery and evaluation."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+from harness_eval_lab.core.setup import discover_setup
+from harness_eval_lab.core.types import ComponentType
+from harness_eval_lab.inspection.engine import inspect_setup, lint_claude_md, lint_hooks
+
+FIXTURES_DIR = Path(__file__).parent / "fixtures"
+
+
+class TestCursorDiscovery:
+    def test_discover_mdc_rules(self) -> None:
+        setup = discover_setup(name="cursor", path=str(FIXTURES_DIR / "sample-cursor-setup"))
+        claude_md = setup.by_type(ComponentType.CLAUDE_MD)
+        mdc_names = {c.name for c in claude_md}
+        assert "coding-standards" in mdc_names
+        assert "security" in mdc_names
+
+    def test_discover_cursorrules(self) -> None:
+        setup = discover_setup(name="cursor", path=str(FIXTURES_DIR / "sample-cursor-setup"))
+        claude_md = setup.by_type(ComponentType.CLAUDE_MD)
+        names = {c.name for c in claude_md}
+        assert ".cursorrules" in names
+
+    def test_discover_cursor_commands(self) -> None:
+        setup = discover_setup(name="cursor", path=str(FIXTURES_DIR / "sample-cursor-setup"))
+        commands = setup.by_type(ComponentType.COMMAND)
+        names = {c.name for c in commands}
+        assert "deploy" in names
+
+    def test_discover_cursor_skills(self) -> None:
+        setup = discover_setup(name="cursor", path=str(FIXTURES_DIR / "sample-cursor-setup"))
+        skills = setup.by_type(ComponentType.SKILL)
+        names = {c.name for c in skills}
+        assert "code-review" in names
+
+    def test_discover_cursor_hooks(self) -> None:
+        setup = discover_setup(name="cursor", path=str(FIXTURES_DIR / "sample-cursor-setup"))
+        hooks = setup.by_type(ComponentType.HOOKS)
+        assert len(hooks) >= 1
+        assert any("hooks.json" in c.name for c in hooks)
+
+    def test_detect_tools_cursor_only(self) -> None:
+        setup = discover_setup(name="cursor", path=str(FIXTURES_DIR / "sample-cursor-setup"))
+        assert "Cursor" in setup.detected_tools
+        assert "Claude Code" not in setup.detected_tools
+
+    def test_detect_tools_both(self) -> None:
+        setup = discover_setup(name="mixed", path=str(FIXTURES_DIR / "sample-mixed-setup"))
+        assert "Claude Code" in setup.detected_tools
+        assert "Cursor" in setup.detected_tools
+
+    def test_mdc_content_is_parsed(self) -> None:
+        setup = discover_setup(name="cursor", path=str(FIXTURES_DIR / "sample-cursor-setup"))
+        claude_md = setup.by_type(ComponentType.CLAUDE_MD)
+        coding = next(c for c in claude_md if c.name == "coding-standards")
+        assert "PEP 8" in coding.content
+        assert coding.token_count > 0
+
+    def test_cursorrules_frontmatter_parsed(self) -> None:
+        setup = discover_setup(name="cursor", path=str(FIXTURES_DIR / "sample-cursor-setup"))
+        claude_md = setup.by_type(ComponentType.CLAUDE_MD)
+        rules = next(c for c in claude_md if c.name == ".cursorrules")
+        assert rules.frontmatter is not None
+        assert rules.frontmatter.get("name") == "project-rules"
+
+
+class TestCursorLinting:
+    def test_lint_mdc_file(self) -> None:
+        mdc_path = str(
+            FIXTURES_DIR / "sample-cursor-setup" / ".cursor" / "rules" / "coding-standards.mdc"
+        )
+        result = lint_claude_md(mdc_path)
+        assert result.target_name is not None
+
+    def test_lint_cursor_hooks(self) -> None:
+        hooks_path = str(FIXTURES_DIR / "sample-cursor-setup" / ".cursor" / "hooks.json")
+        result = lint_hooks(hooks_path)
+        assert result.error_count == 0
+
+    def test_inspect_cursor_setup(self) -> None:
+        setup = discover_setup(name="cursor", path=str(FIXTURES_DIR / "sample-cursor-setup"))
+        results = inspect_setup(setup)
+        assert len(results) > 0
+        target_types = {r.target_type for r in results}
+        assert "claude_md" in target_types
+        assert "skill" in target_types
+
+    def test_inspect_mixed_setup(self) -> None:
+        setup = discover_setup(name="mixed", path=str(FIXTURES_DIR / "sample-mixed-setup"))
+        results = inspect_setup(setup)
+        assert len(results) > 0
+
+
+class TestDeduplication:
+    def test_no_duplicate_components(self) -> None:
+        setup = discover_setup(name="cursor", path=str(FIXTURES_DIR / "sample-cursor-setup"))
+        paths = [c.path for c in setup.components]
+        resolved = [str(Path(p).resolve()) for p in paths]
+        assert len(resolved) == len(set(resolved))

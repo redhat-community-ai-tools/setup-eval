@@ -46,6 +46,7 @@ class Setup:
     fingerprint: str
     components: list[ParsedComponent] = field(default_factory=list)
     total_tokens: int = 0
+    detected_tools: tuple[str, ...] = ()
 
     def by_type(self, component_type: ComponentType) -> list[ParsedComponent]:
         return [c for c in self.components if c.component_type == component_type]

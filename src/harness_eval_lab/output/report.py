@@ -57,6 +57,8 @@ def format_terminal(
     lines.append(f"{'=' * 60}")
     lines.append(f"Setup Assessment: {system.setup_name}")
     lines.append(f"{'=' * 60}")
+    if system.detected_tools:
+        lines.append(f"Detected tools: {', '.join(system.detected_tools)}")
     lines.append(f"Components: {system.component_count}")
     lines.append(f"Total tokens: {system.budget.total_tokens}")
     lines.append("")
@@ -238,6 +240,7 @@ def format_json(
     """Format a full assessment report as JSON."""
     output = {
         "setup": system.setup_name,
+        "detected_tools": list(system.detected_tools),
         "component_count": system.component_count,
         "budget": {
             "total_tokens": system.budget.total_tokens,

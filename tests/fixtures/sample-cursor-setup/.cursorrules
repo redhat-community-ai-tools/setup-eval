@@ -1,0 +1,16 @@
+---
+name: project-rules
+description: Project-level rules for the entire codebase
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Project Rules
+
+Follow the project conventions documented in this file.
+
+## General
+
+- Write clean, readable code
+- Add tests for new features
+- Document public APIs

@@ -1,0 +1,9 @@
+---
+description: Code standards for the mixed project
+globs: "**/*.py"
+alwaysApply: false
+---
+
+# Standards
+
+Follow PEP 8 conventions.

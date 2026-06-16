@@ -37,8 +37,16 @@ def discover_setup(
     components.extend(_discover_mcp_configs(root))
     components.extend(_discover_rules(root))
     components.extend(_discover_output_styles(root))
+    components.extend(_discover_cursor_rules(root))
+    components.extend(_discover_cursor_commands(root))
+    components.extend(_discover_cursor_skills(root))
+    components.extend(_discover_cursor_hooks(root))
+    components.extend(_discover_cursor_mcp(root))
+
+    components = _deduplicate_components(components)
     components.extend(_discover_uncategorized(root, components))
 
+    detected = _detect_tools(root)
     fp = fingerprint_setup(path, user_config_dir=user_config_dir)
     total = sum(c.token_count for c in components)
 
@@ -48,6 +56,7 @@ def discover_setup(
         fingerprint=fp,
         components=list(components),
         total_tokens=total,
+        detected_tools=detected,
     )
 
 
@@ -213,6 +222,92 @@ def _discover_output_styles(root: Path) -> list[ParsedComponent]:
     return results
 
 
+def _discover_cursor_rules(root: Path) -> list[ParsedComponent]:
+    results: list[ParsedComponent] = []
+    seen_paths: set[str] = set()
+
+    cursor_rules_dir = root / ".cursor" / "rules"
+    if cursor_rules_dir.is_dir():
+        for f in sorted(cursor_rules_dir.rglob("*.mdc")):
+            if f.is_file():
+                resolved = str(f.resolve())
+                if resolved not in seen_paths:
+                    seen_paths.add(resolved)
+                    results.append(_parse_file(f, ComponentType.CLAUDE_MD, name=f.stem))
+
+    for f in sorted(root.rglob(".cursorrules")):
+        if f.is_file() and ".git" not in f.parts:
+            resolved = str(f.resolve())
+            if resolved not in seen_paths:
+                seen_paths.add(resolved)
+                rel = f.relative_to(root)
+                name = str(rel) if rel != Path(".cursorrules") else ".cursorrules"
+                results.append(_parse_file(f, ComponentType.CLAUDE_MD, name=name))
+
+    return results
+
+
+def _discover_cursor_commands(root: Path) -> list[ParsedComponent]:
+    results = []
+    commands_dir = root / ".cursor" / "commands"
+    if not commands_dir.is_dir():
+        return results
+    for f in sorted(commands_dir.iterdir()):
+        if f.is_file() and f.suffix == ".md":
+            results.append(_parse_file(f, ComponentType.COMMAND, name=f.stem))
+    return results
+
+
+def _discover_cursor_skills(root: Path) -> list[ParsedComponent]:
+    results = []
+    seen_paths: set[str] = set()
+    skills_dir = root / ".cursor" / "skills"
+    if not skills_dir.is_dir():
+        return results
+    for skill_md in sorted(skills_dir.rglob("SKILL.md")):
+        resolved = str(skill_md.resolve())
+        if resolved not in seen_paths:
+            seen_paths.add(resolved)
+            results.append(_parse_file(skill_md, ComponentType.SKILL, name=skill_md.parent.name))
+    return results
+
+
+def _discover_cursor_hooks(root: Path) -> list[ParsedComponent]:
+    hooks_file = root / ".cursor" / "hooks.json"
+    if hooks_file.is_file():
+        return [_parse_file(hooks_file, ComponentType.HOOKS, name="hooks.json")]
+    return []
+
+
+def _discover_cursor_mcp(root: Path) -> list[ParsedComponent]:
+    mcp_file = root / ".cursor" / "mcp.json"
+    if mcp_file.is_file():
+        return [_parse_file(mcp_file, ComponentType.MCP_CONFIG, name=".cursor/mcp.json")]
+    return []
+
+
+def _detect_tools(root: Path) -> tuple[str, ...]:
+    tools = []
+    has_claude = (root / "CLAUDE.md").is_file() or (root / ".claude").is_dir()
+    has_cursor = (root / ".cursor").is_dir() or (root / ".cursorrules").is_file()
+    if has_claude:
+        tools.append("Claude Code")
+    if has_cursor:
+        tools.append("Cursor")
+    return tuple(tools)
+
+
+def _deduplicate_components(components: list[ParsedComponent]) -> list[ParsedComponent]:
+    seen: set[str] = set()
+    deduped: list[ParsedComponent] = []
+    for c in components:
+        resolved = str(Path(c.path).resolve())
+        if resolved not in seen:
+            seen.add(resolved)
+            deduped.append(c)
+    return deduped
+
+
 def _discover_uncategorized(
     root: Path, known_components: list[ParsedComponent]
 ) -> list[ParsedComponent]:
@@ -224,7 +319,7 @@ def _discover_uncategorized(
         if c.component_type == ComponentType.SKILL:
             skill_dirs.add(str(Path(c.path).parent.resolve()))
 
-    scan_dirs = [root / ".claude", root / "skills", root / "commands"]
+    scan_dirs = [root / ".claude", root / ".cursor", root / "skills", root / "commands"]
 
     for scan_dir in scan_dirs:
         if not scan_dir.is_dir():
