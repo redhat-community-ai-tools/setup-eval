@@ -65,6 +65,7 @@ def _parse_file(
     component_type: ComponentType,
     name: str | None = None,
     scope: ComponentScope = ComponentScope.PROJECT,
+    source_tool: str | None = None,
 ) -> ParsedComponent:
     content = filepath.read_text(encoding="utf-8", errors="replace")
     frontmatter, _ = parse_frontmatter(content)
@@ -76,6 +77,7 @@ def _parse_file(
         frontmatter=frontmatter,
         token_count=count_tokens(content),
         scope=scope,
+        source_tool=source_tool,
     )
 
 
@@ -93,7 +95,7 @@ def _discover_claude_md(
                 resolved = str(f.resolve())
                 if resolved not in seen_paths:
                     seen_paths.add(resolved)
-                    results.append(_parse_file(f, ComponentType.CLAUDE_MD))
+                    results.append(_parse_file(f, ComponentType.CLAUDE_MD, source_tool="claude"))
 
     if user_config_dir is None:
         return results
@@ -110,6 +112,7 @@ def _discover_claude_md(
                     ComponentType.CLAUDE_MD,
                     name="CLAUDE.md (user-global)",
                     scope=ComponentScope.USER_GLOBAL,
+                    source_tool="claude",
                 )
             )
 
@@ -130,6 +133,7 @@ def _discover_claude_md(
                             ComponentType.CLAUDE_MD,
                             name=f"CLAUDE.md (user-project: {project_dir.name})",
                             scope=ComponentScope.USER_PROJECT,
+                            source_tool="claude",
                         )
                     )
 
@@ -142,13 +146,16 @@ def _discover_skills(root: Path) -> list[ParsedComponent]:
     for skills_dir in [root / "skills", root / ".claude" / "skills"]:
         if not skills_dir.is_dir():
             continue
+        tool = "claude" if ".claude" in skills_dir.parts else None
         for skill_md in sorted(skills_dir.rglob("SKILL.md")):
             resolved = str(skill_md.resolve())
             if resolved in seen_paths:
                 continue
             seen_paths.add(resolved)
             skill_dir = skill_md.parent
-            results.append(_parse_file(skill_md, ComponentType.SKILL, name=skill_dir.name))
+            results.append(
+                _parse_file(skill_md, ComponentType.SKILL, name=skill_dir.name, source_tool=tool)
+            )
     return results
 
 
@@ -157,20 +164,25 @@ def _discover_commands(root: Path) -> list[ParsedComponent]:
     for commands_dir in [root / "commands", root / ".claude" / "commands"]:
         if not commands_dir.is_dir():
             continue
+        tool = "claude" if ".claude" in commands_dir.parts else None
         for item in sorted(commands_dir.iterdir()):
             if item.is_file() and item.suffix == ".md":
-                results.append(_parse_file(item, ComponentType.COMMAND))
+                results.append(_parse_file(item, ComponentType.COMMAND, source_tool=tool))
             elif item.is_dir():
                 cmd_md = item / "command.md"
                 if cmd_md.is_file():
-                    results.append(_parse_file(cmd_md, ComponentType.COMMAND, name=item.name))
+                    results.append(
+                        _parse_file(cmd_md, ComponentType.COMMAND, name=item.name, source_tool=tool)
+                    )
     return results
 
 
 def _discover_hooks(root: Path) -> list[ParsedComponent]:
     settings = root / ".claude" / "settings.json"
     if settings.is_file():
-        return [_parse_file(settings, ComponentType.HOOKS, name="settings.json")]
+        return [
+            _parse_file(settings, ComponentType.HOOKS, name="settings.json", source_tool="claude")
+        ]
     return []
 
 
@@ -181,7 +193,7 @@ def _discover_agents(root: Path) -> list[ParsedComponent]:
         return results
     for f in sorted(agents_dir.glob("*.md")):
         if f.is_file():
-            results.append(_parse_file(f, ComponentType.AGENT))
+            results.append(_parse_file(f, ComponentType.AGENT, source_tool="claude"))
     return results
 
 
@@ -207,7 +219,7 @@ def _discover_rules(root: Path) -> list[ParsedComponent]:
         return results
     for f in sorted(rules_dir.rglob("*")):
         if f.is_file() and f.suffix in (".md", ".yaml", ".yml"):
-            results.append(_parse_file(f, ComponentType.RULE, name=f.stem))
+            results.append(_parse_file(f, ComponentType.RULE, name=f.stem, source_tool="claude"))
     return results
 
 
@@ -218,7 +230,9 @@ def _discover_output_styles(root: Path) -> list[ParsedComponent]:
         return results
     for f in sorted(styles_dir.rglob("*")):
         if f.is_file() and f.suffix in (".md", ".yaml", ".yml"):
-            results.append(_parse_file(f, ComponentType.OUTPUT_STYLE, name=f.stem))
+            results.append(
+                _parse_file(f, ComponentType.OUTPUT_STYLE, name=f.stem, source_tool="claude")
+            )
     return results
 
 
@@ -233,7 +247,9 @@ def _discover_cursor_rules(root: Path) -> list[ParsedComponent]:
                 resolved = str(f.resolve())
                 if resolved not in seen_paths:
                     seen_paths.add(resolved)
-                    results.append(_parse_file(f, ComponentType.CLAUDE_MD, name=f.stem))
+                    results.append(
+                        _parse_file(f, ComponentType.CLAUDE_MD, name=f.stem, source_tool="cursor")
+                    )
 
     for f in sorted(root.rglob(".cursorrules")):
         if f.is_file() and ".git" not in f.parts:
@@ -242,7 +258,9 @@ def _discover_cursor_rules(root: Path) -> list[ParsedComponent]:
                 seen_paths.add(resolved)
                 rel = f.relative_to(root)
                 name = str(rel) if rel != Path(".cursorrules") else ".cursorrules"
-                results.append(_parse_file(f, ComponentType.CLAUDE_MD, name=name))
+                results.append(
+                    _parse_file(f, ComponentType.CLAUDE_MD, name=name, source_tool="cursor")
+                )
 
     return results
 
@@ -254,7 +272,7 @@ def _discover_cursor_commands(root: Path) -> list[ParsedComponent]:
         return results
     for f in sorted(commands_dir.iterdir()):
         if f.is_file() and f.suffix == ".md":
-            results.append(_parse_file(f, ComponentType.COMMAND, name=f.stem))
+            results.append(_parse_file(f, ComponentType.COMMAND, name=f.stem, source_tool="cursor"))
     return results
 
 
@@ -268,21 +286,31 @@ def _discover_cursor_skills(root: Path) -> list[ParsedComponent]:
         resolved = str(skill_md.resolve())
         if resolved not in seen_paths:
             seen_paths.add(resolved)
-            results.append(_parse_file(skill_md, ComponentType.SKILL, name=skill_md.parent.name))
+            results.append(
+                _parse_file(
+                    skill_md, ComponentType.SKILL, name=skill_md.parent.name, source_tool="cursor"
+                )
+            )
     return results
 
 
 def _discover_cursor_hooks(root: Path) -> list[ParsedComponent]:
     hooks_file = root / ".cursor" / "hooks.json"
     if hooks_file.is_file():
-        return [_parse_file(hooks_file, ComponentType.HOOKS, name="hooks.json")]
+        return [
+            _parse_file(hooks_file, ComponentType.HOOKS, name="hooks.json", source_tool="cursor")
+        ]
     return []
 
 
 def _discover_cursor_mcp(root: Path) -> list[ParsedComponent]:
     mcp_file = root / ".cursor" / "mcp.json"
     if mcp_file.is_file():
-        return [_parse_file(mcp_file, ComponentType.MCP_CONFIG, name=".cursor/mcp.json")]
+        return [
+            _parse_file(
+                mcp_file, ComponentType.MCP_CONFIG, name=".cursor/mcp.json", source_tool="cursor"
+            )
+        ]
     return []
 
 

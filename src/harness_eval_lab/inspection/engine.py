@@ -155,6 +155,7 @@ def _run_rules(
     all_skills: list[ParsedSkill] | None = None,
     all_commands: list[ParsedCommand] | None = None,
     scan_state: dict[str, Any] | None = None,
+    source_tool: str | None = None,
 ) -> tuple[list[Finding], int, list[RuleResult]]:
     """Run rules for a given target type. Returns (findings, suppression_count, rules_run)."""
     findings: list[Finding] = []
@@ -183,6 +184,13 @@ def _run_rules(
         if rule.meta.target_type != target_type:
             continue
 
+        if (
+            rule.meta.tools is not None
+            and source_tool is not None
+            and source_tool not in rule.meta.tools
+        ):
+            continue
+
         resolved = _resolve_severity(rule, config_rules)
         if resolved is None:
             continue
@@ -209,6 +217,7 @@ def _run_rules(
             all_skills=all_skills or [],
             all_commands=all_commands or [],
             scan_state=scan_state,
+            source_tool=source_tool,
         )
         rule.create(context)
 
@@ -254,6 +263,7 @@ def lint(
     scan_state: dict[str, Any] | None = None,
     all_skills: list[ParsedSkill] | None = None,
     all_commands: list[ParsedCommand] | None = None,
+    source_tool: str | None = None,
 ) -> InspectionResult:
     """Lint a single skill directory or SKILL.md file."""
     skill = parse_skill(skill_path)
@@ -273,6 +283,7 @@ def lint(
         scan_state=scan_state,
         all_skills=all_skills,
         all_commands=all_commands,
+        source_tool=source_tool,
     )
     diagnostics.extend(rule_diags)
 
@@ -293,6 +304,7 @@ def lint_command(
     all_skills: list[ParsedSkill] | None = None,
     all_commands: list[ParsedCommand] | None = None,
     scan_state: dict[str, Any] | None = None,
+    source_tool: str | None = None,
 ) -> InspectionResult:
     """Lint a single command directory."""
     cmd = parse_command(command_path)
@@ -308,6 +320,7 @@ def lint_command(
         all_skills=all_skills,
         all_commands=all_commands,
         scan_state=scan_state,
+        source_tool=source_tool,
     )
     diagnostics.extend(rule_diags)
 
@@ -327,6 +340,7 @@ def lint_claude_md(
     config_rules: dict[str, str | list[Any]] | None = None,
     all_skills: list[ParsedSkill] | None = None,
     scan_state: dict[str, Any] | None = None,
+    source_tool: str | None = None,
 ) -> InspectionResult:
     """Lint a CLAUDE.md file."""
     claude_md = parse_claude_md(file_path)
@@ -341,6 +355,7 @@ def lint_claude_md(
         config_rules=config_rules,
         all_skills=all_skills,
         scan_state=scan_state,
+        source_tool=source_tool,
     )
     diagnostics.extend(rule_diags)
 
@@ -359,6 +374,7 @@ def lint_hooks(
     settings_path: str,
     config_rules: dict[str, str | list[Any]] | None = None,
     scan_state: dict[str, Any] | None = None,
+    source_tool: str | None = None,
 ) -> InspectionResult:
     """Lint hooks from settings.json."""
     hooks = parse_hooks(settings_path)
@@ -372,6 +388,7 @@ def lint_hooks(
         target=hooks,
         config_rules=config_rules,
         scan_state=scan_state,
+        source_tool=source_tool,
     )
     diagnostics.extend(rule_diags)
 
@@ -391,6 +408,7 @@ def lint_agent(
     config_rules: dict[str, str | list[Any]] | None = None,
     all_skills: list[ParsedSkill] | None = None,
     scan_state: dict[str, Any] | None = None,
+    source_tool: str | None = None,
 ) -> InspectionResult:
     """Lint a single agent .md file."""
     agent = parse_agent(agent_path)
@@ -405,6 +423,7 @@ def lint_agent(
         config_rules=config_rules,
         all_skills=all_skills,
         scan_state=scan_state,
+        source_tool=source_tool,
     )
     diagnostics.extend(rule_diags)
 
@@ -434,6 +453,7 @@ def lint_text_file(
     component_type: ComponentType,
     config_rules: dict[str, str | list[Any]] | None = None,
     scan_state: dict[str, Any] | None = None,
+    source_tool: str | None = None,
 ) -> InspectionResult:
     """Lint a generic text file (rule, output-style) using security-only rules."""
     path = Path(file_path)
@@ -475,6 +495,7 @@ def lint_text_file(
         target=dummy_skill,
         config_rules=security_config,
         scan_state=scan_state,
+        source_tool=source_tool,
     )
 
     return _build_result(
@@ -516,6 +537,7 @@ def inspect_setup(
                 scan_state=scan_state,
                 all_skills=all_skills,
                 all_commands=all_commands,
+                source_tool=comp.source_tool,
             )
         )
     for comp in setup.by_type(CT.COMMAND):
@@ -528,6 +550,7 @@ def inspect_setup(
                     all_skills=all_skills,
                     all_commands=all_commands,
                     scan_state=scan_state,
+                    source_tool=comp.source_tool,
                 )
             )
         else:
@@ -538,21 +561,46 @@ def inspect_setup(
                     all_skills=all_skills,
                     all_commands=all_commands,
                     scan_state=scan_state,
+                    source_tool=comp.source_tool,
                 )
             )
     for comp in setup.by_type(CT.CLAUDE_MD):
         results.append(
-            lint_claude_md(comp.path, config_rules, all_skills=all_skills, scan_state=scan_state)
+            lint_claude_md(
+                comp.path,
+                config_rules,
+                all_skills=all_skills,
+                scan_state=scan_state,
+                source_tool=comp.source_tool,
+            )
         )
     for comp in setup.by_type(CT.HOOKS):
-        results.append(lint_hooks(comp.path, config_rules, scan_state=scan_state))
+        results.append(
+            lint_hooks(comp.path, config_rules, scan_state=scan_state, source_tool=comp.source_tool)
+        )
     for comp in setup.by_type(CT.AGENT):
-        results.append(lint_agent(comp.path, config_rules, scan_state=scan_state))
+        results.append(
+            lint_agent(comp.path, config_rules, scan_state=scan_state, source_tool=comp.source_tool)
+        )
     for comp in setup.by_type(CT.RULE):
-        results.append(lint_text_file(comp.path, CT.RULE, config_rules, scan_state=scan_state))
+        results.append(
+            lint_text_file(
+                comp.path,
+                CT.RULE,
+                config_rules,
+                scan_state=scan_state,
+                source_tool=comp.source_tool,
+            )
+        )
     for comp in setup.by_type(CT.OUTPUT_STYLE):
         results.append(
-            lint_text_file(comp.path, CT.OUTPUT_STYLE, config_rules, scan_state=scan_state)
+            lint_text_file(
+                comp.path,
+                CT.OUTPUT_STYLE,
+                config_rules,
+                scan_state=scan_state,
+                source_tool=comp.source_tool,
+            )
         )
     return results
 

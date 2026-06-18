@@ -4,9 +4,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from harness_eval_lab.analysis.budget import analyze_budget
+from harness_eval_lab.analysis.system import analyze_system
 from harness_eval_lab.core.setup import discover_setup
 from harness_eval_lab.core.types import ComponentType
 from harness_eval_lab.inspection.engine import inspect_setup, lint_claude_md, lint_hooks
+from harness_eval_lab.output.report import format_terminal
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 
@@ -93,6 +96,71 @@ class TestCursorLinting:
         setup = discover_setup(name="mixed", path=str(FIXTURES_DIR / "sample-mixed-setup"))
         results = inspect_setup(setup)
         assert len(results) > 0
+
+
+class TestCursorSourceTool:
+    def test_cursor_components_have_source_tool(self) -> None:
+        setup = discover_setup(name="cursor", path=str(FIXTURES_DIR / "sample-cursor-setup"))
+        for comp in setup.components:
+            if ".cursor" in comp.path or ".cursorrules" in comp.path:
+                assert comp.source_tool == "cursor", f"{comp.path} should have source_tool='cursor'"
+
+    def test_mixed_setup_has_both_source_tools(self) -> None:
+        setup = discover_setup(name="mixed", path=str(FIXTURES_DIR / "sample-mixed-setup"))
+        claude_comps = [c for c in setup.components if c.source_tool == "claude"]
+        cursor_comps = [c for c in setup.components if c.source_tool == "cursor"]
+        assert len(claude_comps) > 0
+        assert len(cursor_comps) > 0
+
+
+class TestCursorRuleFiltering:
+    def test_claude_md_exists_not_fired_for_cursor(self) -> None:
+        setup = discover_setup(name="cursor", path=str(FIXTURES_DIR / "sample-cursor-setup"))
+        config = {"claude-md/exists": "warning"}
+        results = inspect_setup(setup, config)
+        for r in results:
+            for d in r.diagnostics:
+                assert d.rule_id != "claude-md/exists", (
+                    "claude-md/exists should not fire for Cursor setup"
+                )
+
+    def test_generic_advice_not_fired_for_cursor(self) -> None:
+        setup = discover_setup(name="cursor", path=str(FIXTURES_DIR / "sample-cursor-setup"))
+        config = {"claude-md/generic-advice": "warning"}
+        results = inspect_setup(setup, config)
+        for r in results:
+            for d in r.diagnostics:
+                assert d.rule_id != "claude-md/generic-advice", (
+                    "generic-advice should not fire for Cursor components"
+                )
+
+
+class TestCursorBudget:
+    def test_cursor_non_always_apply_is_on_demand(self) -> None:
+        setup = discover_setup(name="cursor", path=str(FIXTURES_DIR / "sample-cursor-setup"))
+        budget = analyze_budget(setup)
+        assert budget.on_demand_tokens > 0
+
+    def test_cursor_always_apply_is_always_loaded(self) -> None:
+        setup = discover_setup(name="cursor", path=str(FIXTURES_DIR / "sample-cursor-setup"))
+        budget = analyze_budget(setup)
+        assert budget.always_loaded_tokens > 0
+
+
+class TestCursorReport:
+    def test_cursor_only_report_labels(self) -> None:
+        setup = discover_setup(name="cursor", path=str(FIXTURES_DIR / "sample-cursor-setup"))
+        system = analyze_system(setup)
+        results = inspect_setup(setup)
+        output = format_terminal(system, results)
+        assert "Cursor Rules" in output
+
+    def test_cursor_budget_label(self) -> None:
+        setup = discover_setup(name="cursor", path=str(FIXTURES_DIR / "sample-cursor-setup"))
+        system = analyze_system(setup)
+        results = inspect_setup(setup)
+        output = format_terminal(system, results)
+        assert "cursor rules, hooks" in output
 
 
 class TestDeduplication:

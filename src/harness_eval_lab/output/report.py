@@ -8,15 +8,26 @@ from collections import defaultdict
 from harness_eval_lab.analysis.system import SystemReport
 from harness_eval_lab.inspection.types import InspectionResult
 
-_TYPE_DISPLAY = {
-    "skill": "Skills",
-    "command": "Commands",
-    "hooks": "Hooks",
-    "claude_md": "CLAUDE.md",
-    "agent": "Agents",
-    "rule": "Rules",
-    "output_style": "Output Styles",
-}
+
+def _get_type_display(detected_tools: tuple[str, ...] = ()) -> dict[str, str]:
+    base = {
+        "skill": "Skills",
+        "command": "Commands",
+        "hooks": "Hooks",
+        "agent": "Agents",
+        "rule": "Rules",
+        "output_style": "Output Styles",
+    }
+    if "Cursor" in detected_tools and "Claude Code" not in detected_tools:
+        base["claude_md"] = "Cursor Rules"
+    elif "Claude Code" in detected_tools and "Cursor" not in detected_tools:
+        base["claude_md"] = "CLAUDE.md"
+    elif "Cursor" in detected_tools and "Claude Code" in detected_tools:
+        base["claude_md"] = "System Instructions"
+    else:
+        base["claude_md"] = "CLAUDE.md"
+    return base
+
 
 _TYPE_ORDER = ["skill", "command", "hooks", "claude_md", "agent", "rule", "output_style"]
 
@@ -71,10 +82,15 @@ def format_terminal(
     lines.append("  SKIP     Check was skipped (missing dependency or N/A)")
     lines.append("")
 
+    if "Cursor" in system.detected_tools and "Claude Code" not in system.detected_tools:
+        always_label = "cursor rules, hooks"
+    else:
+        always_label = "CLAUDE.md, hooks"
+
     lines.append("Token Budget:")
     lines.append(f"{'─' * 60}")
     lines.append(
-        f"  Always-loaded (CLAUDE.md, hooks): "
+        f"  Always-loaded ({always_label}): "
         f"{system.budget.always_loaded_tokens} tokens "
         f"({system.budget.always_loaded_ratio:.0%})"
     )
@@ -149,7 +165,7 @@ def format_terminal(
 
         for type_key in all_type_keys:
             results = grouped[type_key]
-            label = _TYPE_DISPLAY.get(type_key, type_key)
+            label = _get_type_display(system.detected_tools).get(type_key, type_key)
             lines.append("")
             lines.append(f"  {label} ({len(results)})")
             lines.append(f"  {'─' * 56}")

@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- Tool-aware rule filtering: rules can declare `tools=("claude",)` or `tools=("cursor",)` to only run for matching components
+- `source_tool` field on `ParsedComponent` and `RuleContext` to track whether a component came from `.claude/` or `.cursor/`
+- Cursor-aware budget analysis: respects `alwaysApply` frontmatter in `.mdc` files instead of treating all Cursor rules as always-loaded
+- Tool-aware report labels: Cursor-only setups show "Cursor Rules" instead of "CLAUDE.md" in reports
+- 8 new Cursor-specific tests (source_tool tracking, rule filtering, budget, report labels)
+
+### Changed
+- `claude-md/exists`, `claude-md/generic-advice`, and `command/shadows-builtin` rules now only fire for Claude Code components (skipped for Cursor)
+- `claude-md/skill-duplication` uses Cursor-appropriate message text when evaluating Cursor rules
+- System analysis messages use tool-aware labels ("cursor rules" vs "CLAUDE.md")
+
 ## [3.4.0] - 2026-06-18
 
 ### Added

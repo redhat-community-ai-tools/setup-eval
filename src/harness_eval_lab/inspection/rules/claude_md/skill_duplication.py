@@ -23,6 +23,7 @@ class ClaudeMdSkillDuplication:
         category=RuleCategory.CONTENT,
         messages={
             "overlap": "CLAUDE.md section '{{section}}' has {{pct}}% similarity with skill '{{skill}}' — consider removing the duplicate content from CLAUDE.md since the skill loads on demand",
+            "overlap_cursor": "Rules section '{{section}}' has {{pct}}% similarity with skill '{{skill}}' — consider removing the duplicate content from the rule file since the skill loads on demand",
         },
         target_type=ComponentType.CLAUDE_MD,
     )
@@ -43,9 +44,10 @@ class ClaudeMdSkillDuplication:
 
                 similarity = tfidf_similarity(section_text, skill.body)
                 if similarity >= OVERLAP_THRESHOLD:
+                    msg_id = "overlap_cursor" if context.source_tool == "cursor" else "overlap"
                     context.report(
                         ReportDescriptor(
-                            message_id="overlap",
+                            message_id=msg_id,
                             data={
                                 "section": section.get("header", "(untitled)"),
                                 "pct": str(int(similarity * 100)),

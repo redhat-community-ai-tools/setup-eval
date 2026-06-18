@@ -41,10 +41,15 @@ def analyze_system(setup: Setup) -> SystemReport:
 
     findings: list[str] = []
 
+    if "Cursor" in setup.detected_tools and "Claude Code" not in setup.detected_tools:
+        always_label = "cursor rules"
+    else:
+        always_label = "CLAUDE.md"
+
     if budget.always_loaded_ratio > 0.7:
         findings.append(
             f"Inverted budget: {budget.always_loaded_ratio:.0%} of tokens are "
-            f"always-loaded (CLAUDE.md). Most content should be in on-demand skills."
+            f"always-loaded ({always_label}). Most content should be in on-demand skills."
         )
     elif budget.always_loaded_ratio > 0.5:
         findings.append(

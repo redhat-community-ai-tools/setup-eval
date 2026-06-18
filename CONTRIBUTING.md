@@ -67,11 +67,13 @@ class MyNewRule:
             "message_id": "What to tell the user: {{variable}}",
         },
         target_type=ComponentType.SKILL,   # what component this applies to
+        tools=None,                        # None = all tools; ("claude",) = Claude Code only; ("cursor",) = Cursor only
     )
 
     def create(self, context: RuleContext) -> None:
         # Access the component via context.skill, context.command,
         # context.claude_md, context.hooks, or context.agent
+        # Use context.source_tool ("claude", "cursor", or None) for tool-specific behavior
         skill = context.skill
         if not skill.raw_content:
             return

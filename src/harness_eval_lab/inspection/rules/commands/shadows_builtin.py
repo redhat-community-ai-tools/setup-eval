@@ -41,6 +41,7 @@ class CommandShadowsBuiltin:
             "shadows": "Command '{{name}}' shadows the built-in /{{name}} command — the built-in will be overridden, which may be unintentional",
         },
         target_type=ComponentType.COMMAND,
+        tools=("claude",),
     )
 
     def create(self, context: RuleContext) -> None:

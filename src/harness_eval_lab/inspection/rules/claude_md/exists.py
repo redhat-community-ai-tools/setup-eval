@@ -22,6 +22,7 @@ class ClaudeMdExists:
             "not_found": "No CLAUDE.md found — consider creating one with project-specific instructions (build commands, test runners, code style). See https://code.claude.com/docs/en/best-practices",
         },
         target_type=ComponentType.CLAUDE_MD,
+        tools=("claude",),
     )
 
     def create(self, context: RuleContext) -> None:

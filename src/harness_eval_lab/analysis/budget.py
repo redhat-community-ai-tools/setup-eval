@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from harness_eval_lab.core.types import ComponentType, Setup
+from harness_eval_lab.core.types import ComponentType, ParsedComponent, Setup
 
 
 @dataclass
@@ -21,8 +21,17 @@ class BudgetReport:
     heaviest_component_ratio: float = 0.0
 
 
-ALWAYS_LOADED_TYPES = {ComponentType.CLAUDE_MD, ComponentType.HOOKS}
 _EXCLUDED_FROM_BUDGET = {ComponentType.UNCATEGORIZED}
+
+
+def _is_always_loaded(comp: ParsedComponent) -> bool:
+    if comp.component_type == ComponentType.HOOKS:
+        return True
+    if comp.component_type != ComponentType.CLAUDE_MD:
+        return False
+    if comp.source_tool != "cursor":
+        return True
+    return bool(comp.frontmatter and comp.frontmatter.get("alwaysApply") is True)
 
 
 def analyze_budget(setup: Setup) -> BudgetReport:
@@ -41,7 +50,7 @@ def analyze_budget(setup: Setup) -> BudgetReport:
         by_type[type_key] = by_type.get(type_key, 0) + comp.token_count
         by_component.append((type_key, comp.name, comp.token_count))
 
-        if comp.component_type in ALWAYS_LOADED_TYPES:
+        if _is_always_loaded(comp):
             always_loaded += comp.token_count
         else:
             on_demand += comp.token_count

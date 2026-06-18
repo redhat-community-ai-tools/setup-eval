@@ -35,6 +35,7 @@ class ParsedComponent:
     frontmatter: dict[str, object] | None = None
     token_count: int = 0
     scope: ComponentScope = ComponentScope.PROJECT
+    source_tool: str | None = None
 
 
 @dataclass(frozen=True)

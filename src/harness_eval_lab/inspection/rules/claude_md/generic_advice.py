@@ -42,6 +42,7 @@ class ClaudeMdGenericAdvice:
             "generic": "Line {{line}}: '{{label}}' — Claude does this by default. This instruction wastes tokens every session.",
         },
         target_type=ComponentType.CLAUDE_MD,
+        tools=("claude",),
     )
 
     def create(self, context: RuleContext) -> None:

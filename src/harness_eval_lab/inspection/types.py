@@ -53,6 +53,7 @@ class RuleMeta:
     category: RuleCategory
     messages: dict[str, str]
     target_type: ComponentType = ComponentType.SKILL
+    tools: tuple[str, ...] | None = None
 
 
 @dataclass
@@ -147,6 +148,7 @@ class RuleContext:
     all_skills: list[ParsedSkill] = field(default_factory=list)
     all_commands: list[ParsedCommand] = field(default_factory=list)
     scan_state: dict[str, Any] = field(default_factory=dict)
+    source_tool: str | None = None
 
     @property
     def command(self) -> ParsedCommand | None:
