@@ -286,6 +286,132 @@ def _discover_cursor_mcp(root: Path) -> list[ParsedComponent]:
     return []
 
 
+def collect_setup_file_paths(
+    root: Path,
+    user_config_dir: Path | None = None,
+) -> list[Path]:
+    """Return deduplicated file paths that ``discover_setup`` would scan.
+
+    This is the single source of truth for which files constitute an agent
+    setup.  Both ``discover_setup`` (for parsing) and watch mode (for
+    monitoring) consume this list so they stay in sync automatically.
+    """
+    paths: list[Path] = []
+
+    # CLAUDE.md — project-local
+    for pattern in ["CLAUDE.md", "**/CLAUDE.md"]:
+        for f in sorted(root.glob(pattern)):
+            if f.is_file():
+                paths.append(f)
+
+    # CLAUDE.md — user-config (global + per-project)
+    if user_config_dir is not None:
+        user_global = user_config_dir / "CLAUDE.md"
+        if user_global.is_file():
+            paths.append(user_global)
+        projects_dir = user_config_dir / "projects"
+        if projects_dir.is_dir():
+            for project_dir in sorted(projects_dir.iterdir()):
+                if project_dir.is_dir():
+                    project_claude = project_dir / "CLAUDE.md"
+                    if project_claude.is_file():
+                        paths.append(project_claude)
+
+    # Skills
+    for skills_dir in [root / "skills", root / ".claude" / "skills"]:
+        if skills_dir.is_dir():
+            for f in sorted(skills_dir.rglob("SKILL.md")):
+                paths.append(f)
+
+    # Commands
+    for commands_dir in [root / "commands", root / ".claude" / "commands"]:
+        if commands_dir.is_dir():
+            for item in sorted(commands_dir.iterdir()):
+                if item.is_file() and item.suffix == ".md":
+                    paths.append(item)
+                elif item.is_dir():
+                    cmd_md = item / "command.md"
+                    if cmd_md.is_file():
+                        paths.append(cmd_md)
+
+    # Settings / hooks
+    settings = root / ".claude" / "settings.json"
+    if settings.is_file():
+        paths.append(settings)
+
+    # Agents
+    agents_dir = root / ".claude" / "agents"
+    if agents_dir.is_dir():
+        for f in sorted(agents_dir.glob("*.md")):
+            if f.is_file():
+                paths.append(f)
+
+    # MCP configs
+    for pattern in [".mcp.json", "**/.mcp.json"]:
+        for f in sorted(root.glob(pattern)):
+            if f.is_file():
+                paths.append(f)
+
+    # Rules
+    rules_dir = root / ".claude" / "rules"
+    if rules_dir.is_dir():
+        for f in sorted(rules_dir.rglob("*")):
+            if f.is_file() and f.suffix in (".md", ".yaml", ".yml"):
+                paths.append(f)
+
+    # Output styles
+    styles_dir = root / ".claude" / "output-styles"
+    if styles_dir.is_dir():
+        for f in sorted(styles_dir.rglob("*")):
+            if f.is_file() and f.suffix in (".md", ".yaml", ".yml"):
+                paths.append(f)
+
+    # Cursor rules
+    cursor_rules_dir = root / ".cursor" / "rules"
+    if cursor_rules_dir.is_dir():
+        for f in sorted(cursor_rules_dir.rglob("*.mdc")):
+            if f.is_file():
+                paths.append(f)
+
+    for f in sorted(root.rglob(".cursorrules")):
+        if f.is_file() and ".git" not in f.parts:
+            paths.append(f)
+
+    # Cursor commands
+    cursor_commands = root / ".cursor" / "commands"
+    if cursor_commands.is_dir():
+        for f in sorted(cursor_commands.iterdir()):
+            if f.is_file() and f.suffix == ".md":
+                paths.append(f)
+
+    # Cursor skills
+    cursor_skills = root / ".cursor" / "skills"
+    if cursor_skills.is_dir():
+        for f in sorted(cursor_skills.rglob("SKILL.md")):
+            paths.append(f)
+
+    # Cursor hooks
+    cursor_hooks = root / ".cursor" / "hooks.json"
+    if cursor_hooks.is_file():
+        paths.append(cursor_hooks)
+
+    # Cursor MCP
+    cursor_mcp = root / ".cursor" / "mcp.json"
+    if cursor_mcp.is_file():
+        paths.append(cursor_mcp)
+
+    # Deduplicate while preserving order
+    seen: set[str] = set()
+    unique: list[Path] = []
+    for p in paths:
+        resolved = str(p.resolve())
+        if resolved not in seen:
+            seen.add(resolved)
+            unique.append(p)
+
+    return unique
+
+
 def _detect_tools(root: Path) -> tuple[str, ...]:
     tools = []
     has_claude = (root / "CLAUDE.md").is_file() or (root / ".claude").is_dir()

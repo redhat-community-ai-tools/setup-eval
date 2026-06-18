@@ -20,6 +20,9 @@ dependencies = [
 setup-eval = "harness_eval_lab.cli:cli"
 
 [project.optional-dependencies]
+watch = [
+    "watchfiles>=1.0",
+]
 yara = [
     "yara-python>=4.0",
 ]

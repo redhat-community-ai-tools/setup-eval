@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- `--watch` flag for `setup-eval-lint` that monitors agent setup files and re-runs lint on save
+
 ## [3.3.0] - 2026-06-17
 
 ### Added

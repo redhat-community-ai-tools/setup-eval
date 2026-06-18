@@ -34,6 +34,7 @@ Install from PyPI and run from the terminal:
 pip install setup-eval
 
 setup-eval setup-eval-lint .
+setup-eval setup-eval-lint . --watch     # re-run lint automatically on file changes
 setup-eval setup-eval-review . --provider gemini
 setup-eval setup-eval-security . --review
 setup-eval eval-skill ./skills/my-skill --context . --rubric

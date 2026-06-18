@@ -35,15 +35,36 @@ def cli() -> None:
     help="Exit with code 1 if any errors found. Useful for CI and hooks.",
 )
 @click.option(
+    "--watch",
+    is_flag=True,
+    help="Watch files for changes and re-run lint automatically.",
+)
+@click.option(
     "--user-config",
     type=click.Path(),
     default=None,
     help="Path to ~/.claude directory for user-level CLAUDE.md discovery.",
 )
 def eval_setup_lint(
-    path: str, preset: str, fmt: str, fix: bool, fail_on_error: bool, user_config: str | None
+    path: str,
+    preset: str,
+    fmt: str,
+    fix: bool,
+    fail_on_error: bool,
+    watch: bool,
+    user_config: str | None,
 ) -> None:
     """Lint: 39 rules + system analysis. No LLM, deterministic, fast."""
+    if watch:
+        from harness_eval_lab.watch import run_watch
+
+        if fix:
+            click.echo("Warning: --fix is ignored in watch mode.", err=True)
+        if fail_on_error:
+            click.echo("Warning: --fail-on-error is ignored in watch mode.", err=True)
+        run_watch(path=path, preset=preset, fmt=fmt, user_config=user_config)
+        return
+
     t0 = time.monotonic()
     from harness_eval_lab.analysis.system import analyze_system
     from harness_eval_lab.config.presets import PRESETS
