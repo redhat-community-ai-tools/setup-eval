@@ -45,7 +45,7 @@ jobs:
         id: parse
         run: |
           set -euo pipefail
-          BUMP=$(echo "$COMMENT_BODY" | sed -n 's|^/release \(patch\|minor\|major\).*|\1|p')
+          BUMP=$(echo "$COMMENT_BODY" | head -1 | awk '/^\/release (patch|minor|major)/ { print $2 }')
           if [ -z "$BUMP" ]; then
             gh pr comment "$PR_NUMBER" --repo "$REPO" \
               --body "Release failed: invalid command. Use \`/release patch\`, \`/release minor\`, or \`/release major\`."
