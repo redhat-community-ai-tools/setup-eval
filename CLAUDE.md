@@ -19,15 +19,15 @@ Every PR that adds a feature, fixes a bug, or changes behavior must include a CH
 
 To cut a release: `uv run scripts/release.py minor` (or `patch`/`major`). This moves unreleased entries to a dated version, bumps pyproject.toml, commits, and tags.
 
-## Before pushing
+## Before committing
 
-The CI runs 4 jobs: lint, typecheck, test, dogfood. All must pass. Run this before pushing:
+The CI runs 4 jobs: lint, typecheck, test, dogfood. All must pass. Run this before committing:
 
 ```bash
 uv run ruff format src/ tests/ && uv run ruff check src/ tests/ && uv run pytest tests/ -q
 ```
 
-The most common CI failure is forgetting `ruff format`. The `ruff check` (lint rules) and `ruff format` (code style) are separate checks. Both must pass.
+All three must pass. The most common CI failure is forgetting `ruff format`. The `ruff check` (lint rules) and `ruff format` (code style) are separate checks.
 
 ## Project structure
 

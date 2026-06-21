@@ -10,14 +10,13 @@ uv sync --extra dev
 uv run pre-commit install
 ```
 
-## Before pushing
+## Before committing
 
 ```bash
-uv run ruff check src/ tests/
-uv run pytest tests/ -q
+uv run ruff format src/ tests/ && uv run ruff check src/ tests/ && uv run pytest tests/ -q
 ```
 
-Both must pass. Pre-commit hooks will also run automatically.
+All three must pass. Commits that fail `ruff check` or `ruff format` will be rejected by pre-commit hooks.
 
 ## Adding a new inspection rule
 
@@ -181,7 +180,7 @@ Add a row to the Future Plans table in `README.md`.
 ## PR guidelines
 
 - One logical change per PR. Don't mix a new rule with a future plan rewrite.
-- Run `uv run ruff check src/ tests/` and `uv run pytest tests/ -q` before pushing.
+- Run `uv run ruff format src/ tests/ && uv run ruff check src/ tests/ && uv run pytest tests/ -q` before committing.
 - PR title should describe what changed, not how (e.g., "Add shadows-builtin rule" not "Add new file and update init").
 - If adding a rule, include the test in the same PR.
 - If adding a future plan, follow the structure above.
