@@ -16,6 +16,7 @@ def main() -> None:
     from harness_eval_lab.config.presets import SECURITY
     from harness_eval_lab.core.setup import discover_setup
     from harness_eval_lab.inspection.engine import inspect_setup
+    from harness_eval_lab.inspection.registry import get_all_rules
 
     setup = discover_setup(
         name=Path(setup_path).name, path=setup_path, user_config_dir=user_config
@@ -60,11 +61,18 @@ def main() -> None:
     else:
         risk = "UNSAFE"
 
+    rules_checked = [
+        {"id": r.meta.id, "description": r.meta.description}
+        for r in get_all_rules()
+        if r.meta.id in SECURITY and SECURITY[r.meta.id] != "off"
+    ]
+
     output = {
         "security_scan": True,
         "setup": setup.name,
         "risk_assessment": risk,
         "components_scanned": len(results),
+        "rules_checked": rules_checked,
         "errors": total_errors,
         "warnings": total_warnings,
         "findings": findings,
