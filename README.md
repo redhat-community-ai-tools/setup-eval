@@ -50,7 +50,7 @@ No pip install needed. Install directly from within Claude Code:
 
 ```
 /plugin marketplace add redhat-community-ai-tools/harness-eval-lab
-/plugin install setup-eval@setup-eval
+/plugin install setup-eval@harness-eval-lab
 /reload-plugins
 ```
 
