@@ -1,5 +1,5 @@
 {
-  "name": "setup-eval",
+  "name": "harness-eval-lab",
   "description": "Evaluate AI agent setups for best practices, redundancy, security, and cross-component issues.",
   "owner": {
     "name": "Benjamin Kapner",
