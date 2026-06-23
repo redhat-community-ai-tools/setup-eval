@@ -24,7 +24,7 @@ _INJECTION_PATTERNS: list[tuple[str, re.Pattern]] = [
         re.compile(r"override\s+(all\s+)?(instructions|rules|guidelines)", re.I),
     ),
     ("new instructions", re.compile(r"new\s+instructions?\s*:", re.I)),
-    ("jailbreak attempt", re.compile(r"(\bDAN\b|do\s+anything\s+now|developer\s+mode)", re.I)),
+    ("jailbreak attempt", re.compile(r"(do\s+anything\s+now|developer\s+mode)", re.I)),
     (
         "prompt leak",
         re.compile(r"(reveal|show|print|output)\s+(your|the)\s+(system\s+)?prompt", re.I),
