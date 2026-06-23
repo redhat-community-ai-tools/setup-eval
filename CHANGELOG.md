@@ -12,6 +12,13 @@ All notable changes to this project will be documented in this file.
 - Tool-aware report labels: Cursor-only setups show "Cursor Rules" instead of "CLAUDE.md" in reports
 - 8 new Cursor-specific tests (source_tool tracking, rule filtering, budget, report labels)
 
+### Fixed
+- `security/no-prompt-injection`: removed `\bDAN\b` from jailbreak pattern to prevent false positives on legitimate names (e.g., "Dan reviewed the PR")
+
+### Added
+- Positive-match unit tests for all 17 injection regex patterns, proving each detects its target content
+- Negative-match tests confirming clean text (including "Dan") does not trigger false positives
+
 ### Changed
 - `claude-md/exists`, `claude-md/generic-advice`, and `command/shadows-builtin` rules now only fire for Claude Code components (skipped for Cursor)
 - `claude-md/skill-duplication` uses Cursor-appropriate message text when evaluating Cursor rules
