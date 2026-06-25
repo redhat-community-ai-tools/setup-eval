@@ -312,3 +312,134 @@ class TestInjectionPatternRegexes:
     def test_clean_text_no_match(self, text: str) -> None:
         matched = [(lbl, p) for lbl, p in _INJECTION_PATTERNS if p.search(text)]
         assert not matched, f"Clean text matched patterns: {[lbl for lbl, _ in matched]}"
+
+
+class TestBase64EntropyFiltering:
+    def test_file_path_not_flagged(self, skill_dir: Path) -> None:
+        _write_skill(
+            skill_dir,
+            body="/home/user/.specify/extensions.yml\n"
+            "/usr/local/bin/check-prerequisites.sh\n"
+            "../scripts/bash/setup-environment.sh",
+        )
+        result = lint(str(skill_dir), SECURITY)
+        poisoning = [d for d in result.diagnostics if d.rule_id == "security/mcp-tool-poisoning"]
+        assert len(poisoning) == 0
+
+    def test_real_base64_flagged(self, skill_dir: Path) -> None:
+        _write_skill(
+            skill_dir,
+            body="SGVsbG8gV29ybGQhIFRoaXMgaXMgYSBiYXNlNjQgZW5jb2RlZCBwYXlsb2Fk",
+        )
+        result = lint(str(skill_dir), SECURITY)
+        poisoning = [d for d in result.diagnostics if d.rule_id == "security/mcp-tool-poisoning"]
+        assert len(poisoning) >= 1
+
+    def test_data_uri_still_flagged(self, skill_dir: Path) -> None:
+        _write_skill(skill_dir, body="data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==")
+        result = lint(str(skill_dir), SECURITY)
+        poisoning = [d for d in result.diagnostics if d.rule_id == "security/mcp-tool-poisoning"]
+        assert len(poisoning) >= 1
+
+
+class TestSubprocessHardcodedDetection:
+    def test_hardcoded_subprocess_is_warning(self, skill_dir: Path) -> None:
+        _write_skill(
+            skill_dir,
+            py_content='import subprocess\nsubprocess.run(["ruff", "check", "."])\n',
+        )
+        result = lint(str(skill_dir), SECURITY)
+        ast_findings = [d for d in result.diagnostics if d.rule_id == "security/ast-behavioral"]
+        assert len(ast_findings) >= 1
+        assert ast_findings[0].severity.value == "warning"
+        assert "hardcoded" in ast_findings[0].message
+
+    def test_dynamic_subprocess_is_error(self, skill_dir: Path) -> None:
+        _write_skill(
+            skill_dir,
+            py_content=("import subprocess, sys\nsubprocess.run(sys.argv[1:])\n"),
+        )
+        result = lint(str(skill_dir), SECURITY)
+        ast_findings = [d for d in result.diagnostics if d.rule_id == "security/ast-behavioral"]
+        assert len(ast_findings) >= 1
+        assert ast_findings[0].severity.value == "error"
+
+    def test_shell_true_is_error(self, skill_dir: Path) -> None:
+        _write_skill(
+            skill_dir,
+            py_content=('import subprocess\nsubprocess.run("ls -la", shell=True)\n'),
+        )
+        result = lint(str(skill_dir), SECURITY)
+        ast_findings = [d for d in result.diagnostics if d.rule_id == "security/ast-behavioral"]
+        assert len(ast_findings) >= 1
+        assert ast_findings[0].severity.value == "error"
+
+
+class TestCveSeverityMapping:
+    def test_medium_cve_is_warning(self, skill_dir: Path) -> None:
+        from harness_eval_lab.inspection.rules.security.cve_lookup import CveLookup
+
+        assert CveLookup.meta.default_severity.value == "warning"
+
+    def test_adjudicated_finding_properties(self) -> None:
+        from harness_eval_lab.inspection.types import (
+            AdjudicatedFinding,
+            Finding,
+            Location,
+            RuleCategory,
+            Severity,
+        )
+
+        f = Finding(
+            rule_id="test/rule",
+            severity=Severity.ERROR,
+            message="test",
+            location=Location(file="test.md"),
+            category=RuleCategory.SECURITY,
+        )
+        confirmed = AdjudicatedFinding(finding=f, verdict="CONFIRMED", reasoning="real")
+        assert confirmed.is_confirmed
+        assert not confirmed.is_false_positive
+        assert confirmed.effective_severity == Severity.ERROR
+
+        fp = AdjudicatedFinding(finding=f, verdict="FALSE_POSITIVE", reasoning="benign")
+        assert fp.is_false_positive
+        assert not fp.is_confirmed
+        assert fp.effective_severity == Severity.INFO
+
+        dg = AdjudicatedFinding(finding=f, verdict="DOWNGRADED", reasoning="minor")
+        assert dg.effective_severity == Severity.WARNING
+
+
+class TestAdjudicationParsing:
+    def test_parse_valid_response(self) -> None:
+        from harness_eval_lab.cli import _parse_adjudication_response
+        from harness_eval_lab.inspection.types import Finding, Location, RuleCategory, Severity
+
+        findings = [
+            Finding("r/1", Severity.ERROR, "msg1", Location("f.md"), RuleCategory.SECURITY),
+            Finding("r/2", Severity.ERROR, "msg2", Location("f.md"), RuleCategory.SECURITY),
+        ]
+        response = (
+            "```json\n"
+            "[\n"
+            '  {"finding_index": 0, "verdict": "FALSE_POSITIVE", "reasoning": "benign"},\n'
+            '  {"finding_index": 1, "verdict": "CONFIRMED", "reasoning": "real risk"}\n'
+            "]\n"
+            "```"
+        )
+        result = _parse_adjudication_response(response, findings)
+        assert len(result) == 2
+        assert result[0].verdict == "FALSE_POSITIVE"
+        assert result[1].verdict == "CONFIRMED"
+
+    def test_parse_invalid_falls_back_to_confirmed(self) -> None:
+        from harness_eval_lab.cli import _parse_adjudication_response
+        from harness_eval_lab.inspection.types import Finding, Location, RuleCategory, Severity
+
+        findings = [
+            Finding("r/1", Severity.ERROR, "msg1", Location("f.md"), RuleCategory.SECURITY),
+        ]
+        result = _parse_adjudication_response("not valid json at all", findings)
+        assert len(result) == 1
+        assert result[0].verdict == "CONFIRMED"

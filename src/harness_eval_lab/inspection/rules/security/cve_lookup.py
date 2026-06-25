@@ -177,9 +177,13 @@ class CveLookup:
             return
 
         for vuln in vulns:
-            sev_override = None
-            if vuln["severity"] in ("CRITICAL", "HIGH"):
-                sev_override = Severity.ERROR
+            sev_map = {
+                "CRITICAL": Severity.ERROR,
+                "HIGH": Severity.ERROR,
+                "MEDIUM": Severity.WARNING,
+                "LOW": Severity.INFO,
+            }
+            sev_override = sev_map.get(vuln["severity"])
 
             context.report(
                 ReportDescriptor(

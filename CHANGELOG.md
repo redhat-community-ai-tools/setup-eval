@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- LLM-based adjudication of scanner findings: when `--review` is enabled, each deterministic finding is classified as CONFIRMED, FALSE_POSITIVE, or DOWNGRADED before the risk assessment is computed
+- `AdjudicatedFinding` type with `is_confirmed`, `is_false_positive`, and `effective_severity` properties
+- Adjudication prompt template for structured LLM review of scanner findings
+- 10 new tests covering base64 entropy filtering, subprocess argument analysis, CVE severity mapping, adjudication parsing, and adjudicated finding properties
+
+### Changed
+- Security risk assessment now uses adjudicated findings (not raw scanner output) when `--review` is enabled; without `--review`, behavior is unchanged (backward compatible)
+- JSON output adds `adjudicated`, `raw_errors`, `raw_warnings`, `confirmed_errors`, `false_positives`, and `downgraded` fields
+- Terminal output shows "Scanner: X errors -> After review: Y confirmed, Z false positives" when adjudicated
+- `security/mcp-tool-poisoning`: base64 detection now uses Shannon entropy filtering (threshold 4.5 bits/char) and path exclusion to reduce false positives on file paths and command examples
+- `security/ast-behavioral`: subprocess/os calls with hardcoded literal arguments are now reported as WARNING instead of ERROR; dynamic/user-controlled arguments remain ERROR
+- `security/cve-lookup`: MEDIUM CVEs now produce WARNING (not ERROR), LOW CVEs produce INFO (not ERROR); only CRITICAL/HIGH CVEs produce ERROR
+
+### Fixed
+- False positive base64 detections on file paths containing base64-like character sequences (e.g., `/home/user/.specify/extensions.yml`)
+- Overly aggressive subprocess detection flagging hardcoded `subprocess.run(["ruff", "check", "."])` as ERROR
+- All CVE findings treated as errors in the security preset regardless of actual severity
+
 ## [3.5.2] - 2026-06-23
 
 ### Added

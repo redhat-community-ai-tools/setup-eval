@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import math
 import re
+from collections import Counter
 
 from harness_eval_lab.inspection.types import (
     Location,
@@ -11,13 +13,38 @@ from harness_eval_lab.inspection.types import (
     Severity,
 )
 
+_BASE64_RAW_RE = re.compile(r"[A-Za-z0-9+/]{40,}={0,2}")
+
+_PATH_PREFIXES = ("./", "../", "~/", "/home", "/usr", "/etc", "/var", "/tmp", "/opt", "/bin")
+
+_ENTROPY_THRESHOLD = 4.5
+
+
+def _shannon_entropy(text: str) -> float:
+    if not text:
+        return 0.0
+    counts = Counter(text)
+    length = len(text)
+    return -sum((c / length) * math.log2(c / length) for c in counts.values())
+
+
+def _is_likely_base64(text: str) -> bool:
+    if "/" in text or "\\" in text:
+        return False
+    if any(text.startswith(p) for p in _PATH_PREFIXES):
+        return False
+    if "." in text and text.count(".") >= 2:
+        return False
+    return _shannon_entropy(text) >= _ENTROPY_THRESHOLD
+
+
 _HIDDEN_INSTRUCTION_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     (
         "HTML comment with instruction",
         re.compile(r"<!--\s*(?:system|instruction|ignore|override|you\s+are)", re.I),
     ),
     ("markdown comment", re.compile(r"\[//\]:\s*#\s*\(.*(?:ignore|override|instruction)", re.I)),
-    ("base64 blob in text", re.compile(r"(?:data:text/[^;]+;base64,|[A-Za-z0-9+/]{40,}={0,2})")),
+    ("base64 blob in text", re.compile(r"data:text/[^;]+;base64,")),
     (
         "data URI with script",
         re.compile(r"data:\s*(?:text/javascript|application/javascript|text/html)", re.I),
@@ -100,6 +127,7 @@ class McpToolPoisoning:
         lines = skill.raw_content.split("\n")
 
         for i, line in enumerate(lines):
+            pattern_matched = False
             for label, pattern in _HIDDEN_INSTRUCTION_PATTERNS:
                 if pattern.search(line):
                     context.report(
@@ -112,7 +140,22 @@ class McpToolPoisoning:
                             ),
                         )
                     )
+                    pattern_matched = True
                     break
+
+            if not pattern_matched:
+                m = _BASE64_RAW_RE.search(line)
+                if m and _is_likely_base64(m.group()):
+                    context.report(
+                        ReportDescriptor(
+                            message_id="mcp_hidden_instruction",
+                            data={"label": "base64 blob in text", "line": str(i + 1)},
+                            location=Location(
+                                file=skill.skill_md_path,
+                                start_line=i + 1,
+                            ),
+                        )
+                    )
 
             for char, char_name in _ZERO_WIDTH_CHARS.items():
                 if char in line:

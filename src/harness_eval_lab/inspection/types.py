@@ -44,6 +44,29 @@ class Finding:
     fix: FixSuggestion | None = None
 
 
+@dataclass(frozen=True)
+class AdjudicatedFinding:
+    finding: Finding
+    verdict: str
+    reasoning: str
+
+    @property
+    def is_confirmed(self) -> bool:
+        return self.verdict == "CONFIRMED"
+
+    @property
+    def is_false_positive(self) -> bool:
+        return self.verdict == "FALSE_POSITIVE"
+
+    @property
+    def effective_severity(self) -> Severity:
+        if self.verdict == "FALSE_POSITIVE":
+            return Severity.INFO
+        if self.verdict == "DOWNGRADED":
+            return Severity.WARNING
+        return self.finding.severity
+
+
 @dataclass
 class RuleMeta:
     id: str

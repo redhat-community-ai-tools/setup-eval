@@ -65,6 +65,29 @@ def _is_dynamic_source(node: ast.expr) -> bool:
     return isinstance(node, ast.Subscript)
 
 
+def _all_args_constant(node: ast.Call) -> bool:
+    for arg in node.args:
+        if isinstance(arg, ast.Constant):
+            continue
+        if isinstance(arg, ast.List) and all(isinstance(e, ast.Constant) for e in arg.elts):
+            continue
+        return False
+    for kw in node.keywords:
+        if kw.arg == "shell" and isinstance(kw.value, ast.Constant) and kw.value.value is True:
+            return False
+        if not isinstance(kw.value, ast.Constant) and kw.arg not in (
+            "stdout",
+            "stderr",
+            "stdin",
+            "encoding",
+            "cwd",
+            "env",
+            "check",
+        ):
+            return False
+    return True
+
+
 def _analyze_file(py_path: Path, context: RuleContext, skill_md_path: str) -> None:
     try:
         source = py_path.read_text(encoding="utf-8", errors="replace")
@@ -111,17 +134,31 @@ def _analyze_file(py_path: Path, context: RuleContext, skill_md_path: str) -> No
                     )
                 )
         elif call_name in _SUBPROCESS_CALLS or call_name in _OS_EXEC_CALLS:
-            context.report(
-                ReportDescriptor(
-                    message_id="ast_dangerous_call",
-                    data={
-                        "call": call_name,
-                        "file": rel_path,
-                        "line": str(line),
-                    },
-                    location=Location(file=skill_md_path, start_line=line),
+            if _all_args_constant(node):
+                context.report(
+                    ReportDescriptor(
+                        message_id="ast_subprocess_hardcoded",
+                        data={
+                            "call": call_name,
+                            "file": rel_path,
+                            "line": str(line),
+                        },
+                        location=Location(file=skill_md_path, start_line=line),
+                        severity_override=Severity.WARNING,
+                    )
                 )
-            )
+            else:
+                context.report(
+                    ReportDescriptor(
+                        message_id="ast_dangerous_call",
+                        data={
+                            "call": call_name,
+                            "file": rel_path,
+                            "line": str(line),
+                        },
+                        location=Location(file=skill_md_path, start_line=line),
+                    )
+                )
         elif call_name == "getattr" and len(node.args) >= 2:
             if not isinstance(node.args[1], ast.Constant):
                 context.report(
@@ -147,6 +184,7 @@ class AstBehavioral:
         category=RuleCategory.SECURITY,
         messages={
             "ast_dangerous_call": "{{file}}:{{line}} calls {{call}}, which can execute arbitrary code.",
+            "ast_subprocess_hardcoded": "{{file}}:{{line}} calls {{call}} with hardcoded arguments. Review if this is intentional.",
             "ast_dynamic_import": "{{file}}:{{line}} uses {{call}}, which can load arbitrary modules.",
             "ast_exec_chain": "{{file}}:{{line}} calls {{call}} with a dynamic source (decoded/fetched data), a high-risk execution chain.",
         },

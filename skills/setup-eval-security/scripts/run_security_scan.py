@@ -51,12 +51,12 @@ def main() -> None:
                 }
             )
 
-    total_errors = sum(f["errors"] for f in findings)
-    total_warnings = sum(f["warnings"] for f in findings)
+    raw_errors = sum(f["errors"] for f in findings)
+    raw_warnings = sum(f["warnings"] for f in findings)
 
-    if total_errors == 0 and total_warnings == 0:
+    if raw_errors == 0 and raw_warnings == 0:
         risk = "SAFE"
-    elif total_errors == 0:
+    elif raw_errors == 0:
         risk = "CAUTION"
     else:
         risk = "UNSAFE"
@@ -67,14 +67,15 @@ def main() -> None:
         if r.meta.id in SECURITY and SECURITY[r.meta.id] != "off"
     ]
 
-    output = {
+    output: dict[str, object] = {
         "security_scan": True,
         "setup": setup.name,
         "risk_assessment": risk,
+        "adjudicated": False,
         "components_scanned": len(results),
         "rules_checked": rules_checked,
-        "errors": total_errors,
-        "warnings": total_warnings,
+        "raw_errors": raw_errors,
+        "raw_warnings": raw_warnings,
         "findings": findings,
     }
     if skip_notices:

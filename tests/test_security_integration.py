@@ -91,7 +91,7 @@ def test_security_command_detects_issues(tmp_path: Path) -> None:
     import json
 
     output = json.loads(result.output)
-    assert output["errors"] > 0
+    assert output["raw_errors"] > 0
 
 
 def test_security_command_fail_on_error(tmp_path: Path) -> None:

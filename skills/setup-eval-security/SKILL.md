@@ -8,7 +8,7 @@ allowed-tools:
 
 # Security Audit
 
-Deep security audit combining deterministic checks with semantic analysis. Two stages: fast pattern-based scanning, then qualitative review of flagged components.
+Deep security audit combining deterministic checks with semantic analysis. Three stages: fast pattern-based scanning, LLM adjudication of scanner findings (confirming or overriding false positives), then qualitative review of flagged components. The final risk assessment reflects adjudicated findings, not raw scanner output.
 
 ## Hard Rules
 
