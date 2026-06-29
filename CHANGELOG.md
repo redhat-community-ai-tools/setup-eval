@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file.
 - Gitleaks and Bandit pre-commit hooks for secret scanning and Python security analysis
 - Incident response plan in SECURITY.md (contain, assess, yank, notify, remediate, post-mortem)
 - Privacy and data handling section in README documenting what each command sends externally
-- Dual CODEOWNERS: both @Benkapner and @csoceanu required for review, with stricter rules for release-critical files
+- CODEOWNERS: both @Benkapner and @csoceanu are requested as reviewers, with stricter ownership rules for release-critical files
 
 ### Fixed
 - Broken references rule now rejects path traversal attempts instead of following them
