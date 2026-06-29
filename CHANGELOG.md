@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [3.7.0] - 2026-06-29
+
+### Added
+- New `quality/` rule category with 5 lint rules for instruction effectiveness:
+  - `quality/imprecise-instruction`: detect hedging, passive voice, and vague conditions
+  - `quality/redundant-guidance`: detect instructions redundant with model defaults or project tooling config (.editorconfig, .prettierrc, .eslintrc, tsconfig.json, pyproject.toml)
+  - `quality/unfinished-content`: detect placeholders, TODO/FIXME markers, deferred content (TBD, coming soon), and empty markdown sections
+  - `quality/example-gap`: flag skills with many instructions but no code examples
+  - `quality/stale-references`: detect deprecated models (text-davinci, gpt-3.5-turbo, claude-v1/v2), sunset APIs, old runtimes (Node 14/16, Python 3.7/3.8), and outdated tools (tslint, create-react-app)
+- Shared pattern module `_patterns.py` for tautological detection across rules
+- 56 tests covering positive matches and false-positive prevention for all quality rules
+- Future plan spec for content intelligence Phase 2-3 rules
+
 ## [3.6.2] - 2026-06-29
 
 ### Added

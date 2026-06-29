@@ -1,6 +1,6 @@
 [project]
 name = "setup-eval"
-version = "3.6.2"
+version = "3.7.0"
 description = "Evaluate and compare AI agent setups through experiments, inspections, and rubric scoring."
 readme = "README.md"
 license = "Apache-2.0"
