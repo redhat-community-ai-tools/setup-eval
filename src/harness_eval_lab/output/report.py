@@ -18,18 +18,34 @@ def _get_type_display(detected_tools: tuple[str, ...] = ()) -> dict[str, str]:
         "rule": "Rules",
         "output_style": "Output Styles",
     }
-    if "Cursor" in detected_tools and "Claude Code" not in detected_tools:
+    multi_tool = len(detected_tools) > 1
+    has_cursor_only = detected_tools == ("Cursor",)
+    if has_cursor_only:
         base["claude_md"] = "Cursor Rules"
-    elif "Claude Code" in detected_tools and "Cursor" not in detected_tools:
-        base["claude_md"] = "CLAUDE.md"
-    elif "Cursor" in detected_tools and "Claude Code" in detected_tools:
+    elif multi_tool:
         base["claude_md"] = "System Instructions"
-    else:
+    elif "Claude Code" in detected_tools:
         base["claude_md"] = "CLAUDE.md"
+    elif "Gemini CLI" in detected_tools:
+        base["claude_md"] = "GEMINI.md"
+    elif "OpenCode" in detected_tools:
+        base["claude_md"] = "AGENTS.md"
+    else:
+        base["claude_md"] = "System Instructions"
+    base["mcp_config"] = "MCP Configs"
     return base
 
 
-_TYPE_ORDER = ["skill", "command", "hooks", "claude_md", "agent", "rule", "output_style"]
+_TYPE_ORDER = [
+    "skill",
+    "command",
+    "hooks",
+    "claude_md",
+    "agent",
+    "mcp_config",
+    "rule",
+    "output_style",
+]
 
 
 def _shorten_rule_id(rule_id: str) -> str:
@@ -82,8 +98,18 @@ def format_terminal(
     lines.append("  SKIP     Check was skipped (missing dependency or N/A)")
     lines.append("")
 
-    if "Cursor" in system.detected_tools and "Claude Code" not in system.detected_tools:
+    tool_set = set(system.detected_tools)
+    tool_set.discard("Third-party modules")
+    if not tool_set:
+        always_label = "system instructions, hooks"
+    elif tool_set == {"Cursor"}:
         always_label = "cursor rules, hooks"
+    elif len(tool_set) > 1:
+        always_label = "system instructions, hooks"
+    elif "Gemini CLI" in tool_set:
+        always_label = "GEMINI.md"
+    elif "OpenCode" in tool_set:
+        always_label = "AGENTS.md"
     else:
         always_label = "CLAUDE.md, hooks"
 

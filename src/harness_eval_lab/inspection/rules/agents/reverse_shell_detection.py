@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from harness_eval_lab.core.types import ComponentType
+from harness_eval_lab.inspection.rules.security._shared import (
+    extract_content_and_path,
+    scan_lines_for_patterns,
+)
 from harness_eval_lab.inspection.rules.security.reverse_shell_detection import (
     _REVERSE_SHELL_PATTERNS,
 )
 from harness_eval_lab.inspection.types import (
-    Location,
-    ReportDescriptor,
     RuleCategory,
     RuleContext,
     RuleMeta,
@@ -28,23 +30,14 @@ class AgentReverseShellDetection:
     )
 
     def create(self, context: RuleContext) -> None:
-        agent = context.agent
-        if not agent or not agent.raw_content:
+        result = extract_content_and_path(context, ComponentType.AGENT)
+        if result is None:
             return
-
-        lines = agent.raw_content.split("\n")
-
-        for i, line in enumerate(lines):
-            for label, pattern in _REVERSE_SHELL_PATTERNS:
-                if pattern.search(line):
-                    context.report(
-                        ReportDescriptor(
-                            message_id="shell_detected",
-                            data={"label": label, "line": str(i + 1)},
-                            location=Location(
-                                file=agent.agent_md_path,
-                                start_line=i + 1,
-                            ),
-                        )
-                    )
-                    break
+        content, file_path = result
+        scan_lines_for_patterns(
+            content,
+            file_path,
+            context,
+            _REVERSE_SHELL_PATTERNS,
+            detected_msg="shell_detected",
+        )

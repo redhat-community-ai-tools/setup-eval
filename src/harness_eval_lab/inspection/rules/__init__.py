@@ -16,6 +16,7 @@ def register_all_rules() -> None:
     from harness_eval_lab.inspection.rules.agents.disallowed_tools_parseable import (
         DisallowedToolsParseable,
     )
+    from harness_eval_lab.inspection.rules.agents.model_specified import AgentModelSpecified
     from harness_eval_lab.inspection.rules.agents.no_credential_access import (
         AgentNoCredentialAccess,
     )
@@ -74,7 +75,11 @@ def register_all_rules() -> None:
     from harness_eval_lab.inspection.rules.frontmatter.format_valid import FormatValid
 
     # Hooks rules
+    from harness_eval_lab.inspection.rules.hooks.script_boundary import HooksScriptBoundary
     from harness_eval_lab.inspection.rules.hooks.valid_structure import HooksValidStructure
+
+    # MCP rules
+    from harness_eval_lab.inspection.rules.mcp.valid_config import McpValidConfig
     from harness_eval_lab.inspection.rules.quality.example_gap import ExampleGap
     from harness_eval_lab.inspection.rules.quality.imprecise_instruction import ImpreciseInstruction
     from harness_eval_lab.inspection.rules.quality.redundant_guidance import RedundantGuidance
@@ -125,6 +130,7 @@ def register_all_rules() -> None:
         ClaudeMdExists,
         ClaudeMdSkillDuplication,
         ClaudeMdGenericAdvice,
+        HooksScriptBoundary,
         HooksValidStructure,
         AgentDescriptionRequired,
         ReferencedSkillsExist,
@@ -135,9 +141,11 @@ def register_all_rules() -> None:
         AgentReverseShellDetection,
         AgentObfuscationDetection,
         AgentDataExfiltration,
+        AgentModelSpecified,
         AstBehavioral,
         TaintTracking,
         McpLeastPrivilege,
+        McpValidConfig,
         McpToolPoisoning,
         YaraScan,
         CveLookup,

@@ -23,6 +23,24 @@ RELEVANT_PATTERNS = [
     ".cursor/skills/**/*.md",
     ".cursor/hooks.json",
     ".cursor/mcp.json",
+    # Copilot
+    ".github/skills/**/SKILL.md",
+    ".github/prompts/*.prompt.md",
+    ".github/prompts/*.md",
+    ".github/agents/*.agent.md",
+    ".github/agents/*.md",
+    # Gemini CLI
+    "GEMINI.md",
+    ".gemini/commands/*.toml",
+    ".gemini/commands/*.md",
+    # OpenCode
+    "AGENTS.md",
+    ".opencode/commands/*.md",
+    ".opencode/agents/*.md",
+    # Third-party modules
+    ".lola/modules/**/SKILL.md",
+    ".lola/modules/**/commands/*.md",
+    ".lola/modules/**/agents/*.md",
 ]
 
 

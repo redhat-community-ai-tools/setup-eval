@@ -441,6 +441,58 @@ def lint_agent(
     )
 
 
+def lint_mcp_config(
+    mcp_config_path: str,
+    config_rules: dict[str, str | list[Any]] | None = None,
+    scan_state: dict[str, Any] | None = None,
+    source_tool: str | None = None,
+) -> InspectionResult:
+    """Lint an MCP configuration file."""
+    path = Path(mcp_config_path)
+    if not path.exists():
+        return _build_result(mcp_config_path, path.name, 0, "mcp_config", [], 0)
+
+    from harness_eval_lab.utils.tokens import count_tokens
+
+    raw_content = path.read_text(encoding="utf-8", errors="replace")
+    tokens = count_tokens(raw_content)
+
+    dummy_skill = ParsedSkill(
+        dir_path=str(path.parent),
+        dir_name=path.parent.name,
+        skill_md_path=mcp_config_path,
+        raw_content=raw_content,
+        frontmatter={},
+        raw_frontmatter="",
+        frontmatter_start_line=0,
+        body=raw_content,
+        body_start_line=1,
+        files=[path.name],
+        tokens=tokens,
+    )
+
+    rule_diags, suppression_count, rules_run = _run_rules(
+        ComponentType.MCP_CONFIG,
+        mcp_config_path,
+        raw_content,
+        skill=dummy_skill,
+        target=None,
+        config_rules=config_rules,
+        scan_state=scan_state,
+        source_tool=source_tool,
+    )
+
+    return _build_result(
+        mcp_config_path,
+        path.name,
+        tokens,
+        "mcp_config",
+        rule_diags,
+        suppression_count,
+        rules_run,
+    )
+
+
 _SECURITY_ONLY_RULES = {
     "security/no-prompt-injection",
     "security/no-credential-access",
@@ -624,6 +676,15 @@ def inspect_setup(
             lint_text_file(
                 comp.path,
                 CT.OUTPUT_STYLE,
+                config_rules,
+                scan_state=scan_state,
+                source_tool=comp.source_tool,
+            )
+        )
+    for comp in setup.by_type(CT.MCP_CONFIG):
+        results.append(
+            lint_mcp_config(
+                comp.path,
                 config_rules,
                 scan_state=scan_state,
                 source_tool=comp.source_tool,

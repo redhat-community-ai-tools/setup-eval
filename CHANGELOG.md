@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- Multi-assistant discovery: Copilot (`.github/skills/`, `.github/prompts/`, `.github/agents/`), Gemini CLI (`GEMINI.md`, `.gemini/commands/`), OpenCode (`AGENTS.md`, `.opencode/commands/`, `.opencode/agents/`)
+- Third-party module discovery: scans `.lola/modules/` for skills, commands, and agents installed via package managers
+- New rule `mcp/valid-config`: validates MCP configuration JSON structure (mcpServers key, server transport, args/env types)
+- New rule `hooks/script-boundary`: ensures hook scripts resolve within the project directory (path traversal prevention)
+- New rule `agent/model-specified`: suggests adding a model field to agent definitions (off by default, info in strict)
+- MCP_CONFIG linting in the engine: MCP config files are now inspected by rules (previously discovered but not linted)
+- Future-plans spec for distributable packaging
+
+### Changed
+- Generalized `claude-md/exists` rule to also fire for Gemini CLI and OpenCode instruction files
+- Tool-neutral language in rule messages (replaced assistant-specific references with generic "AI assistant")
+- Consolidated duplicated security scan logic across component types into shared scanner module
+- Extracted discovery layer into per-tool discoverer classes (`core/discoverers/`)
+- Rule count: 48 to 51
+
 ## [3.7.0] - 2026-06-29
 
 ### Added

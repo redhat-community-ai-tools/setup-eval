@@ -41,8 +41,18 @@ def analyze_system(setup: Setup) -> SystemReport:
 
     findings: list[str] = []
 
-    if "Cursor" in setup.detected_tools and "Claude Code" not in setup.detected_tools:
+    tool_set = set(setup.detected_tools)
+    tool_set.discard("Third-party modules")
+    if not tool_set:
+        always_label = "system instructions"
+    elif tool_set == {"Cursor"}:
         always_label = "cursor rules"
+    elif len(tool_set) > 1:
+        always_label = "system instructions"
+    elif "Gemini CLI" in tool_set:
+        always_label = "GEMINI.md"
+    elif "OpenCode" in tool_set:
+        always_label = "AGENTS.md"
     else:
         always_label = "CLAUDE.md"
 

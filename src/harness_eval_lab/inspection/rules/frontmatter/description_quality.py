@@ -38,7 +38,7 @@ class DescriptionQuality:
         messages={
             "first_person": "Description uses first-person POV ('{{match}}') — Anthropic recommends third-person for better discovery",
             "second_person": "Description uses second-person POV ('{{match}}') — Anthropic recommends third-person (e.g. 'Processes files' not 'You can process files')",
-            "no_use_case": "Description lacks use-case context — include phrases like 'use when', 'applies to', 'relevant for' so Claude knows when to activate it",
+            "no_use_case": "Description lacks use-case context — include phrases like 'use when', 'applies to', 'relevant for' so the assistant knows when to activate it",
             "too_long": "Description is {{length}} characters — Anthropic's documented limit is 1,024",
             "too_short": "Description is only {{length}} characters — too vague for reliable skill matching",
         },

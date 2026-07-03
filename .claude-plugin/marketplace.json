@@ -10,8 +10,8 @@
     {
       "name": "setup-eval",
       "source": "./",
-      "version": "3.7.0",
-      "description": "Evaluate AI agent setups for best practices, redundancy, security, and cross-component issues. 43 lint rules, per-component rubric review, deep security audit, and single-skill evaluation."
+      "version": "3.8.0",
+      "description": "Evaluate AI agent setups for best practices, redundancy, security, and cross-component issues. 51 lint rules, per-component rubric review, deep security audit, and single-skill evaluation."
     }
   ]
 }

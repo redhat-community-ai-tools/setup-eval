@@ -19,10 +19,10 @@ class ClaudeMdExists:
         description="Project should have a CLAUDE.md with project-specific instructions",
         category=RuleCategory.STRUCTURAL,
         messages={
-            "not_found": "No CLAUDE.md found — consider creating one with project-specific instructions (build commands, test runners, code style). See https://code.claude.com/docs/en/best-practices",
+            "not_found": "No instruction file found — consider creating one with project-specific instructions (build commands, test runners, code style)",
         },
         target_type=ComponentType.CLAUDE_MD,
-        tools=("claude",),
+        tools=("claude", "gemini", "opencode"),
     )
 
     def create(self, context: RuleContext) -> None:

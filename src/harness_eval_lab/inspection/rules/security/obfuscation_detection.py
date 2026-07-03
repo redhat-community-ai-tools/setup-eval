@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import re
 
+from harness_eval_lab.core.types import ComponentType
+from harness_eval_lab.inspection.rules.security._shared import (
+    extract_content_and_path,
+    scan_lines_for_patterns,
+)
 from harness_eval_lab.inspection.types import (
-    Location,
-    ReportDescriptor,
     RuleCategory,
     RuleContext,
     RuleMeta,
@@ -40,38 +43,15 @@ class ObfuscationDetection:
     )
 
     def create(self, context: RuleContext) -> None:
-        skill = context.skill
-        if not skill.raw_content:
+        result = extract_content_and_path(context, ComponentType.SKILL)
+        if result is None:
             return
-
-        lines = skill.raw_content.split("\n")
-        in_code_fence = False
-
-        for i, line in enumerate(lines):
-            stripped = line.strip()
-
-            if stripped.startswith("```"):
-                in_code_fence = not in_code_fence
-                continue
-
-            for label, pattern in _OBFUSCATION_PATTERNS:
-                if pattern.search(line):
-                    if in_code_fence:
-                        message_id = "obfuscation_in_code_block"
-                        severity_override = Severity.WARNING
-                    else:
-                        message_id = "obfuscation_detected"
-                        severity_override = None
-
-                    context.report(
-                        ReportDescriptor(
-                            message_id=message_id,
-                            data={"label": label, "line": str(i + 1)},
-                            location=Location(
-                                file=skill.skill_md_path,
-                                start_line=i + 1,
-                            ),
-                            severity_override=severity_override,
-                        )
-                    )
-                    break
+        content, file_path = result
+        scan_lines_for_patterns(
+            content,
+            file_path,
+            context,
+            _OBFUSCATION_PATTERNS,
+            detected_msg="obfuscation_detected",
+            code_block_msg="obfuscation_in_code_block",
+        )

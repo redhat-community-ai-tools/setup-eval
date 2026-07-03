@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import re
 
+from harness_eval_lab.core.types import ComponentType
+from harness_eval_lab.inspection.rules.security._shared import (
+    extract_content_and_path,
+    scan_lines_for_credential_patterns,
+)
 from harness_eval_lab.inspection.types import (
-    Location,
-    ReportDescriptor,
     RuleCategory,
     RuleContext,
     RuleMeta,
@@ -58,54 +61,17 @@ class NoCredentialAccess:
     )
 
     def create(self, context: RuleContext) -> None:
-        skill = context.skill
-        if not skill.raw_content:
+        result = extract_content_and_path(context, ComponentType.SKILL)
+        if result is None:
             return
-
-        lines = skill.raw_content.split("\n")
-
-        for i, line in enumerate(lines):
-            for pattern in _SENSITIVE_PATHS:
-                match = pattern.search(line)
-                if match:
-                    context.report(
-                        ReportDescriptor(
-                            message_id="sensitive_path",
-                            data={"match": match.group(0), "line": str(i + 1)},
-                            location=Location(
-                                file=skill.skill_md_path,
-                                start_line=i + 1,
-                            ),
-                        )
-                    )
-                    break
-
-            for pattern in _SENSITIVE_ENV_VARS:
-                match = pattern.search(line)
-                if match:
-                    context.report(
-                        ReportDescriptor(
-                            message_id="sensitive_env",
-                            data={"match": match.group(0), "line": str(i + 1)},
-                            location=Location(
-                                file=skill.skill_md_path,
-                                start_line=i + 1,
-                            ),
-                        )
-                    )
-                    break
-
-            for pattern, label in _DANGEROUS_COMMANDS:
-                match = pattern.search(line)
-                if match:
-                    context.report(
-                        ReportDescriptor(
-                            message_id="dangerous_command",
-                            data={"match": label, "line": str(i + 1)},
-                            location=Location(
-                                file=skill.skill_md_path,
-                                start_line=i + 1,
-                            ),
-                        )
-                    )
-                    break
+        content, file_path = result
+        scan_lines_for_credential_patterns(
+            content,
+            file_path,
+            context,
+            [
+                ("sensitive_path", _SENSITIVE_PATHS),
+                ("sensitive_env", _SENSITIVE_ENV_VARS),
+                ("dangerous_command", _DANGEROUS_COMMANDS),
+            ],
+        )
