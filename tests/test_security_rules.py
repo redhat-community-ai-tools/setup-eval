@@ -414,7 +414,7 @@ class TestCveSeverityMapping:
 
 class TestAdjudicationParsing:
     def test_parse_valid_response(self) -> None:
-        from harness_eval_lab.cli import _parse_adjudication_response
+        from harness_eval_lab.cli.security import _parse_adjudication_response
         from harness_eval_lab.inspection.types import Finding, Location, RuleCategory, Severity
 
         findings = [
@@ -435,7 +435,7 @@ class TestAdjudicationParsing:
         assert result[1].verdict == "CONFIRMED"
 
     def test_parse_invalid_falls_back_to_confirmed(self) -> None:
-        from harness_eval_lab.cli import _parse_adjudication_response
+        from harness_eval_lab.cli.security import _parse_adjudication_response
         from harness_eval_lab.inspection.types import Finding, Location, RuleCategory, Severity
 
         findings = [

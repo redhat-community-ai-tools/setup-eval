@@ -32,7 +32,7 @@ All three must pass. The most common CI failure is forgetting `ruff format`. The
 ## Project structure
 
 - `src/harness_eval_lab/` - main package
-  - `cli.py` - Click CLI (4 commands: setup-eval-lint, setup-eval-review, setup-eval-security, eval-skill)
+  - `cli/` - Click CLI package (4 commands split into `lint.py`, `review.py`, `security.py`, `skill.py`)
   - `config/` - rule presets (recommended/strict/security/pre-workflow)
   - `core/` - setup discovery, fingerprinting, component types
     - `discoverers/` - per-tool discoverer classes (`ToolDiscoverer` ABC); add new assistants here
