@@ -54,7 +54,7 @@ select = ["E", "F", "I", "UP", "B", "SIM"]
 "src/harness_eval_lab/inspection/engine.py" = ["E501"]
 "src/harness_eval_lab/inspection/types.py" = ["UP042"]
 "src/harness_eval_lab/rubric/dimensions.py" = ["E501"]
-"src/harness_eval_lab/cli.py" = ["E501"]
+"src/harness_eval_lab/cli/*.py" = ["E501"]
 "tests/test_rubric.py" = ["E501"]
 "skills/**" = ["E501"]
 
