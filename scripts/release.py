@@ -166,7 +166,14 @@ def git_commit_and_tag(new_version: str, dry_run: bool) -> None:
         check=True,
     )
     print(f"\n  Committed and tagged {tag}.")
-    print("  Push with: git push origin main --tags")
+
+    print(f"  Pushing main and {tag} to origin...")
+    subprocess.run(
+        ["git", "push", "origin", "main", "--tags"],
+        cwd=ROOT,
+        check=True,
+    )
+    print(f"  Pushed. PyPI publish and GitHub Release will be created automatically.")
 
 
 def main() -> None:

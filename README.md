@@ -3,6 +3,7 @@
 [![CI](https://github.com/redhat-community-ai-tools/harness-eval-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/redhat-community-ai-tools/harness-eval-lab/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/setup-eval)](https://pypi.org/project/setup-eval/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/downloads/)
+[![Rules](https://img.shields.io/badge/rules-58-blue)](https://github.com/redhat-community-ai-tools/harness-eval-lab#inspection-rules-58)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
 
 Evaluate AI code agent setups for best practices, redundancy, security, and cross-component issues.
