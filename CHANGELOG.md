@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.0.0] - 2026-07-08
+
 ### Changed
 - **BREAKING**: Python package renamed from `harness_eval_lab` to `setup_eval`. Update imports: `from setup_eval...` instead of `from harness_eval_lab...`
 - **BREAKING**: CLI subcommands shortened: `lint`, `review`, `security`, `skill` (previously `setup-eval-lint`, `setup-eval-review`, `setup-eval-security`, `eval-skill`)
