@@ -4,12 +4,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from harness_eval_lab.analysis.budget import analyze_budget
-from harness_eval_lab.analysis.system import analyze_system
-from harness_eval_lab.core.setup import discover_setup
-from harness_eval_lab.core.types import ComponentType
-from harness_eval_lab.inspection.engine import inspect_setup, lint_claude_md, lint_hooks
-from harness_eval_lab.output.report import format_terminal
+from setup_eval.analysis.budget import analyze_budget
+from setup_eval.analysis.system import analyze_system
+from setup_eval.core.setup import discover_setup
+from setup_eval.core.types import ComponentType
+from setup_eval.inspection.engine import inspect_setup, lint_claude_md, lint_hooks
+from setup_eval.output.report import format_terminal
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 

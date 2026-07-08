@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from harness_eval_lab.utils.parsing import parse_frontmatter
+from setup_eval.utils.parsing import parse_frontmatter
 
 
 def test_parse_frontmatter_basic() -> None:

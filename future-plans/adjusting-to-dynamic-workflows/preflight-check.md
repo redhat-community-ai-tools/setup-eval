@@ -8,13 +8,13 @@ A dynamic workflow that spawns 16 subagents, each loading a broken setup, multip
 
 ## The concept
 
-Run `harness-eval-lab scan` automatically before any workflow starts. Like a pilot's pre-flight checklist: check the instruments before takeoff, not after you're in the air.
+Run `setup-eval scan` automatically before any workflow starts. Like a pilot's pre-flight checklist: check the instruments before takeoff, not after you're in the air.
 
 ## Approaches explored
 
 ### Approach 1: Claude Code hook
 
-A `PreToolUse` hook in `settings.json` that fires before Workflow tool calls. The hook runs `harness-eval-lab scan . --preset security --format json` and blocks if errors are found.
+A `PreToolUse` hook in `settings.json` that fires before Workflow tool calls. The hook runs `setup-eval scan . --preset security --format json` and blocks if errors are found.
 
 **Trade-offs:**
 - Uses existing infrastructure (hooks, scan command)
@@ -45,11 +45,11 @@ Create a `pre-workflow` preset that only runs the rules most relevant to workflo
 
 **Approach 1 (hook) + Approach 3 (dedicated preset).**
 
-The hook makes it automatic. The dedicated preset keeps it fast. Together: a hook runs `harness-eval-lab scan . --preset pre-workflow` before workflows, takes under 1 second, and warns (not blocks) on errors.
+The hook makes it automatic. The dedicated preset keeps it fast. Together: a hook runs `setup-eval scan . --preset pre-workflow` before workflows, takes under 1 second, and warns (not blocks) on errors.
 
 ## How to build it
 
-1. **Define the `pre-workflow` preset** in `src/harness_eval_lab/config/presets.py`. Include only: `structural/skill-md-exists`, `content/broken-references`, `agent/referenced-skills-exist`, `security/no-credential-access`, `security/no-prompt-injection`, `hooks/valid-structure`. Disable everything else.
+1. **Define the `pre-workflow` preset** in `src/setup_eval/config/presets.py`. Include only: `structural/skill-md-exists`, `content/broken-references`, `agent/referenced-skills-exist`, `security/no-credential-access`, `security/no-prompt-injection`, `hooks/valid-structure`. Disable everything else.
 
 2. **Add a `--fail-on-error` flag** to the `scan` command. Exit code 1 if any errors found, 0 if only warnings. This lets hooks decide whether to block.
 
@@ -59,7 +59,7 @@ The hook makes it automatic. The dedicated preset keeps it fast. Together: a hoo
   "hooks": {
     "PreToolUse": [{
       "matcher": "Workflow",
-      "command": "harness-eval-lab scan . --preset pre-workflow --fail-on-error"
+      "command": "setup-eval scan . --preset pre-workflow --fail-on-error"
     }]
   }
 }

@@ -10,13 +10,13 @@ A skill with a vague description like "helps with documents" might activate when
 
 ## The concept
 
-Use `harness-eval-lab` as an automated quality gate for skills before they're published, installed, or added to a team setup. Like a linter in CI: if the skill doesn't pass, it doesn't get merged.
+Use `setup-eval` as an automated quality gate for skills before they're published, installed, or added to a team setup. Like a linter in CI: if the skill doesn't pass, it doesn't get merged.
 
 ## Approaches explored
 
 ### Approach 1: CI integration
 
-Add `harness-eval-lab scan skills/ --preset strict` to the CI pipeline. Skills that fail the check don't get merged. Teams enforce quality at PR time.
+Add `setup-eval scan skills/ --preset strict` to the CI pipeline. Skills that fail the check don't get merged. Teams enforce quality at PR time.
 
 **Trade-offs:**
 - Uses existing infrastructure (scan command, presets)
@@ -26,7 +26,7 @@ Add `harness-eval-lab scan skills/ --preset strict` to the CI pipeline. Skills t
 
 ### Approach 2: Skill report card
 
-A dedicated `harness-eval-lab grade <skill-path>` command that produces a concise pass/fail report card for a single skill. Designed for quick feedback during development, not CI gating.
+A dedicated `setup-eval grade <skill-path>` command that produces a concise pass/fail report card for a single skill. Designed for quick feedback during development, not CI gating.
 
 **Trade-offs:**
 - Better developer experience than reading a raw scan output
@@ -36,7 +36,7 @@ A dedicated `harness-eval-lab grade <skill-path>` command that produces a concis
 
 ### Approach 3: Registry/marketplace integration
 
-If a shared skills registry emerges, `harness-eval-lab scan` becomes part of the submission process. Every skill submission gets scanned before it's listed.
+If a shared skills registry emerges, `setup-eval scan` becomes part of the submission process. Every skill submission gets scanned before it's listed.
 
 **Trade-offs:**
 - Scales quality control to the ecosystem level
@@ -56,7 +56,7 @@ Add **Approach 2 (report card)** as a developer-facing UX improvement. When you'
 
 ### The `strict-skills` preset
 
-A new preset in `src/harness_eval_lab/config/presets.py` that enforces Anthropic's published best practices:
+A new preset in `src/setup_eval/config/presets.py` that enforces Anthropic's published best practices:
 
 | Rule | Severity in strict-skills |
 |------|--------------------------|
@@ -77,8 +77,8 @@ A reusable GitHub Action that teams can add to their repos:
 ```yaml
 - name: Check skill quality
   run: |
-    pip install harness-eval-lab
-    harness-eval-lab scan skills/ --preset strict-skills --fail-on-error
+    pip install setup-eval
+    setup-eval scan skills/ --preset strict-skills --fail-on-error
 ```
 
 ### Report card format

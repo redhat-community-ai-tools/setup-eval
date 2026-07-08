@@ -23,7 +23,7 @@ Determine the skill path from $ARGUMENTS. If the user says a skill name, find it
 ## Step 3: Run Lint
 
 ```bash
-setup-eval eval-skill <skill-path> --context .
+setup-eval skill <skill-path> --context .
 ```
 
 If `setup-eval` is not installed, try `pip install setup-eval` first.

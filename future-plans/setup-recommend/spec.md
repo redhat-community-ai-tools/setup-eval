@@ -61,17 +61,17 @@ No arguments needed. Works in any directory.
 ### User interaction (CLI)
 
 ```bash
-harness-eval-lab eval-setup-recommend /path/to/project
-harness-eval-lab eval-setup-recommend /path/to/project --setup /path/to/setup
+setup-eval eval-setup-recommend /path/to/project
+setup-eval eval-setup-recommend /path/to/project --setup /path/to/setup
 ```
 
 Default: setup is discovered from the project directory itself. The `--setup` flag allows evaluating a separate setup against a project.
 
 ## Where it lives
 
-- `src/harness_eval_lab/profiling/` (new package): stack profiler, gap matcher
-- `src/harness_eval_lab/profiling/scanner.py`: project discovery and stack profile generation
-- `src/harness_eval_lab/profiling/gaps.py`: stack-to-setup gap analysis
+- `src/setup_eval/profiling/` (new package): stack profiler, gap matcher
+- `src/setup_eval/profiling/scanner.py`: project discovery and stack profile generation
+- `src/setup_eval/profiling/gaps.py`: stack-to-setup gap analysis
 - `skills/eval-setup-recommend/`: plugin skill with SKILL.md and script
 - CLI command in `cli.py`
 

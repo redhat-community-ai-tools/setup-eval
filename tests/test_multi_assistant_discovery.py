@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from harness_eval_lab.core.setup import _detect_tools, discover_setup
-from harness_eval_lab.core.types import ComponentType
+from setup_eval.core.setup import _detect_tools, discover_setup
+from setup_eval.core.types import ComponentType
 
 
 @pytest.fixture
@@ -96,7 +96,7 @@ class TestDetectToolsMulti:
 
 class TestMultiAssistantInspection:
     def test_lint_runs_on_copilot_setup(self, copilot_setup_path):
-        from harness_eval_lab.inspection.engine import inspect_setup
+        from setup_eval.inspection.engine import inspect_setup
 
         setup = discover_setup("test", copilot_setup_path)
         results = inspect_setup(setup)
@@ -106,7 +106,7 @@ class TestMultiAssistantInspection:
         assert "skill" in target_types
 
     def test_lint_runs_on_opencode_setup(self, opencode_setup_path):
-        from harness_eval_lab.inspection.engine import inspect_setup
+        from setup_eval.inspection.engine import inspect_setup
 
         setup = discover_setup("test", opencode_setup_path)
         results = inspect_setup(setup)

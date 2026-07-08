@@ -48,19 +48,19 @@ The runner-abstraction plan (`future-plans/runner-abstraction/spec.md`) defines 
 ### Story 1: Evaluate a Windsurf project
 
 **Given** a project with `.windsurfrules` and `.windsurf/rules/coding.md`
-**When** `setup-eval setup-eval-lint .` is run
+**When** `setup-eval lint .` is run
 **Then** the tool auto-detects Windsurf, discovers both rule files, runs all applicable rules, and reports findings.
 
 ### Story 2: Evaluate a Codex project
 
 **Given** a project with `AGENTS.md` and `.codex/hooks.json`
-**When** `setup-eval setup-eval-lint .` is run
+**When** `setup-eval lint .` is run
 **Then** the tool discovers AGENTS.md as system instructions and hooks.json as hook config, applies rules to both.
 
 ### Story 3: Multi-tool project
 
 **Given** a project with `CLAUDE.md`, `.windsurfrules`, and `AGENTS.md`
-**When** `setup-eval setup-eval-lint .` is run without `--tool`
+**When** `setup-eval lint .` is run without `--tool`
 **Then** the tool detects all three tools and evaluates all setup files, deduplicating shared components (e.g., `skills/` used by both Claude Code and Windsurf).
 
 ## Requirements
@@ -76,7 +76,7 @@ The runner-abstraction plan (`future-plans/runner-abstraction/spec.md`) defines 
 
 - At least Windsurf and Cline discoverers are implemented and pass tests.
 - Adding a new tool requires only a new discoverer file and registry entry.
-- `setup-eval setup-eval-lint .` on a multi-tool project produces correct, deduplicated results.
+- `setup-eval lint .` on a multi-tool project produces correct, deduplicated results.
 - Existing Claude Code and Cursor tests pass unchanged.
 
 ## Open questions

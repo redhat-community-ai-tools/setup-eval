@@ -4,10 +4,10 @@ description: "Deep-evaluate a single skill with static analysis and qualitative 
 
 # Eval Skill
 
-Use the Skill tool to invoke `eval-skill` explicitly.
+Use the Skill tool to invoke `skill` explicitly.
 
 Pass through any arguments from $ARGUMENTS (e.g., a skill name or path to evaluate).
 
 If the Skill tool is not available or the skill is not found, tell the user:
-- Check that `skills/eval-skill/SKILL.md` exists in the workspace
+- Check that `skills/skill/SKILL.md` exists in the workspace
 - If not, reinstall the setup-eval plugin

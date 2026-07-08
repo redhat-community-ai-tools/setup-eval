@@ -5,7 +5,7 @@
 
 ## Problem
 
-harness-eval-lab includes security rules covering prompt injection, credential access, data exfiltration, obfuscation, reverse shells, taint flows, and more. But there is no systematic way to measure how well these rules perform. Detection rates, false positive rates, and per-rule precision are unknown. New rules ship without validated coverage, regressions go unnoticed, and claims about security capabilities are feature-counts rather than evidence.
+setup-eval includes security rules covering prompt injection, credential access, data exfiltration, obfuscation, reverse shells, taint flows, and more. But there is no systematic way to measure how well these rules perform. Detection rates, false positive rates, and per-rule precision are unknown. New rules ship without validated coverage, regressions go unnoticed, and claims about security capabilities are feature-counts rather than evidence.
 
 Without benchmarks, the security evaluation is "trust me, it works." That is not good enough for a tool that tells users their setup is safe.
 
@@ -89,7 +89,7 @@ The benchmark runner:
 
 ### CI integration
 
-Run the benchmark on every PR that modifies security rules (files under `src/harness_eval_lab/inspection/rules/security/`). The CI job fails if:
+Run the benchmark on every PR that modifies security rules (files under `src/setup_eval/inspection/rules/security/`). The CI job fails if:
 
 - Any rule's detection rate drops below 80%
 - Any rule's false positive rate exceeds 5%
@@ -113,7 +113,7 @@ This prevents rule changes from silently degrading detection quality.
 
 ### Story 3: Demonstrate coverage to adopters
 
-**Given** a potential user evaluates harness-eval-lab for their team
+**Given** a potential user evaluates setup-eval for their team
 **When** they review the benchmark results
 **Then** they see concrete per-rule detection rates, not just a feature list.
 

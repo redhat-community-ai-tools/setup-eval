@@ -10,7 +10,7 @@ This is different from evaluating the static setup. The static setup is markdown
 
 ## The concept
 
-Extend harness-eval-lab with a new category of rules that inspect generated workflow scripts for common orchestration mistakes. Think of it as linting for agent orchestration, not just agent configuration.
+Extend setup-eval with a new category of rules that inspect generated workflow scripts for common orchestration mistakes. Think of it as linting for agent orchestration, not just agent configuration.
 
 ## What could be checked
 
@@ -49,7 +49,7 @@ After a workflow completes, analyze its results: how many agents failed? How lon
 
 ### Approach 3: LLM-based review
 
-Send the workflow script to Claude and ask it to evaluate the orchestration quality. Similar to how setup-eval-review evaluates skill quality.
+Send the workflow script to Claude and ask it to evaluate the orchestration quality. Similar to how review evaluates skill quality.
 
 **Trade-offs:**
 - Can judge semantic quality (are the prompts specific enough for this task?)
@@ -71,7 +71,7 @@ Add **Approach 3 (LLM review)** as part of the plugin's review protocol: after r
 
 2. **New rules:** 4-6 rules in `inspection/rules/workflow/`. Each checks one pattern in the parsed workflow.
 
-3. **New CLI command:** `harness-eval-lab eval-workflow <script.js>` or integrate into `scan` with auto-detection (if the file is `.js` and starts with `export const meta`).
+3. **New CLI command:** `setup-eval eval-workflow <script.js>` or integrate into `scan` with auto-detection (if the file is `.js` and starts with `export const meta`).
 
 4. **Access to scripts:** Workflow scripts are persisted in the session directory. The tool needs to know where to find them, or the user passes the path explicitly.
 

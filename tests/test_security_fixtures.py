@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from harness_eval_lab.core.setup import discover_setup
-from harness_eval_lab.inspection.engine import inspect_setup, lint, lint_command
+from setup_eval.core.setup import discover_setup
+from setup_eval.inspection.engine import inspect_setup, lint, lint_command
 
 FIXTURES = Path(__file__).parent / "fixtures"
 SECURITY_SETUP = FIXTURES / "security-issues"
@@ -69,13 +69,13 @@ class TestSecurityFixtureE2E:
     def test_cli_lint_reports_security_issues(self) -> None:
         from click.testing import CliRunner
 
-        from harness_eval_lab.cli import cli
+        from setup_eval.cli import cli
 
         runner = CliRunner()
         result = runner.invoke(
             cli,
             [
-                "setup-eval-lint",
+                "lint",
                 str(SECURITY_SETUP),
                 "--preset",
                 "security",
@@ -87,13 +87,13 @@ class TestSecurityFixtureE2E:
     def test_cli_lint_fail_on_error_exits_nonzero(self) -> None:
         from click.testing import CliRunner
 
-        from harness_eval_lab.cli import cli
+        from setup_eval.cli import cli
 
         runner = CliRunner()
         result = runner.invoke(
             cli,
             [
-                "setup-eval-lint",
+                "lint",
                 str(SECURITY_SETUP),
                 "--preset",
                 "security",
@@ -107,13 +107,13 @@ class TestSecurityFixtureE2E:
 
         from click.testing import CliRunner
 
-        from harness_eval_lab.cli import cli
+        from setup_eval.cli import cli
 
         runner = CliRunner()
         result = runner.invoke(
             cli,
             [
-                "setup-eval-lint",
+                "lint",
                 str(SECURITY_SETUP),
                 "--format",
                 "json",
@@ -141,8 +141,8 @@ class TestMockLLMReview:
     """Test review with mocked LLM responses (no real API calls)."""
 
     def test_rubric_checker_parses_multi_issue_response(self) -> None:
-        from harness_eval_lab.rubric.scorer import RubricChecker
-        from harness_eval_lab.utils.llm import LLMClient
+        from setup_eval.rubric.scorer import RubricChecker
+        from setup_eval.utils.llm import LLMClient
 
         class MockClient(LLMClient):
             def generate(self, system: str, prompt: str) -> str:
@@ -168,8 +168,8 @@ class TestMockLLMReview:
         assert categories == {"specificity", "redundancy", "trigger_quality"}
 
     def test_rubric_checker_handles_clean_response(self) -> None:
-        from harness_eval_lab.rubric.scorer import RubricChecker
-        from harness_eval_lab.utils.llm import LLMClient
+        from setup_eval.rubric.scorer import RubricChecker
+        from setup_eval.utils.llm import LLMClient
 
         class MockClient(LLMClient):
             def generate(self, system: str, prompt: str) -> str:
@@ -185,8 +185,8 @@ class TestMockLLMReview:
         assert "well-structured" in result.summary
 
     def test_rubric_checker_handles_malformed_response(self) -> None:
-        from harness_eval_lab.rubric.scorer import RubricChecker
-        from harness_eval_lab.utils.llm import LLMClient
+        from setup_eval.rubric.scorer import RubricChecker
+        from setup_eval.utils.llm import LLMClient
 
         class MockClient(LLMClient):
             def generate(self, system: str, prompt: str) -> str:

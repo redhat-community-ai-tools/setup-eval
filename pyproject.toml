@@ -1,6 +1,6 @@
 [project]
 name = "setup-eval"
-version = "3.8.0"
+version = "4.0.0"
 description = "Evaluate and compare AI agent setups through experiments, inspections, and rubric scoring."
 readme = "README.md"
 license = "Apache-2.0"
@@ -17,7 +17,7 @@ dependencies = [
 ]
 
 [project.scripts]
-setup-eval = "harness_eval_lab.cli:cli"
+setup-eval = "setup_eval.cli:cli"
 
 [project.optional-dependencies]
 watch = [
@@ -39,7 +39,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/harness_eval_lab"]
+packages = ["src/setup_eval"]
 
 [tool.ruff]
 target-version = "py311"
@@ -50,18 +50,18 @@ src = ["src", "tests"]
 select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.ruff.lint.per-file-ignores]
-"src/harness_eval_lab/inspection/rules/**" = ["E501"]
-"src/harness_eval_lab/inspection/engine.py" = ["E501"]
-"src/harness_eval_lab/inspection/types.py" = ["UP042"]
-"src/harness_eval_lab/rubric/dimensions.py" = ["E501"]
-"src/harness_eval_lab/cli/*.py" = ["E501"]
+"src/setup_eval/inspection/rules/**" = ["E501"]
+"src/setup_eval/inspection/engine.py" = ["E501"]
+"src/setup_eval/inspection/types.py" = ["UP042"]
+"src/setup_eval/rubric/dimensions.py" = ["E501"]
+"src/setup_eval/cli/*.py" = ["E501"]
 "tests/test_rubric.py" = ["E501"]
 "skills/**" = ["E501"]
 
 [tool.mypy]
 python_version = "3.11"
 strict = true
-packages = ["harness_eval_lab"]
+packages = ["setup_eval"]
 mypy_path = "src"
 
 [tool.pytest.ini_options]
