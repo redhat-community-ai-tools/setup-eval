@@ -13,7 +13,7 @@ Harness evaluation becomes more important in the dynamic workflow era, not less.
 
 ## Proposal
 
-Four directions for adapting harness-eval-lab, ranging from near-term to ambitious. Each is explored in a dedicated file in this directory:
+Four directions for adapting setup-eval, ranging from near-term to ambitious. Each is explored in a dedicated file in this directory:
 
 | Direction | File | Complexity | Value |
 |-----------|------|-----------|-------|
@@ -62,6 +62,6 @@ Four directions for adapting harness-eval-lab, ranging from near-term to ambitio
 
 ## Open questions
 
-- How does harness-eval-lab discover that a dynamic workflow is about to run? (Hook? API? File watcher?)
+- How does setup-eval discover that a dynamic workflow is about to run? (Hook? API? File watcher?)
 - Should the tool evaluate workflows at design time (before they run) or runtime (as they execute)?
 - How to handle the cost question? Workflows already use significant tokens. Adding evaluation on top increases cost. Should there be a "light" vs "full" mode?

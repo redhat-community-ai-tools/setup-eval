@@ -18,16 +18,16 @@ Package setup-eval's 4 skills and 4 commands as a self-contained module that con
 ```
 setup-eval-module/
   skills/
-    setup-eval-lint/
+    lint/
       SKILL.md
       scripts/
         run_assessment.py
         ensure_deps.py
       report-format.md
-    setup-eval-review/
+    review/
       SKILL.md
       rubric/
-    setup-eval-security/
+    security/
       SKILL.md
       scripts/
         run_security_scan.py
@@ -38,9 +38,9 @@ setup-eval-module/
         run_skill_eval.py
       rubric/
   commands/
-    setup-eval-lint.md
-    setup-eval-review.md
-    setup-eval-security.md
+    lint.md
+    review.md
+    security.md
     eval-skill.md
 ```
 

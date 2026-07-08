@@ -1,16 +1,16 @@
 {
-  "name": "harness-eval-lab",
+  "name": "setup-eval",
   "description": "Evaluate AI agent setups for best practices, redundancy, security, and cross-component issues.",
   "owner": {
     "name": "Benjamin Kapner",
     "url": "https://github.com/bkapner"
   },
-  "repository": "https://github.com/redhat-community-ai-tools/harness-eval-lab",
+  "repository": "https://github.com/redhat-community-ai-tools/setup-eval",
   "plugins": [
     {
       "name": "setup-eval",
       "source": "./",
-      "version": "3.8.0",
+      "version": "4.0.0",
       "description": "Evaluate AI agent setups for best practices, redundancy, security, and cross-component issues. 58 lint rules, per-component rubric review, deep security audit, and single-skill evaluation."
     }
   ]

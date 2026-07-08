@@ -14,10 +14,10 @@ Not all commands behave the same way:
 
 | Command | Sends data externally? | Where |
 |---------|----------------------|-------|
-| `setup-eval-lint` | No. Fully offline. | Nowhere |
-| `setup-eval-review` | Yes (CLI only) | Gemini or Anthropic API (your choice) |
-| `setup-eval-security` | Scan: No. With `--review`: Yes (CLI only) | Gemini or Anthropic API |
-| `eval-skill` | Lint: No. With `--rubric`: Yes (CLI only) | Gemini or Anthropic API |
+| `lint` | No. Fully offline. | Nowhere |
+| `review` | Yes (CLI only) | Gemini or Anthropic API (your choice) |
+| `security` | Scan: No. With `--review`: Yes (CLI only) | Gemini or Anthropic API |
+| `skill` | Lint: No. With `--rubric`: Yes (CLI only) | Gemini or Anthropic API |
 
 When used as a Claude Code plugin, review and security commands run inside your existing Claude session. No additional API calls are made. The same applies when used as Cursor commands.
 

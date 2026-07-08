@@ -62,7 +62,7 @@ Two layers of detection:
 - Heuristic: if the flagged line also contains a file path, tool name, or project-specific term (detected via the component's frontmatter `name` field or referenced paths), skip it
 - Skip lines inside examples sections (under headings containing "example", "sample", "template")
 
-**Implementation:** Shared pattern module at `src/harness_eval_lab/inspection/rules/quality/_patterns.py` used by both this rule and `claude-md/generic-advice`. Each pattern is a `(label, regex, specificity_check)` tuple where `specificity_check` is an optional function that returns True if the line contains enough project-specific context to not be tautological.
+**Implementation:** Shared pattern module at `src/setup_eval/inspection/rules/quality/_patterns.py` used by both this rule and `claude-md/generic-advice`. Each pattern is a `(label, regex, specificity_check)` tuple where `specificity_check` is an optional function that returns True if the line contains enough project-specific context to not be tautological.
 
 **Example finding:**
 ```
@@ -224,7 +224,7 @@ WARNING  cross-component-conflict: CLAUDE.md says 'use 4-space indentation' (lin
 
 ## Where it lives
 
-- `src/harness_eval_lab/inspection/rules/quality/` (new directory, 8 rule files + shared patterns module)
+- `src/setup_eval/inspection/rules/quality/` (new directory, 8 rule files + shared patterns module)
   - `_patterns.py` — shared pattern lists used by `quality/tautological` and `claude-md/generic-advice`
   - `imprecise_instruction.py`
   - `tautological.py`

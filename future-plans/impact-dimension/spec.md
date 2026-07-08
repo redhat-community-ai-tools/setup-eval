@@ -21,7 +21,7 @@ Use A/B probe tasks as the primary approach, with activation rate as a cheap pre
 
 **Differential analysis (complement):** Remove one component at a time and observe the effect on lint + review scores. Good for identifying truly dead components but insufficient alone.
 
-**Where it lives:** `src/harness_eval_lab/experiment/` (new package)
+**Where it lives:** `src/setup_eval/experiment/` (new package)
 
 **What to build:**
 1. A `ProbeTask` dataclass: task description, target repo path, expected skill activation
@@ -56,7 +56,7 @@ Use A/B probe tasks as the primary approach, with activation rate as a cheap pre
 2. Probe tasks must be portable across different projects or customizable per project.
 3. Dimension-based scoring (accuracy, specificity, actionability, completeness, response quality), not "which is better overall."
 4. Activation rate check must run before A/B probes to skip dead skills.
-5. Impact measurement must live in `src/harness_eval_lab/experiment/`.
+5. Impact measurement must live in `src/setup_eval/experiment/`.
 6. Integration with the plugin must be opt-in (flag or separate step), not default.
 7. Default probe tasks must work on any repo without customization.
 

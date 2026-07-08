@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from harness_eval_lab.inspection.engine import lint, lint_command, lint_hooks
-from harness_eval_lab.inspection.parsers import parse_skill
+from setup_eval.inspection.engine import lint, lint_command, lint_hooks
+from setup_eval.inspection.parsers import parse_skill
 
 
 def _make_skill(tmp_path: Path, name: str, body: str) -> str:

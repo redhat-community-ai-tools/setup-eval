@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from harness_eval_lab.inspection.engine import lint
+from setup_eval.inspection.engine import lint
 
 IMPRECISE = "quality/imprecise-instruction"
 REDUNDANT = "quality/redundant-guidance"

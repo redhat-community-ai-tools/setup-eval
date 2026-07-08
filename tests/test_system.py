@@ -4,16 +4,16 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from harness_eval_lab.analysis.budget import analyze_budget
-from harness_eval_lab.analysis.context_utilization import (
+from setup_eval.analysis.budget import analyze_budget
+from setup_eval.analysis.context_utilization import (
     DEFAULT_MODELS,
     ModelSpec,
     analyze_context_utilization,
 )
-from harness_eval_lab.analysis.dependencies import analyze_dependencies
-from harness_eval_lab.analysis.system import analyze_system
-from harness_eval_lab.analysis.triggers import analyze_triggers
-from harness_eval_lab.core.setup import discover_setup
+from setup_eval.analysis.dependencies import analyze_dependencies
+from setup_eval.analysis.system import analyze_system
+from setup_eval.analysis.triggers import analyze_triggers
+from setup_eval.core.setup import discover_setup
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -143,8 +143,8 @@ class TestSystemAnalysis:
 
 class TestReportOutput:
     def test_terminal_format(self, setup_a_path: str) -> None:
-        from harness_eval_lab.analysis.system import analyze_system
-        from harness_eval_lab.output.report import format_terminal
+        from setup_eval.analysis.system import analyze_system
+        from setup_eval.output.report import format_terminal
 
         setup = discover_setup("a", setup_a_path)
         system = analyze_system(setup)
@@ -155,8 +155,8 @@ class TestReportOutput:
     def test_json_format(self, setup_a_path: str) -> None:
         import json
 
-        from harness_eval_lab.analysis.system import analyze_system
-        from harness_eval_lab.output.report import format_json
+        from setup_eval.analysis.system import analyze_system
+        from setup_eval.output.report import format_json
 
         setup = discover_setup("a", setup_a_path)
         system = analyze_system(setup)

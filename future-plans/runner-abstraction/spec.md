@@ -6,7 +6,7 @@
 
 ## Problem
 
-harness-eval-lab is hardcoded to Claude Code's setup format. The `discover_setup()` function in `src/harness_eval_lab/core/setup.py` searches for Claude-specific file paths (`CLAUDE.md`, `.claude/settings.json`, `.claude/agents/*.md`, `skills/*/SKILL.md`). The fingerprinter in `core/fingerprint.py` has its own hardcoded `RELEVANT_PATTERNS` list matching the same Claude-specific paths.
+setup-eval is hardcoded to Claude Code's setup format. The `discover_setup()` function in `src/setup_eval/core/setup.py` searches for Claude-specific file paths (`CLAUDE.md`, `.claude/settings.json`, `.claude/agents/*.md`, `skills/*/SKILL.md`). The fingerprinter in `core/fingerprint.py` has its own hardcoded `RELEVANT_PATTERNS` list matching the same Claude-specific paths.
 
 But the evaluation rules themselves are largely tool-agnostic. Redundancy detection, prompt injection scanning, token budget analysis, structural quality checks: these apply to any AI coding tool's setup files. The tool-specific part is only _where the files live and how they map to concepts_ like "system instructions," "skills/rules," and "tool configuration."
 
@@ -26,7 +26,7 @@ Introduce a `SetupDiscoverer` abstract base class that decouples file discovery 
 ### Architecture
 
 ```
-src/harness_eval_lab/core/
+src/setup_eval/core/
     discoverer.py         # ABC + registry
     discoverers/
         __init__.py
@@ -111,29 +111,29 @@ Alternatively, keep `CLAUDE_MD` as-is and treat it as "the component type for sy
 ### Story 1: Evaluate a Cursor project
 
 **Given** a developer has a project with `.cursor/rules/coding-standards.mdc` and `.cursorrules`
-**When** they run `harness-eval-lab setup-eval-lint .`
+**When** they run `setup-eval lint .`
 **Then** the tool auto-detects Cursor, discovers both rule files as system-instruction components, runs the 26 deterministic rules against them (redundancy, injection, token budget), and reports findings in the same format as a Claude Code evaluation.
 
 ### Story 2: Evaluate a multi-tool project
 
 **Given** a project contains both `CLAUDE.md` and `.github/copilot-instructions.md`
-**When** they run `harness-eval-lab setup-eval-lint . --tool claude`
+**When** they run `setup-eval lint . --tool claude`
 **Then** only Claude Code setup files are evaluated. Running without `--tool` detects both tools and produces separate evaluation sections, one per tool.
 
 ### Story 3: Add support for a new tool
 
 **Given** a contributor wants to add evaluation support for a new AI coding tool (e.g., Aider)
-**When** they create a new file at `src/harness_eval_lab/core/discoverers/aider.py` implementing `SetupDiscoverer`
+**When** they create a new file at `src/setup_eval/core/discoverers/aider.py` implementing `SetupDiscoverer`
 **Then** the tool automatically discovers Aider setups with no changes to the inspection engine, analysis pipeline, CLI, or report generation. Only the new discoverer file and a registration call are needed.
 
 ## Requirements
 
-1. Define `SetupDiscoverer` ABC in `src/harness_eval_lab/core/discoverer.py` with `tool_name`, `tool_id`, `file_patterns`, `discover()`, and `detect()`.
-2. Extract current Claude Code discovery logic from `setup.py` into `src/harness_eval_lab/core/discoverers/claude.py` as the first concrete implementation.
-3. Create a discoverer registry (dictionary or entry-point based) in `src/harness_eval_lab/core/discoverers/__init__.py` so new tools can be registered without modifying core code.
+1. Define `SetupDiscoverer` ABC in `src/setup_eval/core/discoverer.py` with `tool_name`, `tool_id`, `file_patterns`, `discover()`, and `detect()`.
+2. Extract current Claude Code discovery logic from `setup.py` into `src/setup_eval/core/discoverers/claude.py` as the first concrete implementation.
+3. Create a discoverer registry (dictionary or entry-point based) in `src/setup_eval/core/discoverers/__init__.py` so new tools can be registered without modifying core code.
 4. Update `discover_setup()` to accept a `tool: str | None` parameter. When `None`, iterate registered discoverers and call `detect()`. When specified, use that discoverer directly.
 5. Update `fingerprint_setup()` to accept `file_patterns` from the active discoverer instead of using `RELEVANT_PATTERNS`.
-6. Add `--tool` CLI option to `setup-eval-lint` and `setup-eval-review` commands (choices populated from the registry).
+6. Add `--tool` CLI option to `lint` and `review` commands (choices populated from the registry).
 7. Add a `CursorDiscoverer` as the second implementation to validate the abstraction works for a tool with meaningfully different file layouts.
 8. Ensure all 26 existing lint rules work on components discovered by any discoverer, with no tool-specific branching in the rule logic.
 9. Update the report output to include the detected tool name (e.g., "Tool: Cursor") in both terminal and JSON formats.

@@ -8,9 +8,9 @@ from unittest.mock import patch
 import pytest
 from click.testing import CliRunner
 
-from harness_eval_lab.cli import cli
-from harness_eval_lab.core.setup import collect_setup_file_paths
-from harness_eval_lab.watch import (
+from setup_eval.cli import cli
+from setup_eval.core.setup import collect_setup_file_paths
+from setup_eval.watch import (
     _build_filter,
     _get_watch_directories,
     run_watch,
@@ -212,13 +212,13 @@ class TestGetWatchDirectories:
 
 class TestCLIWatchFlag:
     def test_cli_accepts_watch_flag(self) -> None:
-        """The --watch flag is accepted by setup-eval-lint without error."""
+        """The --watch flag is accepted by lint without error."""
         runner = CliRunner()
         with runner.isolated_filesystem():
             Path("CLAUDE.md").write_text("# Test")
             # Mock run_watch to avoid actually starting the watcher
-            with patch("harness_eval_lab.watch.run_watch") as mock_watch:
-                result = runner.invoke(cli, ["setup-eval-lint", ".", "--watch"])
+            with patch("setup_eval.watch.run_watch") as mock_watch:
+                result = runner.invoke(cli, ["lint", ".", "--watch"])
                 assert result.exit_code == 0
                 mock_watch.assert_called_once()
 
@@ -227,10 +227,10 @@ class TestCLIWatchFlag:
         runner = CliRunner()
         with runner.isolated_filesystem():
             Path("CLAUDE.md").write_text("# Test")
-            with patch("harness_eval_lab.watch.run_watch") as mock_watch:
+            with patch("setup_eval.watch.run_watch") as mock_watch:
                 result = runner.invoke(
                     cli,
-                    ["setup-eval-lint", ".", "--watch", "--preset", "strict"],
+                    ["lint", ".", "--watch", "--preset", "strict"],
                 )
                 assert result.exit_code == 0
                 mock_watch.assert_called_once_with(
@@ -247,10 +247,10 @@ class TestCLIWatchWithIncompatibleFlags:
         runner = CliRunner()
         with runner.isolated_filesystem():
             Path("CLAUDE.md").write_text("# Test")
-            with patch("harness_eval_lab.watch.run_watch"):
+            with patch("setup_eval.watch.run_watch"):
                 result = runner.invoke(
                     cli,
-                    ["setup-eval-lint", ".", "--watch", "--fix"],
+                    ["lint", ".", "--watch", "--fix"],
                 )
                 assert result.exit_code == 0
                 assert (
@@ -263,10 +263,10 @@ class TestCLIWatchWithIncompatibleFlags:
         runner = CliRunner()
         with runner.isolated_filesystem():
             Path("CLAUDE.md").write_text("# Test")
-            with patch("harness_eval_lab.watch.run_watch"):
+            with patch("setup_eval.watch.run_watch"):
                 result = runner.invoke(
                     cli,
-                    ["setup-eval-lint", ".", "--watch", "--fail-on-error"],
+                    ["lint", ".", "--watch", "--fail-on-error"],
                 )
                 assert result.exit_code == 0
                 assert (

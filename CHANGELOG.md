@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- **BREAKING**: Python package renamed from `harness_eval_lab` to `setup_eval`. Update imports: `from setup_eval...` instead of `from harness_eval_lab...`
+- **BREAKING**: CLI subcommands shortened: `lint`, `review`, `security`, `skill` (previously `setup-eval-lint`, `setup-eval-review`, `setup-eval-security`, `eval-skill`)
+- GitHub repo renamed from `harness-eval-lab` to `setup-eval`
+- Skill directories renamed: `skills/lint/`, `skills/review/`, `skills/security/` (previously `skills/setup-eval-lint/`, etc.)
+- Command files renamed: `commands/lint.md`, `commands/review.md`, `commands/security.md`
+
 ## [3.8.0] - 2026-07-07
 
 ### Added

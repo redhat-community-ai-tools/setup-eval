@@ -31,7 +31,7 @@ All three must pass. The most common CI failure is forgetting `ruff format`. The
 
 ## Project structure
 
-- `src/harness_eval_lab/` - main package
+- `src/setup_eval/` - main package
   - `cli/` - Click CLI package (4 commands split into `lint.py`, `review.py`, `security.py`, `skill.py`)
   - `config/` - rule presets (recommended/strict/security/pre-workflow)
   - `core/` - setup discovery, fingerprinting, component types
@@ -54,7 +54,7 @@ All three must pass. The most common CI failure is forgetting `ruff format`. The
 - Plugin skills call Python scripts that use the same engine as the CLI
 - Cross-component state in rules uses `context.scan_state`, not module-level variables
 - Tests go in `tests/` mirroring the source structure
-- LLM prompts live in `src/harness_eval_lab/rubric/prompts/` as markdown files, not inline strings
-- `skills/eval-skill/rubric/skills-rubric.md` is a symlink to `skills/setup-eval-review/rubric/skills-rubric.md`; edit the source, not the link
-- YARA and CVE rules only run in the `security` preset (used by `setup-eval-security`), never in lint
+- LLM prompts live in `src/setup_eval/rubric/prompts/` as markdown files, not inline strings
+- `skills/skill/rubric/skills-rubric.md` is a symlink to `skills/review/rubric/skills-rubric.md`; edit the source, not the link
+- YARA and CVE rules only run in the `security` preset (used by `security`), never in lint
 - Rules that resolve file paths from user content must use `safe_join()` from `utils.paths` to prevent path traversal; never join untrusted paths with raw `/` or `Path()`

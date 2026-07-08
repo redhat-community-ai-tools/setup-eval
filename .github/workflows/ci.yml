@@ -85,4 +85,4 @@ jobs:
         run: uv sync --extra dev
 
       - name: Lint own setup
-        run: uv run setup-eval setup-eval-lint .
+        run: uv run setup-eval lint .

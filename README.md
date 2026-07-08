@@ -1,9 +1,9 @@
 # setup-eval
 
-[![CI](https://github.com/redhat-community-ai-tools/harness-eval-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/redhat-community-ai-tools/harness-eval-lab/actions/workflows/ci.yml)
+[![CI](https://github.com/redhat-community-ai-tools/setup-eval/actions/workflows/ci.yml/badge.svg)](https://github.com/redhat-community-ai-tools/setup-eval/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/setup-eval)](https://pypi.org/project/setup-eval/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/downloads/)
-[![Rules](https://img.shields.io/badge/rules-58-blue)](https://github.com/redhat-community-ai-tools/harness-eval-lab#inspection-rules-58)
+[![Rules](https://img.shields.io/badge/rules-58-blue)](https://github.com/redhat-community-ai-tools/setup-eval#inspection-rules-58)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
 
 Evaluate AI code agent setups for best practices, redundancy, security, and cross-component issues.
@@ -20,10 +20,10 @@ Four commands, same engine:
 
 | Command | What it does | LLM in CLI | LLM in Claude Code / Cursor |
 |---------|-------------|-----------|----------------------------|
-| `setup-eval-lint` | 58 deterministic rules + system analysis (token budget, trigger overlaps, dependencies). Fast, CI-suitable. Supports `--format sarif` for GitHub code scanning. | No | No |
-| `setup-eval-review` | Per-component rubric review with 0-3 scoring per dimension, 21 cross-type checks. KEEP/REVIEW/REMOVE verdicts. | Yes (API key) | Yes (in-session) |
-| `setup-eval-security` | All security rules + YARA + CVE lookups + semantic review. SAFE/CAUTION/UNSAFE. | Scan: no. Semantic review: `--review` flag | Yes (in-session) |
-| `eval-skill` | Deep-evaluate one skill individually and in context of the full setup. | Lint: no. Rubric: `--rubric` flag | Yes (in-session) |
+| `lint` | 58 deterministic rules + system analysis (token budget, trigger overlaps, dependencies). Fast, CI-suitable. Supports `--format sarif` for GitHub code scanning. | No | No |
+| `review` | Per-component rubric review with 0-3 scoring per dimension, 21 cross-type checks. KEEP/REVIEW/REMOVE verdicts. | Yes (API key) | Yes (in-session) |
+| `security` | All security rules + YARA + CVE lookups + semantic review. SAFE/CAUTION/UNSAFE. | Scan: no. Semantic review: `--review` flag | Yes (in-session) |
+| `skill` | Deep-evaluate one skill individually and in context of the full setup. | Lint: no. Rubric: `--rubric` flag | Yes (in-session) |
 
 ## Supported AI Assistants
 
@@ -49,32 +49,32 @@ Install from PyPI and run from the terminal:
 ```bash
 pip install setup-eval
 
-setup-eval setup-eval-lint .
-setup-eval setup-eval-lint . --watch     # re-run lint automatically on file changes
-setup-eval setup-eval-review . --provider gemini
-setup-eval setup-eval-security . --review
-setup-eval eval-skill ./skills/my-skill --context . --rubric
+setup-eval lint .
+setup-eval lint . --watch     # re-run lint automatically on file changes
+setup-eval review . --provider gemini
+setup-eval security . --review
+setup-eval skill ./skills/my-skill --context . --rubric
 ```
 
 Requires `GEMINI_API_KEY` or `ANTHROPIC_API_KEY` for review/security/skill commands.
 
-`setup-eval-security` supports optional YARA malware signature scanning. To enable it: `pip install setup-eval[yara]`
+`setup-eval security` supports optional YARA malware signature scanning. To enable it: `pip install setup-eval[yara]`
 
 ### Claude Code plugin
 
 No pip install needed. Install directly from within Claude Code:
 
 ```
-/plugin marketplace add redhat-community-ai-tools/harness-eval-lab
-/plugin install setup-eval@harness-eval-lab
+/plugin marketplace add redhat-community-ai-tools/setup-eval
+/plugin install setup-eval@setup-eval
 /reload-plugins
 ```
 
 The 4 commands appear in the `/` menu:
-- `/setup-eval:setup-eval-lint`
-- `/setup-eval:setup-eval-review`
-- `/setup-eval:setup-eval-security`
-- `/setup-eval:eval-skill`
+- `/setup-eval:lint`
+- `/setup-eval:review`
+- `/setup-eval:security`
+- `/setup-eval:skill`
 
 No API key needed. Claude evaluates in-session.
 
@@ -88,11 +88,11 @@ Requires the CLI tool installed first (Cursor commands call it for the determini
 pip install setup-eval
 ```
 
-Then copy `.cursor/commands/` from [this repo](https://github.com/redhat-community-ai-tools/harness-eval-lab) into your project. The 4 commands appear in Cursor's command palette:
-- `/setup-eval-lint`
-- `/setup-eval-review`
-- `/setup-eval-security`
-- `/eval-skill`
+Then copy `.cursor/commands/` from [this repo](https://github.com/redhat-community-ai-tools/setup-eval) into your project. The 4 commands appear in Cursor's command palette:
+- `/lint`
+- `/review`
+- `/security`
+- `/skill`
 
 No API key needed for review/security/skill. Cursor evaluates in-session.
 
@@ -124,10 +124,10 @@ For a full overview of how this tool protects your code, your credentials, and y
 
 | Command | Sends data externally? | What is sent | Where |
 |---------|----------------------|--------------|-------|
-| `setup-eval-lint` | No | Nothing. Fully offline. | N/A |
-| `setup-eval-review` | Yes (CLI only) | Code snippets from your setup files | Gemini or Anthropic API (your choice via `--provider`) |
-| `setup-eval-security` | Scan: No. `--review`: Yes (CLI only) | Code snippets from flagged files | Gemini or Anthropic API |
-| `eval-skill` | Lint: No. `--rubric`: Yes (CLI only) | The skill content being evaluated | Gemini or Anthropic API |
+| `lint` | No | Nothing. Fully offline. | N/A |
+| `review` | Yes (CLI only) | Code snippets from your setup files | Gemini or Anthropic API (your choice via `--provider`) |
+| `security` | Scan: No. `--review`: Yes (CLI only) | Code snippets from flagged files | Gemini or Anthropic API |
+| `skill` | Lint: No. `--rubric`: Yes (CLI only) | The skill content being evaluated | Gemini or Anthropic API |
 
 When used as a **Claude Code plugin**, review/security/eval-skill commands use the existing Claude session. No additional API calls are made.
 

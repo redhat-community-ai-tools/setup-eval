@@ -1,0 +1,51 @@
+from __future__ import annotations
+
+from pathlib import Path
+
+from setup_eval.core.types import ComponentType
+from setup_eval.inspection.types import (
+    Location,
+    ReportDescriptor,
+    RuleCategory,
+    RuleContext,
+    RuleMeta,
+    Severity,
+)
+from setup_eval.utils.paths import safe_join
+
+
+class CommandScriptExists:
+    meta = RuleMeta(
+        id="command/script-exists",
+        default_severity=Severity.WARNING,
+        fixable=False,
+        description="Script files referenced in commands should exist",
+        category=RuleCategory.CONTENT,
+        messages={
+            "missing_script": "Command references '{{script}}' but this file does not exist in the command directory",
+        },
+        target_type=ComponentType.COMMAND,
+    )
+
+    def create(self, context: RuleContext) -> None:
+        cmd = context.command
+        if cmd is None or not cmd.script_references:
+            return
+
+        cmd_dir = Path(cmd.dir_path)
+        checked: set[str] = set()
+
+        for script in cmd.script_references:
+            if script in checked:
+                continue
+            checked.add(script)
+
+            script_path = safe_join(cmd_dir, script)
+            if script_path is None or not script_path.exists():
+                context.report(
+                    ReportDescriptor(
+                        message_id="missing_script",
+                        data={"script": script},
+                        location=Location(file=cmd.command_md_path),
+                    )
+                )
