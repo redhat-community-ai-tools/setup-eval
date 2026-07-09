@@ -23,6 +23,7 @@ class AgentObfuscationDetection:
         category=RuleCategory.SECURITY,
         messages={
             "obfuscation_detected": "Line {{line}} contains an obfuscation pattern ('{{label}}'). This may hide malicious behavior.",
+            "obfuscation_in_code_block": "Line {{line}} contains '{{label}}' inside a code block (likely safe).",
         },
         target_type=ComponentType.AGENT,
     )
@@ -38,4 +39,5 @@ class AgentObfuscationDetection:
             context,
             _OBFUSCATION_PATTERNS,
             detected_msg="obfuscation_detected",
+            code_block_msg="obfuscation_in_code_block",
         )

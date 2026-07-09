@@ -16,8 +16,6 @@ _NETWORK_PATTERNS = [
     (re.compile(r"\bcurl\b"), "curl"),
     (re.compile(r"\bwget\b"), "wget"),
     (re.compile(r"\b(?:nc|netcat)\b"), "netcat"),
-    (re.compile(r"\bfetch\b"), "fetch"),
-    (re.compile(r"\bhttp\b"), "http"),
 ]
 
 

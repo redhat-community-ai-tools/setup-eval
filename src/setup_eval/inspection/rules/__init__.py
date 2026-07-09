@@ -88,6 +88,7 @@ def register_all_rules() -> None:
     from setup_eval.inspection.rules.mcp.valid_config import McpValidConfig
     from setup_eval.inspection.rules.quality.example_gap import ExampleGap
     from setup_eval.inspection.rules.quality.imprecise_instruction import ImpreciseInstruction
+    from setup_eval.inspection.rules.quality.negative_only import NegativeOnly
     from setup_eval.inspection.rules.quality.redundant_guidance import RedundantGuidance
     from setup_eval.inspection.rules.quality.stale_references import StaleReferences
     from setup_eval.inspection.rules.quality.unfinished_content import UnfinishedContent
@@ -168,5 +169,6 @@ def register_all_rules() -> None:
         UnfinishedContent,
         ExampleGap,
         StaleReferences,
+        NegativeOnly,
     ]:
         register_rule(rule_cls())

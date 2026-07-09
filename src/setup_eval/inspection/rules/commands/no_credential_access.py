@@ -47,4 +47,5 @@ class CommandNoCredentialAccess:
                 ("sensitive_env", _SENSITIVE_ENV_VARS),
                 ("dangerous_command", _DANGEROUS_COMMANDS),
             ],
+            code_block_msg="skip",
         )

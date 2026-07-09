@@ -103,6 +103,37 @@ Flag if:
 - Important instructions are buried deep in the file, below less important content. Critical rules should be early or clearly marked.
 - Contains orphaned conditionals: "when the user asks about X, do Y" where X is not something the skill's trigger would match
 
+## Contradiction detection
+
+Flag if:
+- Two instructions in the same file or across the setup conflict with each other. Examples: "use tabs" in one section and "use 2-space indentation" in another; "always run tests" early on and "skip tests when time is short" later.
+- A skill contradicts a rule in CLAUDE.md or another skill. The agent cannot follow both at once.
+- Look for pairs of instructions where following one necessarily means violating the other.
+
+Scoring anchors:
+- Severe: "Always use TypeScript" in CLAUDE.md but a skill says "Write all new code in JavaScript"
+- Moderate: "Run tests before committing" in one place, "skip tests for documentation-only changes" elsewhere (ambiguous, not truly contradictory)
+- Not an issue: No conflicting instructions found; conditional variations are clearly scoped ("for API code, use X; for scripts, use Y")
+
+## Position effectiveness
+
+Flag if:
+- The most critical instructions (build commands, test commands, hard constraints) are buried in the bottom half of the document
+- Generic context or verbose explanations appear before actionable rules
+- The first 20 lines don't contain any concrete, project-specific instruction
+
+Scoring anchors:
+- Severe: 200-line SKILL.md where the actual commands and rules start at line 150, preceded by philosophy and motivation
+- Moderate: Commands are in the middle; some context at the top is useful but could be shorter
+- Not an issue: First 10 lines contain the most important rules; context and examples come after
+
+## Specificity gradient
+
+Flag if:
+- Instructions start specific and concrete at the top but become increasingly vague toward the bottom (e.g., exact commands early, then "handle edge cases appropriately" later)
+- The last third of the document is noticeably less actionable than the first third
+- Late sections contain filler like "be thorough" or "follow best practices" as if the author ran out of specific things to say
+
 ## Content quality
 
 Flag if:

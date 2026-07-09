@@ -26,7 +26,7 @@ _SUSPICIOUS_PATTERNS = [
 class McpSuspiciousEndpoint:
     meta = RuleMeta(
         id="mcp/suspicious-endpoint",
-        default_severity=Severity.WARNING,
+        default_severity=Severity.INFO,
         fixable=False,
         description="Flag MCP servers pointing to localhost or private IP ranges",
         category=RuleCategory.SECURITY,

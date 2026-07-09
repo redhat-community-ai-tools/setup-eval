@@ -11,7 +11,7 @@ from setup_eval.inspection.types import (
 )
 from setup_eval.utils.similarity import tfidf_similarity
 
-OVERLAP_THRESHOLD = 0.60
+OVERLAP_THRESHOLD = 0.80
 
 
 class ClaudeMdSkillDuplication:

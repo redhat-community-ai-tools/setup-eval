@@ -28,24 +28,7 @@ _PAST_PARTICIPLES = (
     r"|committed|pushed|released|published)"
 )
 
-_PASSIVE: list[tuple[str, re.Pattern[str]]] = [
-    (
-        "should be",
-        re.compile(rf"\bshould\s+be\s+{_PAST_PARTICIPLES}\b", re.I),
-    ),
-    (
-        "needs to be",
-        re.compile(rf"\bneeds?\s+to\s+be\s+{_PAST_PARTICIPLES}\b", re.I),
-    ),
-    (
-        "is expected to be",
-        re.compile(rf"\bis\s+expected\s+to\s+be\s+{_PAST_PARTICIPLES}\b", re.I),
-    ),
-    (
-        "must be",
-        re.compile(rf"\bmust\s+be\s+{_PAST_PARTICIPLES}\b", re.I),
-    ),
-]
+_PASSIVE: list[tuple[str, re.Pattern[str]]] = []
 
 _CONDITIONAL_AMBIGUITY: list[tuple[str, re.Pattern[str]]] = [
     ("if needed", re.compile(r"\bif\s+needed\b", re.I)),

@@ -46,13 +46,13 @@ class TestImpreciseInstruction:
         path = _make_skill(tmp_path, "s3", "Consider using dataclasses for DTOs.")
         assert IMPRECISE in _rule_ids(path)
 
-    def test_passive_should_be_run(self, tmp_path: Path) -> None:
+    def test_passive_not_flagged(self, tmp_path: Path) -> None:
         path = _make_skill(tmp_path, "s4", "Tests should be run before merging.")
-        assert IMPRECISE in _rule_ids(path)
+        assert IMPRECISE not in _rule_ids(path)
 
-    def test_passive_needs_to_be_validated(self, tmp_path: Path) -> None:
+    def test_passive_needs_not_flagged(self, tmp_path: Path) -> None:
         path = _make_skill(tmp_path, "s5", "Input needs to be validated first.")
-        assert IMPRECISE in _rule_ids(path)
+        assert IMPRECISE not in _rule_ids(path)
 
     def test_conditional_if_appropriate(self, tmp_path: Path) -> None:
         path = _make_skill(tmp_path, "s6", "Refactor the module if appropriate.")
@@ -76,9 +76,9 @@ class TestImpreciseInstruction:
         path = _make_skill(tmp_path, "s10", "The database is hosted on AWS.")
         assert len(_findings_for(path, IMPRECISE)) == 0
 
-    def test_passive_must_be_checked(self, tmp_path: Path) -> None:
+    def test_passive_must_not_flagged(self, tmp_path: Path) -> None:
         path = _make_skill(tmp_path, "s11", "All endpoints must be tested before release.")
-        assert IMPRECISE in _rule_ids(path)
+        assert IMPRECISE not in _rule_ids(path)
 
 
 # --- RedundantGuidance ---

@@ -40,7 +40,7 @@ _SENSITIVE_ENV_VARS = [
 ]
 
 _DANGEROUS_COMMANDS = [
-    (re.compile(r"\bsudo\s+"), "sudo"),
+    (re.compile(r"\bsudo\s+(?!apt\b|dnf\b|yum\b|pip\b|npm\b)"), "sudo (non-install)"),
     (re.compile(r"\bchmod\s+777\b"), "chmod 777"),
     (re.compile(r"\bchown\s+root\b"), "chown root"),
 ]
@@ -74,4 +74,5 @@ class NoCredentialAccess:
                 ("sensitive_env", _SENSITIVE_ENV_VARS),
                 ("dangerous_command", _DANGEROUS_COMMANDS),
             ],
+            code_block_msg="skip",
         )

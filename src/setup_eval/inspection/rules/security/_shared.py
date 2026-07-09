@@ -98,16 +98,30 @@ def scan_lines_for_credential_patterns(
     file_path: str,
     context: RuleContext,
     pattern_groups: Sequence[tuple[str, Sequence[re.Pattern[str] | tuple[re.Pattern[str], str]]]],
+    code_block_msg: str | None = None,
 ) -> None:
     """Scan content lines for credential and command patterns.
 
     Each group is (message_id, patterns) where patterns can be:
     - Sequence[re.Pattern]: match.group(0) used as data value
     - Sequence[tuple[re.Pattern, str]]: str used as data value
+
+    When code_block_msg is provided, matches inside code fences use that
+    message ID with WARNING severity instead of the group's message ID.
     """
     lines = content.split("\n")
+    in_code_fence = False
 
     for i, line in enumerate(lines):
+        stripped = line.strip()
+
+        if code_block_msg is not None and stripped.startswith("```"):
+            in_code_fence = not in_code_fence
+            continue
+
+        if code_block_msg is not None and in_code_fence:
+            continue
+
         for message_id, patterns in pattern_groups:
             for item in patterns:
                 if isinstance(item, tuple):

@@ -6,6 +6,21 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - GitHub Action at `.github/actions/setup-eval/`: one-step CI integration with two-tier gating (security + lint) and SARIF upload for inline PR annotations
+- New rule `quality/negative-only`: flags prohibitions without constructive alternatives (e.g., "don't use var" without saying what to use instead)
+- Scoring anchors (severity examples) added to all review rubric dimensions across 5 rubric files
+- 3 new LLM review dimensions: contradiction detection, position effectiveness, specificity gradient
+
+### Fixed
+- `security/no-prompt-injection`: removed false-positive-prone patterns (bare markdown images, "you are now", "role play", "translate", bare base64). Tightened to require override/evasion context.
+- `security/no-credential-access`: added code-block awareness; `sudo apt install` no longer fires
+- `mcp/suspicious-endpoint`: changed from WARNING to INFO (localhost is the default for MCP servers)
+- `quality/stale-references`: "moment" (the English word) no longer fires; requires `moment.js`, `moment(`, etc.
+- `quality/imprecise-instruction`: removed passive voice patterns ("should be run", "must be checked") which flagged clear instructions
+- `hooks/env-leakage`: only flags sensitive variable names (TOKEN, SECRET, KEY, PASSWORD), not all env vars
+- `hooks/network-access`: removed bare `http` and `fetch` patterns; only flags actual network tools (curl, wget, netcat)
+- `claude-md/skill-duplication` and `command/skill-overlap`: raised TF-IDF threshold from 0.60 to 0.80 to reduce false positives on same-domain content
+- Agent/command variants of data-exfiltration, obfuscation, and reverse-shell rules now have code-block awareness (previously fired at ERROR on code examples)
+- Agent/command credential-access rules now skip matches inside code blocks
 - 22 new tests covering all 16 previously untested rules (agent, command, and content categories)
 
 ## [4.1.0] - 2026-07-08

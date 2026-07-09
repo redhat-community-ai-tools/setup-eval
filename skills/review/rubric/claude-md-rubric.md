@@ -71,6 +71,11 @@ Flag if:
 - Critical instructions are buried in the middle of a long file. Important rules should be near the top or clearly marked, not hidden in paragraph 47.
 - Contains conditional instructions ("when X, do Y") where the condition X is never defined or referenced elsewhere in the setup.
 
+Scoring anchors:
+- Severe: "Always use tabs" in line 10, "use 2-space indentation" in line 80. Two rules that cannot both be followed.
+- Moderate: Build command is on line 150 of a 200-line file, below a long project history section.
+- Not an issue: Critical rules (build, test, lint commands) are in the first 20 lines. No conflicting instructions.
+
 ## Conflict-free
 
 Flag if:

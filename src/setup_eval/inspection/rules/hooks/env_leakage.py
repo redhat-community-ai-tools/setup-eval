@@ -12,8 +12,13 @@ from setup_eval.inspection.types import (
     Severity,
 )
 
+_SENSITIVE_VAR = r"\$\w*(?:TOKEN|SECRET|KEY|PASSWORD|CREDENTIAL|PRIVATE)\w*"
+
 _ENV_LEAK_PATTERNS = [
-    (re.compile(r"\b(?:echo|printf)\s+.*\$\w+", re.IGNORECASE), "echo/printf with env var"),
+    (
+        re.compile(rf"\b(?:echo|printf)\s+.*{_SENSITIVE_VAR}", re.IGNORECASE),
+        "echo/printf with sensitive env var",
+    ),
     (re.compile(r"\bprintenv\b"), "printenv"),
     (re.compile(r"\benv\s*\|\s*grep\b"), "env | grep"),
     (re.compile(r"\bset\s*\|\s*grep\b"), "set | grep"),

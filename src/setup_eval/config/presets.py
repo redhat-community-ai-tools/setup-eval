@@ -55,6 +55,7 @@ RECOMMENDED: dict[str, str] = {
     "quality/unfinished-content": "warning",
     "quality/example-gap": "info",
     "quality/stale-references": "warning",
+    "quality/negative-only": "warning",
 }
 
 STRICT: dict[str, str] = {

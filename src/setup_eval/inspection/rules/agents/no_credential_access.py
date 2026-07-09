@@ -44,4 +44,5 @@ class AgentNoCredentialAccess:
                 ("sensitive_path", _SENSITIVE_PATHS),
                 ("sensitive_env", _SENSITIVE_ENV_VARS),
             ],
+            code_block_msg="skip",
         )

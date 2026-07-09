@@ -23,6 +23,7 @@ class AgentDataExfiltration:
         category=RuleCategory.SECURITY,
         messages={
             "exfil_detected": "Line {{line}} contains a data exfiltration pattern ('{{label}}'). This is a critical security risk.",
+            "exfil_in_code_block": "Line {{line}} contains '{{label}}' inside a code block (likely safe).",
         },
         target_type=ComponentType.AGENT,
     )
@@ -38,4 +39,5 @@ class AgentDataExfiltration:
             context,
             _EXFIL_PATTERNS,
             detected_msg="exfil_detected",
+            code_block_msg="exfil_in_code_block",
         )

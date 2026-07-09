@@ -75,7 +75,7 @@ _STALE_PATTERNS: list[tuple[str, str, re.Pattern[str]]] = [
     (
         "moment.js",
         "Use date-fns, dayjs, or Temporal",
-        re.compile(r"\bmoment(?:\.js)?\b(?!\s*[\(.])", re.I),
+        re.compile(r"\bmoment(?:\.js|\.tz|\.duration|\s*\()\b", re.I),
     ),
     (
         "request (npm package)",
