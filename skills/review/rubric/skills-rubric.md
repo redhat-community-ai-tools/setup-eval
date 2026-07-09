@@ -103,6 +103,11 @@ Flag if:
 - Important instructions are buried deep in the file, below less important content. Critical rules should be early or clearly marked.
 - Contains orphaned conditionals: "when the user asks about X, do Y" where X is not something the skill's trigger would match
 
+Scoring anchors:
+- Severe: "Follow best practices. Be thorough. Handle errors appropriately." in one section, then "always run tests" later contradicted by "skip tests if not needed" (vague + contradictory)
+- Moderate: "Consider using TypeScript if possible" (hedging where a clear rule is needed, but at least names the technology)
+- Not an issue: "Use 2-space indentation in YAML files. Run `uv run ruff format` before committing." (clear, specific, no hedging, no contradictions)
+
 ## Contradiction detection
 
 Flag if:
