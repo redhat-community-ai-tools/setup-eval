@@ -25,6 +25,11 @@ Flag if:
 - Important instructions are buried below less important content
 - Conditional instructions reference triggers or situations the command wouldn't encounter
 
+Scoring anchors:
+- Severe: "Do some checks and make sure everything is good." (no steps, no order, no definition of "good")
+- Moderate: "Run lint, then tests, then deploy." (clear order but no specific commands or failure handling)
+- Not an issue: "1. Run `uv run ruff check src/`. 2. Run `uv run pytest tests/ -q`. 3. If both pass, run `./deploy.sh staging`. If tests fail, stop and report the failures." (exact commands, clear sequencing, failure behavior)
+
 ## Script integrity
 
 Flag if:
@@ -50,6 +55,11 @@ Flag if:
 - Claude already does this without the command
 - Built-in capabilities include: plan mode, commit messages, code explanation, code review, init, security-review
 - Test: "If i deleted this command, could i get the same result by just asking Claude?" If yes, flag it.
+
+Scoring anchors:
+- Severe: "/review" that just says "Review the code." (Claude already does this without a command)
+- Moderate: "/review" that adds "use our style guide" but doesn't include the actual rules
+- Not an issue: "/review" that adds project-specific checklists, required reviewers, integration with CI status checks
 
 ## Robustness
 

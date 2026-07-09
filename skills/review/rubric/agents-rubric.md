@@ -13,6 +13,11 @@ Flag if:
 - No defined output format
 - Agent's purpose overlaps significantly with a built-in capability (code review, commit messages, plan mode)
 
+Scoring anchors:
+- Severe: "Help with code tasks as needed." (no defined procedure, no output format, indistinguishable from the base model)
+- Moderate: "Review PRs and suggest improvements." (clear purpose but no concrete steps or output format)
+- Not an issue: "1. Read the diff. 2. Check each file against CONTRIBUTING.md rules. 3. Output a markdown table: file, issue, severity, suggestion." (concrete steps, defined output)
+
 ## Constraint clarity
 
 Flag if:
@@ -23,6 +28,11 @@ Flag if:
 
 Test: "If the agent ignores a constraint, is there a mechanism that actually prevents the action?" If not, the constraint is decorative.
 
+Scoring anchors:
+- Severe: No constraints at all; agent can push to main, delete files, merge PRs
+- Moderate: Body says "do not push to main" but disallowedTools doesn't block `Bash(git push *)`
+- Not an issue: Body constraints match disallowedTools entries; scope is explicitly bounded ("you review code, you do not merge, deploy, or modify CI")
+
 ## Zero-trust integrity
 
 Flag if:
@@ -32,6 +42,11 @@ Flag if:
 - Agent executes commands constructed from external input without sanitization
 
 Test: "Could a malicious issue title or PR description trick this agent into running unintended commands or making harmful changes?" If yes, flag it.
+
+Scoring anchors:
+- Severe: Agent runs shell commands from issue body without any validation or sanitization
+- Moderate: Agent uses issue data but only for read-only operations (searching, reading files)
+- Not an issue: Agent treats all external input as untrusted data, validates before acting, separates instructions from data
 
 ## Token efficiency
 

@@ -12,6 +12,11 @@ Flag if:
 - Contains dangerous patterns (rm -rf, force push, curl|bash, git reset --hard)
 - Modifies state destructively without safeguards
 
+Scoring anchors:
+- Severe: Hook runs `rm -rf` or `git reset --hard` without confirmation or scope limits
+- Moderate: Hook runs a network call (`curl`) that could leak data but is pointed at an internal URL
+- Not an issue: Hook runs `ruff check` on the changed file only, exits with code 2 to block on errors
+
 ## Reliability
 
 Flag if:
@@ -42,6 +47,11 @@ Flag if:
 - Hook does unnecessary work on every invocation (e.g., scanning all files when only one changed)
 
 Test: "Does this hook need to run on every single tool call, or could it be scoped to specific events?" If it runs too broadly, flag it.
+
+Scoring anchors:
+- Severe: Full test suite runs on every file save via PreToolUse on Write
+- Moderate: Linter runs on every Write but is fast (<1s)
+- Not an issue: Secret scanner runs only on PreToolUse for Bash(git push *), scoped to the push event
 
 ## Verdict
 

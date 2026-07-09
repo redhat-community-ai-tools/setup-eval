@@ -31,6 +31,11 @@ Flag if:
 - No actionable instructions that would change Claude's behavior
 - Rules are not verifiable ("format code properly" vs "use 2-space indentation in YAML files")
 
+Scoring anchors:
+- Severe: "Help with Python code. Be thorough and follow best practices." (zero project-specific detail, everything is a platitude)
+- Moderate: "This is a FastAPI project using pytest and Docker." (names the stack but gives no commands, patterns, or conventions)
+- Not an issue: "Run tests with `uv run pytest tests/ -q`. Use frozen dataclasses for domain objects. Tests go in `tests/` mirroring the source structure." (exact commands, specific conventions, verifiable rules)
+
 ## Redundancy
 
 Flag if:
@@ -50,6 +55,11 @@ Test: "If i deleted this skill, would Claude behave differently?" If not, flag i
 
 Also check overlap with built-in capabilities: plan mode, code review, commit messages, code explanation. A skill that wraps a built-in without adding project-specific rules is redundant.
 
+Scoring anchors:
+- Severe: "Review code for bugs and suggest improvements." (Claude already does this; the skill adds nothing)
+- Moderate: "Review code using our team's style guide." (mentions a guide but doesn't include the rules)
+- Not an issue: "Review code for our API patterns: all handlers return `ApiResponse[T]`, errors use codes from `errors.py`, pagination uses cursor-based `next_token`." (project-specific rules Claude wouldn't know)
+
 ## Trigger quality
 
 Flag if:
@@ -65,6 +75,11 @@ Routing test: read the description and ask "would this trigger on the right requ
 
 Test: "Could a reasonable user want to skip this skill and go straight to coding?" If yes, the trigger shouldn't prevent that.
 
+Scoring anchors:
+- Severe: "A useful development skill." (no trigger keywords, no activation context, would match everything or nothing)
+- Moderate: "Help with database work." (too broad, would trigger on any DB mention)
+- Not an issue: "Generate database migration files. Use when the user asks to create, alter, or drop tables. Run when schema changes are discussed." (specific trigger phrases, clear scope)
+
 ## Token efficiency and progressive disclosure
 
 Flag if:
@@ -73,6 +88,11 @@ Flag if:
 - SKILL.md duplicates content that exists in a reference file
 
 Token budget applies to SKILL.md only (always-loaded cost). Reference files in subdirectories load on demand. The pattern is: SKILL.md provides routing, context, and high-level instructions; reference files provide details.
+
+Scoring anchors:
+- Severe: 800+ line SKILL.md with inline tables, full API docs, and step-by-step procedures that could be reference files
+- Moderate: 300-line SKILL.md that inlines some procedures but keeps the core routing lean
+- Not an issue: 80-line SKILL.md with routing and context; detailed procedures live in `references/*.md`
 
 ## Instruction clarity
 
@@ -92,6 +112,11 @@ Flag if:
 - Workflow steps require synthesizing more than 3 inputs at once (cognitive overload)
 - Skills that execute commands or call APIs don't define failure behavior
 - Skill name doesn't match directory name, or uses characters other than lowercase letters and hyphens
+
+Scoring anchors:
+- Severe: Wall of text, no headers, instructions jump between topics, no logical flow
+- Moderate: Has headers but buries critical constraints below nice-to-have suggestions
+- Not an issue: Clear sections, critical rules early, edge cases handled, failure behavior defined
 
 ## Verdict
 

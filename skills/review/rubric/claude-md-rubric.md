@@ -17,6 +17,11 @@ Test: "Would removing this line cause Claude to make a mistake it wouldn't other
 
 For large projects, use multiple focused CLAUDE.md files in subdirectories rather than one oversized root file.
 
+Scoring anchors:
+- Severe: 400+ lines with inline API docs, deployment procedures, and a changelog
+- Moderate: 150 lines with some procedures that could be skills but core info is useful
+- Not an issue: 60 lines of build commands, test commands, project conventions, and pointers to skills for detailed procedures
+
 ## Signal-to-noise
 
 Flag if:
@@ -45,6 +50,11 @@ Flag if:
 Test: "Does this rule matter in every single conversation, or only when doing a specific task?" If task-specific, it belongs in a skill.
 
 CLAUDE.md should contain only facts Claude needs every session: project identity, build/test commands, universal conventions, and pointers to where detailed procedures live.
+
+Scoring anchors:
+- Severe: 20-step deployment procedure inlined in CLAUDE.md, loaded every session even when the user is just fixing a typo
+- Moderate: "When reviewing PRs, check the following 8 items:" (task-specific checklist that should be a skill)
+- Not an issue: "Run tests: `uv run pytest`. Lint: `uv run ruff check src/`." (needed every session)
 
 ## Structure
 
