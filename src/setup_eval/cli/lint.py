@@ -64,7 +64,7 @@ def eval_setup_lint(
     fail_on_warning: bool,
     user_config: str | None,
 ) -> None:
-    """Lint: 58 rules + system analysis. No LLM, deterministic, fast."""
+    """Lint: 59 rules + system analysis. No LLM, deterministic, fast."""
     if watch:
         from setup_eval.watch import run_watch
 
