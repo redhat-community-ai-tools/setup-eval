@@ -1,5 +1,5 @@
 name: "setup-eval"
-description: "Lint and security-scan AI agent setups (CLAUDE.md, skills, commands, hooks, MCP configs, agents). 58 deterministic rules, no LLM required."
+description: "Lint and security-scan AI agent setups (CLAUDE.md, skills, commands, hooks, MCP configs, agents). 59 deterministic rules, no LLM required."
 author: "redhat-community-ai-tools"
 
 branding:
