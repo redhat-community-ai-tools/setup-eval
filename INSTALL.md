@@ -14,7 +14,7 @@ pip install setup-eval[tiktoken]      # exact token counting via tiktoken
 Run:
 
 ```bash
-setup-eval lint .                         # deterministic lint (58 rules)
+setup-eval lint .                         # deterministic lint (59 rules)
 setup-eval lint . --watch                 # re-run automatically on file changes
 setup-eval lint . --fail-on-error         # exit code 1 on errors (CI gate)
 setup-eval lint . --fail-on-warning       # exit code 1 on any finding (strict)

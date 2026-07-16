@@ -8,7 +8,7 @@
 
 Evaluate AI code agent setups for best practices, redundancy, security, and cross-component issues.
 
-Available as a **CLI tool**, a **Claude Code plugin**, and **Cursor commands**.
+Available as a **CLI tool**, a **GitHub Action**, a **Claude Code plugin**, and **Cursor commands**.
 
 Supports Claude Code, Cursor, Copilot, Gemini CLI, and OpenCode projects. Auto-detects which tool(s) a project uses. Also discovers third-party modules installed via package managers.
 
@@ -77,7 +77,7 @@ For a full overview of how this tool protects your code, your credentials, and y
 | `security` | Scan: No. `--review`: Yes (CLI only) | Code snippets from flagged files | Gemini or Anthropic API |
 | `skill` | Lint: No. `--rubric`: Yes (CLI only) | The skill content being evaluated | Gemini or Anthropic API |
 
-When used as a **Claude Code plugin**, review/security/eval-skill commands use the existing Claude session. No additional API calls are made.
+When used as a **Claude Code plugin**, review/security/skill commands use the existing Claude session. No additional API calls are made.
 
 When used as **Cursor commands**, the evaluation happens in the Cursor session. No additional API calls are made.
 
