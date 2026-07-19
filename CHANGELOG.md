@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [5.0.0] - 2026-07-19
+
 ### Changed
 - **BREAKING**: Python package renamed from `setup_eval` to `harness_eval`. Update imports: `from harness_eval...` instead of `from setup_eval...`
 - **BREAKING**: PyPI package renamed from `setup-eval` to `harness-eval`. Install with `pip install harness-eval`.
