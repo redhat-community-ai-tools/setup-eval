@@ -67,10 +67,10 @@ Include:
 At the very end of the report, include the exact timing:
 
 ```
-Evaluated with: setup-eval v{version} (claude-code-plugin)
+Evaluated with: harness-eval v{version} (claude-code-plugin)
 Duration: [X minutes Y seconds]
 ```
 
-Get `{version}` by running: `uv run python -c "import importlib.metadata; print(importlib.metadata.version('setup-eval'))"`
+Get `{version}` by running: `uv run python -c "import importlib.metadata; print(importlib.metadata.version('harness-eval'))"`
 
 Record the timestamp of your first tool call in Step 2 and compute the exact difference when you finish.

@@ -1,12 +1,12 @@
 {
-  "name": "setup-eval",
+  "name": "harness-eval",
   "displayName": "Setup Eval",
-  "version": "4.2.0",
+  "version": "5.0.0",
   "description": "Evaluate AI agent setups for best practices, redundancy, security, and cross-component issues.",
   "author": {
     "name": "Benjamin Kapner"
   },
-  "repository": "https://github.com/redhat-community-ai-tools/setup-eval",
+  "repository": "https://github.com/redhat-community-ai-tools/harness-eval",
   "license": "Apache-2.0",
   "keywords": ["evaluation", "harness", "setup", "skills", "configuration", "security"],
   "hooks": {

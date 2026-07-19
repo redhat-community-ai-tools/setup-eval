@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from setup_eval.inspection.engine import lint_agent, lint_hooks, lint_mcp_config
+from harness_eval.inspection.engine import lint_agent, lint_hooks, lint_mcp_config
 
 
 class TestMcpValidConfig:

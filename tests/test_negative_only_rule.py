@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from setup_eval.inspection.engine import lint
+from harness_eval.inspection.engine import lint
 
 
 def _diags_for(result, rule_id: str):

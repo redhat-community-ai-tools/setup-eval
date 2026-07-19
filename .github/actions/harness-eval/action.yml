@@ -1,0 +1,114 @@
+name: "harness-eval"
+description: "Lint and security-scan AI agent setups (CLAUDE.md, skills, commands, hooks, MCP configs, agents). 64 deterministic rules, no LLM required."
+author: "redhat-community-ai-tools"
+
+branding:
+  icon: "shield"
+  color: "blue"
+
+inputs:
+  path:
+    description: "Directories to scan, one per line. Default scans the repo root."
+    default: "."
+  preset:
+    description: "Rule preset: recommended, strict, security, or pre-workflow"
+    default: "recommended"
+  security-gate:
+    description: "Run security scan (--fail-on-warning). Set to 'false' to skip."
+    default: "true"
+  lint-gate:
+    description: "Run lint scan (--fail-on-error). Set to 'false' to skip."
+    default: "true"
+  lint-fail-on:
+    description: "Lint failure threshold: 'error' (default) or 'warning' (strict)"
+    default: "error"
+  sarif:
+    description: "Upload SARIF to GitHub Code Scanning for inline PR annotations"
+    default: "true"
+  version:
+    description: "harness-eval version to install (e.g. '4.1.0'). Leave empty for latest."
+    default: ""
+
+outputs:
+  security-passed:
+    description: "Whether the security gate passed"
+    value: ${{ steps.security.outcome == 'success' || inputs.security-gate != 'true' }}
+  lint-passed:
+    description: "Whether the lint gate passed"
+    value: ${{ steps.lint.outcome == 'success' || inputs.lint-gate != 'true' }}
+  sarif-file:
+    description: "Path to the SARIF output directory (if generated)"
+    value: ${{ steps.sarif.outputs.sarif-dir }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install harness-eval
+      shell: bash
+      run: |
+        if [ -n "${{ inputs.version }}" ]; then
+          pip install -q "harness-eval==${{ inputs.version }}"
+        else
+          pip install -q harness-eval
+        fi
+
+    - name: Security gate
+      id: security
+      if: inputs.security-gate == 'true'
+      shell: bash
+      run: |
+        failed=0
+        while IFS= read -r dir; do
+          dir=$(echo "$dir" | xargs)
+          [ -z "$dir" ] && continue
+          echo "::group::Security: $dir"
+          if ! harness-eval security "$dir" --fail-on-warning; then
+            failed=1
+          fi
+          echo "::endgroup::"
+        done <<< "${{ inputs.path }}"
+        exit $failed
+
+    - name: Lint gate
+      id: lint
+      if: inputs.lint-gate == 'true'
+      shell: bash
+      run: |
+        fail_flag="--fail-on-error"
+        if [ "${{ inputs.lint-fail-on }}" = "warning" ]; then
+          fail_flag="--fail-on-warning"
+        fi
+        failed=0
+        while IFS= read -r dir; do
+          dir=$(echo "$dir" | xargs)
+          [ -z "$dir" ] && continue
+          echo "::group::Lint: $dir"
+          if ! harness-eval lint "$dir" --preset "${{ inputs.preset }}" $fail_flag; then
+            failed=1
+          fi
+          echo "::endgroup::"
+        done <<< "${{ inputs.path }}"
+        exit $failed
+
+    - name: Generate SARIF
+      id: sarif
+      if: inputs.sarif == 'true' && always()
+      shell: bash
+      run: |
+        sarif_dir="${{ runner.temp }}/harness-eval-sarif"
+        mkdir -p "$sarif_dir"
+        i=0
+        while IFS= read -r dir; do
+          dir=$(echo "$dir" | xargs)
+          [ -z "$dir" ] && continue
+          harness-eval lint "$dir" --preset "${{ inputs.preset }}" --format sarif --output "$sarif_dir/results-$i.sarif" || true
+          i=$((i + 1))
+        done <<< "${{ inputs.path }}"
+        echo "sarif-dir=$sarif_dir" >> "$GITHUB_OUTPUT"
+
+    - name: Upload SARIF
+      if: inputs.sarif == 'true' && always() && steps.sarif.outputs.sarif-dir != ''
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ steps.sarif.outputs.sarif-dir }}
+        category: harness-eval

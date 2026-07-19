@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from setup_eval.inspection.engine import lint_command
+from harness_eval.inspection.engine import lint_command
 
 
 def _write_command(tmp_path: Path, content: str, name: str = "test-cmd") -> str:

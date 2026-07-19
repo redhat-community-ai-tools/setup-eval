@@ -22,7 +22,7 @@ def setup_b_path() -> str:
 @pytest.fixture
 def tmp_experiment_yaml(tmp_path: Path, setup_a_path: str, setup_b_path: str) -> str:
     config = f"""\
-apiVersion: setup-eval/v1
+apiVersion: harness-eval/v1
 experiment:
   name: test-experiment
   description: Test experiment

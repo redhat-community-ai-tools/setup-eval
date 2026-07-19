@@ -4,10 +4,26 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- **BREAKING**: Python package renamed from `setup_eval` to `harness_eval`. Update imports: `from harness_eval...` instead of `from setup_eval...`
+- **BREAKING**: PyPI package renamed from `setup-eval` to `harness-eval`. Install with `pip install harness-eval`.
+- **BREAKING**: CLI binary renamed: `harness-eval lint .` instead of `setup-eval lint .`
+
+### Added
+- New rule `security/coercive-override`: detect patterns forcing the agent to comply unconditionally (forced compliance, refusal suppression, safety override directives)
+- New rule `security/stealth-persistence`: detect instructions writing to config directories or persistent state without user awareness
+- New rule `security/prompt-exfiltration`: detect instructions that leak system prompts or configuration to outputs
+- New rule `quality/scope-overreach`: detect skills claiming authority over overly broad scope
+- New rule `quality/trigger-manipulation`: detect triggers that hijack conversations by forcing invocation
+- Summary block at top of lint terminal output showing error/warning count, fixable count, and top 3 issues
+- Improved --fix output: shows fixable count before fix, shows total fixed after fix
+- Rule count: 59 to 64
+- 17 new tests for the 5 new rules (465 total)
+
 ## [4.2.0] - 2026-07-09
 
 ### Added
-- GitHub Action at `.github/actions/setup-eval/`: one-step CI integration with two-tier gating (security + lint) and SARIF upload for inline PR annotations
+- GitHub Action at `.github/actions/harness-eval/`: one-step CI integration with two-tier gating (security + lint) and SARIF upload for inline PR annotations
 - New rule `quality/negative-only`: flags prohibitions without constructive alternatives (e.g., "don't use var" without saying what to use instead)
 - Scoring anchors (severity examples) added to all review rubric dimensions across 5 rubric files
 - 3 new LLM review dimensions: contradiction detection, position effectiveness, specificity gradient
@@ -29,11 +45,11 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - `--fail-on-warning` flag for lint and security commands: exit code 1 on any warnings or errors (not just errors)
-- Versioned data files under `src/setup_eval/data/` for knowledge that decays: built-in commands list and tautological pattern definitions
+- Versioned data files under `src/harness_eval/data/` for knowledge that decays: built-in commands list and tautological pattern definitions
 
 ### Changed
 - AGENTS.md attribution changed from "opencode" to "agents-md" (cross-tool standard, not OpenCode-specific)
-- tiktoken moved from hard dependency to optional extra (`pip install setup-eval[tiktoken]`). Token counting falls back to chars/4 when tiktoken is not installed.
+- tiktoken moved from hard dependency to optional extra (`pip install harness-eval[tiktoken]`). Token counting falls back to chars/4 when tiktoken is not installed.
 - Built-in command list (`builtins.json`) and tautological patterns (`tautological_patterns.json`) extracted from hardcoded Python to versioned JSON data files
 - Generic advice patterns in claude-md/generic_advice.py now load from the shared tautological patterns data file (first 12 entries), eliminating duplication with quality/_patterns.py
 
@@ -44,10 +60,10 @@ All notable changes to this project will be documented in this file.
 ## [4.0.0] - 2026-07-08
 
 ### Changed
-- **BREAKING**: Python package renamed from `harness_eval_lab` to `setup_eval`. Update imports: `from setup_eval...` instead of `from harness_eval_lab...`
-- **BREAKING**: CLI subcommands shortened: `lint`, `review`, `security`, `skill` (previously `setup-eval-lint`, `setup-eval-review`, `setup-eval-security`, `eval-skill`)
-- GitHub repo renamed from `harness-eval-lab` to `setup-eval`
-- Skill directories renamed: `skills/lint/`, `skills/review/`, `skills/security/` (previously `skills/setup-eval-lint/`, etc.)
+- **BREAKING**: Python package renamed from `harness_eval_lab` to `harness_eval`. Update imports: `from harness_eval...` instead of `from harness_eval_lab...`
+- **BREAKING**: CLI subcommands shortened: `lint`, `review`, `security`, `skill` (previously `harness-eval-lint`, `harness-eval-review`, `harness-eval-security`, `eval-skill`)
+- GitHub repo renamed from `harness-eval-lab` to `harness-eval`
+- Skill directories renamed: `skills/lint/`, `skills/review/`, `skills/security/` (previously `skills/harness-eval-lint/`, etc.)
 - Command files renamed: `commands/lint.md`, `commands/review.md`, `commands/security.md`
 
 ## [3.8.0] - 2026-07-07
@@ -67,7 +83,7 @@ All notable changes to this project will be documented in this file.
 - New rule `hooks/network-access`: flags hooks that make network calls (curl, wget, netcat)
 - New rule `security/bash-taint-flow`: detects untrusted input flowing to dangerous sinks in bash scripts
 - Future-plans spec for distributable packaging
-- SARIF v2.1.0 output format (`--format sarif`) for `setup-eval-lint` and `setup-eval-security`, enabling GitHub code scanning inline annotations
+- SARIF v2.1.0 output format (`--format sarif`) for `harness-eval-lint` and `harness-eval-security`, enabling GitHub code scanning inline annotations
 - `--output` flag for writing lint and security output to a file instead of stdout
 
 ### Changed
@@ -165,7 +181,7 @@ All notable changes to this project will be documented in this file.
 ## [3.4.0] - 2026-06-18
 
 ### Added
-- `--watch` flag for `setup-eval-lint` that monitors agent setup files and re-runs lint on save
+- `--watch` flag for `harness-eval-lint` that monitors agent setup files and re-runs lint on save
 
 ## [3.3.0] - 2026-06-17
 
@@ -193,7 +209,7 @@ All notable changes to this project will be documented in this file.
 ## [3.1.2] - 2026-06-17
 
 ### Changed
-- Renamed `setup-eval-skill` command to `eval-skill` across CLI, Claude Code plugin, and Cursor
+- Renamed `harness-eval-skill` command to `eval-skill` across CLI, Claude Code plugin, and Cursor
 - Renamed `how-to-contribute.md` to `CONTRIBUTING.md` (standard convention)
 - LLM dependencies (anthropic, google-genai) now included in default install (no separate extras)
 - Simplified README (removed duplication, fixed inconsistencies)
@@ -206,9 +222,9 @@ All notable changes to this project will be documented in this file.
 ## [3.1.0] - 2026-06-16
 
 ### Changed
-- Renamed package from `harness-eval-lab` to `setup-eval` on PyPI (`pip install setup-eval`)
-- Renamed CLI entry point from `harness-eval-lab` to `setup-eval`
-- Renamed all commands: `eval-setup-lint` to `setup-eval-lint`, `eval-setup-review` to `setup-eval-review`, `eval-setup-security` to `setup-eval-security`, `eval-skill` to `eval-skill`
+- Renamed package from `harness-eval-lab` to `harness-eval` on PyPI (`pip install harness-eval`)
+- Renamed CLI entry point from `harness-eval-lab` to `harness-eval`
+- Renamed all commands: `eval-setup-lint` to `harness-eval-lint`, `eval-setup-review` to `harness-eval-review`, `eval-setup-security` to `harness-eval-security`, `eval-skill` to `eval-skill`
 - Renamed plugin skill directories to match new command names
 - Cursor commands rewritten to use in-session LLM (no extra API key needed for review/security/skill)
 
@@ -217,11 +233,11 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Cursor IDE support: discovers `.cursor/rules/*.mdc`, `.cursorrules`, `.cursor/commands/*.md`, `.cursor/skills/*/SKILL.md`, `.cursor/hooks.json`, `.cursor/mcp.json`
 - Multi-tool auto-detection: reports which tools a project uses (Claude Code, Cursor, or both)
-- 4 Cursor commands (`.cursor/commands/`): setup-eval-lint, setup-eval-review, setup-eval-security, eval-skill
+- 4 Cursor commands (`.cursor/commands/`): harness-eval-lint, harness-eval-review, harness-eval-security, eval-skill
 - Component deduplication across tools (shared skills are not double-counted)
 - "Detected tools" shown in terminal and JSON output
 - Cursor file patterns added to fingerprinting for change detection
-- Published to PyPI: `pip install setup-eval`
+- Published to PyPI: `pip install harness-eval`
 - 14 new tests for Cursor discovery and linting (153 total)
 
 ## [2.0.0] - 2026-06-15

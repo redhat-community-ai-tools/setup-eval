@@ -10,4 +10,4 @@ Pass through any arguments from $ARGUMENTS (e.g., a skill name or path to evalua
 
 If the Skill tool is not available or the skill is not found, tell the user:
 - Check that `skills/eval-skill/SKILL.md` exists in the workspace
-- If not, reinstall the setup-eval plugin
+- If not, reinstall the harness-eval plugin

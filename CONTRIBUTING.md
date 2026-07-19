@@ -1,11 +1,11 @@
 # How to Contribute
 
-This document explains how to add things to setup-eval: new inspection rules, new future plans, and general contribution guidelines.
+This document explains how to add things to harness-eval: new inspection rules, new future plans, and general contribution guidelines.
 
 ## Setup
 
 ```bash
-cd setup-eval
+cd harness-eval
 uv sync --extra dev
 uv run pre-commit install
 ```
@@ -25,15 +25,15 @@ Pre-commit also runs **gitleaks** (secret scanning) and **bandit** (Python secur
 Pre-push hooks run the full test suite and two dogfood gates:
 
 ```bash
-uv run setup-eval security . --fail-on-warning   # any security finding blocks
-uv run setup-eval lint . --fail-on-error          # only structural errors block
+uv run harness-eval security . --fail-on-warning   # any security finding blocks
+uv run harness-eval lint . --fail-on-error          # only structural errors block
 ```
 
 The security gate is strict: even a warning about credential access patterns blocks the push. The lint gate is lenient: quality/style warnings are advisory, only real errors (broken references, missing descriptions) block.
 
 ## Versioned data files
 
-Knowledge that decays over time (built-in command lists, tautological pattern definitions) lives in `src/setup_eval/data/` as JSON files. Edit these when Claude Code adds new built-in commands or when model defaults change. No code changes needed.
+Knowledge that decays over time (built-in command lists, tautological pattern definitions) lives in `src/harness_eval/data/` as JSON files. Edit these when Claude Code adds new built-in commands or when model defaults change. No code changes needed.
 
 ## Adding a new inspection rule
 
@@ -41,7 +41,7 @@ A rule is a Python class that checks one specific thing about one component type
 
 ### 1. Create the rule file
 
-Rules go in `src/setup_eval/inspection/rules/<category>/`. Pick the category that matches what you're checking:
+Rules go in `src/harness_eval/inspection/rules/<category>/`. Pick the category that matches what you're checking:
 
 | Category | What it checks | Target type |
 |----------|---------------|-------------|
@@ -63,8 +63,8 @@ Every rule has the same shape. Here's the minimal template:
 ```python
 from __future__ import annotations
 
-from setup_eval.core.types import ComponentType
-from setup_eval.inspection.types import (
+from harness_eval.core.types import ComponentType
+from harness_eval.inspection.types import (
     Location,
     ReportDescriptor,
     RuleCategory,
@@ -109,7 +109,7 @@ Look at existing rules for real examples. `commands/shadows_builtin.py` is a sim
 
 ### 3. Register the rule
 
-Add your class to `src/setup_eval/inspection/rules/__init__.py`:
+Add your class to `src/harness_eval/inspection/rules/__init__.py`:
 
 1. Add the import (alphabetical within its section)
 2. Add the class to the `for rule_cls in [...]` list
@@ -119,7 +119,7 @@ Add your class to `src/setup_eval/inspection/rules/__init__.py`:
 Update the rule count in all files that reference it:
 - `README.md` (the "Inspection Rules (N)" heading, table, and command table)
 - `CLAUDE.md` (the project structure line mentioning rule count)
-- `src/setup_eval/cli.py` (the `setup_eval_lint` docstring)
+- `src/harness_eval/cli.py` (the `harness_eval_lint` docstring)
 - `skills/lint/SKILL.md` (the description field)
 - `skills/review/report-format.md` (the lint description)
 - `commands/lint.md` (the description field)
@@ -148,11 +148,11 @@ def create(self, context: RuleContext) -> None:
 
 ## Adding support for a new AI assistant
 
-The discovery layer uses per-tool discoverer classes in `src/setup_eval/core/discoverers/`. To add a new assistant:
+The discovery layer uses per-tool discoverer classes in `src/harness_eval/core/discoverers/`. To add a new assistant:
 
 ### 1. Create a discoverer class
 
-Create `src/setup_eval/core/discoverers/my_tool.py` that subclasses `ToolDiscoverer` from `base.py`. Implement:
+Create `src/harness_eval/core/discoverers/my_tool.py` that subclasses `ToolDiscoverer` from `base.py`. Implement:
 - `tool_name` (display name, e.g., "My Tool")
 - `source_tool` (short identifier for `ParsedComponent.source_tool`, e.g., "mytool")
 - `detect(root)` (return True if the tool's files exist)
@@ -163,11 +163,11 @@ Use `parse_file()` from `base.py` to create components. Map files to existing `C
 
 ### 2. Register the discoverer
 
-Add your class to `src/setup_eval/core/discoverers/registry.py` in the `DISCOVERERS` list.
+Add your class to `src/harness_eval/core/discoverers/registry.py` in the `DISCOVERERS` list.
 
 ### 3. Add fingerprint patterns
 
-Add the tool's file patterns to `RELEVANT_PATTERNS` in `src/setup_eval/core/fingerprint.py`.
+Add the tool's file patterns to `RELEVANT_PATTERNS` in `src/harness_eval/core/fingerprint.py`.
 
 ### 4. Add test fixtures
 
@@ -175,7 +175,7 @@ Create `tests/fixtures/sample-mytool-setup/` with representative config files an
 
 ## Proposing new features
 
-Open a [GitHub Issue](https://github.com/redhat-community-ai-tools/setup-eval/issues) describing the problem and proposed solution. Feature discussions happen on issues, not in the codebase.
+Open a [GitHub Issue](https://github.com/redhat-community-ai-tools/harness-eval/issues) describing the problem and proposed solution. Feature discussions happen on issues, not in the codebase.
 
 ## PR guidelines
 

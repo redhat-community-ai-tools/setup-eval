@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from setup_eval.inspection.engine import lint, lint_hooks, lint_mcp_config
+from harness_eval.inspection.engine import lint, lint_hooks, lint_mcp_config
 
 # ── MCP rules ──────────────────────────────────────────────────────────
 
@@ -351,8 +351,8 @@ class TestBashTaintTracking:
 class TestContextUtilizationSuppressed:
     def test_no_model_specific_findings(self) -> None:
         """Verify analyze_system does not produce model-specific context window findings."""
-        from setup_eval.analysis.system import analyze_system
-        from setup_eval.core.types import Setup
+        from harness_eval.analysis.system import analyze_system
+        from harness_eval.core.types import Setup
 
         setup = Setup(
             name="test",

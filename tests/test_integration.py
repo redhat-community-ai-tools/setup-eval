@@ -10,7 +10,7 @@ import subprocess
 from pathlib import Path
 from unittest.mock import patch
 
-from setup_eval.utils import tokens
+from harness_eval.utils import tokens
 
 FIXTURES = Path(__file__).parent / "fixtures"
 REPO_ROOT = Path(__file__).parent.parent
@@ -21,7 +21,7 @@ class TestCLIExitCodes:
 
     def test_lint_clean_fixture_exits_0(self):
         result = subprocess.run(
-            ["uv", "run", "setup-eval", "lint", str(FIXTURES / "sample-setup-a")],
+            ["uv", "run", "harness-eval", "lint", str(FIXTURES / "sample-setup-a")],
             capture_output=True,
             text=True,
         )
@@ -32,7 +32,7 @@ class TestCLIExitCodes:
             [
                 "uv",
                 "run",
-                "setup-eval",
+                "harness-eval",
                 "lint",
                 str(FIXTURES / "security-issues"),
                 "--fail-on-error",
@@ -47,7 +47,7 @@ class TestCLIExitCodes:
             [
                 "uv",
                 "run",
-                "setup-eval",
+                "harness-eval",
                 "lint",
                 str(FIXTURES / "security-issues"),
                 "--fail-on-warning",
@@ -64,7 +64,7 @@ class TestCLIExitCodes:
             [
                 "uv",
                 "run",
-                "setup-eval",
+                "harness-eval",
                 "lint",
                 str(FIXTURES / "sample-setup-a"),
                 "--format",
@@ -84,7 +84,7 @@ class TestCLIExitCodes:
             [
                 "uv",
                 "run",
-                "setup-eval",
+                "harness-eval",
                 "lint",
                 str(FIXTURES / "sample-setup-a"),
                 "--format",
@@ -102,7 +102,7 @@ class TestDataFileLoading:
     """Data files must load correctly and contain expected content."""
 
     def test_builtins_loads(self):
-        from setup_eval.data import load_builtins
+        from harness_eval.data import load_builtins
 
         builtins = load_builtins()
         assert isinstance(builtins, set)
@@ -111,14 +111,14 @@ class TestDataFileLoading:
         assert "config" in builtins
 
     def test_tautological_patterns_loads(self):
-        from setup_eval.data import load_tautological_patterns
+        from harness_eval.data import load_tautological_patterns
 
         patterns = load_tautological_patterns()
         assert isinstance(patterns, list)
         assert len(patterns) == 24
 
     def test_generic_advice_subset(self):
-        from setup_eval.data import load_tautological_patterns
+        from harness_eval.data import load_tautological_patterns
 
         generic = load_tautological_patterns(generic_advice_only=True)
         assert len(generic) == 12
@@ -127,7 +127,7 @@ class TestDataFileLoading:
         assert "be thorough" in labels
 
     def test_generic_is_subset_of_all(self):
-        from setup_eval.data import load_tautological_patterns
+        from harness_eval.data import load_tautological_patterns
 
         all_patterns = load_tautological_patterns()
         generic = load_tautological_patterns(generic_advice_only=True)
@@ -138,7 +138,7 @@ class TestDataFileLoading:
     def test_builtins_json_is_valid(self):
         import json
 
-        path = Path(__file__).parent.parent / "src" / "setup_eval" / "data" / "builtins.json"
+        path = Path(__file__).parent.parent / "src" / "harness_eval" / "data" / "builtins.json"
         data = json.loads(path.read_text())
         assert "claude_code_commands" in data
         assert isinstance(data["claude_code_commands"], list)
@@ -149,7 +149,7 @@ class TestDataFileLoading:
         path = (
             Path(__file__).parent.parent
             / "src"
-            / "setup_eval"
+            / "harness_eval"
             / "data"
             / "tautological_patterns.json"
         )
@@ -170,7 +170,7 @@ class TestTiktokenFallbackIntegration:
         ):
             tokens._init_encoder()
         result = subprocess.run(
-            ["uv", "run", "setup-eval", "lint", str(FIXTURES / "sample-setup-a")],
+            ["uv", "run", "harness-eval", "lint", str(FIXTURES / "sample-setup-a")],
             capture_output=True,
             text=True,
             env={**__import__("os").environ, "TIKTOKEN_CACHE_DIR": "/nonexistent"},
@@ -180,11 +180,11 @@ class TestTiktokenFallbackIntegration:
 
 
 class TestSelfDogfood:
-    """setup-eval must be able to lint its own repo without crashing."""
+    """harness-eval must be able to lint its own repo without crashing."""
 
     def test_lint_own_repo_runs(self):
         result = subprocess.run(
-            ["uv", "run", "setup-eval", "lint", str(REPO_ROOT)],
+            ["uv", "run", "harness-eval", "lint", str(REPO_ROOT)],
             capture_output=True,
             text=True,
         )
@@ -195,7 +195,7 @@ class TestSelfDogfood:
         import json
 
         result = subprocess.run(
-            ["uv", "run", "setup-eval", "lint", str(REPO_ROOT), "--format", "json"],
+            ["uv", "run", "harness-eval", "lint", str(REPO_ROOT), "--format", "json"],
             capture_output=True,
             text=True,
         )

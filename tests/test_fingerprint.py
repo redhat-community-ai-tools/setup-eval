@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from setup_eval.core.fingerprint import fingerprint_setup, fingerprints_match
+from harness_eval.core.fingerprint import fingerprint_setup, fingerprints_match
 
 
 def test_fingerprint_deterministic(setup_a_path: str) -> None:

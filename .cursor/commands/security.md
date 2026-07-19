@@ -16,15 +16,15 @@ Ask the user: print the report in conversation, or write to a file?
 ## Step 2: Run Deterministic Security Scan
 
 ```bash
-setup-eval security .
+harness-eval security .
 ```
 
-If `setup-eval` is not installed, try `pip install setup-eval` first.
+If `harness-eval` is not installed, try `pip install harness-eval` first.
 
 For YARA signature scanning (malware, cryptominers, attack tools), install with:
 
 ```bash
-pip install setup-eval[yara]
+pip install harness-eval[yara]
 ```
 
 Without this, YARA checks are skipped automatically and noted in the report.
@@ -60,4 +60,4 @@ Include:
 4. Skip notices (if YARA or CVE dependencies are missing)
 5. Risk assessment: **SAFE** / **CAUTION** / **UNSAFE**
 
-At the end of the report, include: `Evaluated with: setup-eval v{version} (cursor-command)` where {version} comes from `setup-eval --version` or `pip show setup-eval`.
+At the end of the report, include: `Evaluated with: harness-eval v{version} (cursor-command)` where {version} comes from `harness-eval --version` or `pip show harness-eval`.

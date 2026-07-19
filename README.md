@@ -1,9 +1,9 @@
-# setup-eval
+# harness-eval
 
-[![CI](https://github.com/redhat-community-ai-tools/setup-eval/actions/workflows/ci.yml/badge.svg)](https://github.com/redhat-community-ai-tools/setup-eval/actions/workflows/ci.yml)
-[![PyPI](https://img.shields.io/pypi/v/setup-eval)](https://pypi.org/project/setup-eval/)
+[![CI](https://github.com/redhat-community-ai-tools/harness-eval/actions/workflows/ci.yml/badge.svg)](https://github.com/redhat-community-ai-tools/harness-eval/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/harness-eval)](https://pypi.org/project/harness-eval/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/downloads/)
-[![Rules](https://img.shields.io/badge/rules-59-blue)](https://github.com/redhat-community-ai-tools/setup-eval#inspection-rules-59)
+[![Rules](https://img.shields.io/badge/rules-64-blue)](https://github.com/redhat-community-ai-tools/harness-eval#inspection-rules-64)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
 
 Evaluate AI code agent setups for best practices, redundancy, security, and cross-component issues.
@@ -20,7 +20,7 @@ Four commands, same engine:
 
 | Command | What it does | LLM in CLI | LLM in Claude Code / Cursor |
 |---------|-------------|-----------|----------------------------|
-| `lint` | 59 deterministic rules + system analysis (token budget, trigger overlaps, dependencies). Fast, CI-suitable. Supports `--format sarif` for GitHub code scanning. | No | No |
+| `lint` | 64 deterministic rules + system analysis (token budget, trigger overlaps, dependencies). Fast, CI-suitable. Supports `--format sarif` for GitHub code scanning. | No | No |
 | `review` | Per-component rubric review with 0-3 scoring per dimension, 21 cross-type checks. KEEP/REVIEW/REMOVE verdicts. | Yes (API key) | Yes (in-session) |
 | `security` | All security rules + YARA + CVE lookups + semantic review. SAFE/CAUTION/UNSAFE. | Scan: no. Semantic review: `--review` flag | Yes (in-session) |
 | `skill` | Deep-evaluate one skill individually and in context of the full setup. | Lint: no. Rubric: `--rubric` flag | Yes (in-session) |
@@ -44,15 +44,15 @@ Multi-tool projects are fully supported. When a project contains files for multi
 
 See [`INSTALL.md`](INSTALL.md) for all installation options, CI integration, and configuration (Available as a **CLI tool**, **GitHub Action**, **Claude Code plugin**, and **Cursor commands**)
 
-## Inspection Rules (59)
+## Inspection Rules (64)
 
 | Category | Rules | What they check |
 |----------|-------|-----------------|
 | Structural | 1 | SKILL.md exists |
 | Frontmatter | 3 | Description required/quality, format valid |
 | Content | 4 | Duplicate detection (TF-IDF), broken references, circular references, token budget |
-| Quality | 6 | Imprecise instructions (hedging, vague conditions), redundant guidance (model defaults + tooling config), unfinished content (placeholders, empty sections, deferred markers), example gap, stale references, negative-only prohibitions |
-| Security | 10 | Credential access, prompt injection (17 patterns), data exfiltration, obfuscation, reverse shells, AST analysis, Python taint tracking, bash taint tracking, MCP least-privilege, tool poisoning |
+| Quality | 8 | Imprecise instructions, redundant guidance, unfinished content, example gap, stale references, negative-only prohibitions, scope overreach, trigger manipulation |
+| Security | 13 | Credential access, prompt injection, data exfiltration, obfuscation, reverse shells, AST analysis, Python taint tracking, bash taint tracking, MCP least-privilege, tool poisoning, coercive override, stealth persistence, prompt exfiltration |
 | Security (opt-in) | 2 | YARA signatures, CVE lookups via OSV.dev |
 | Commands | 11 | Description, script exists, duplicates, credentials, injection, exfiltration, obfuscation, reverse shells, skill overlap, shadows built-in, references nonexistent skill |
 | CLAUDE.md | 3 | Exists, skill duplication, generic advice detection |
@@ -68,7 +68,7 @@ For a full overview of how this tool protects your code, your credentials, and y
 
 ## Privacy and Data Handling
 
-`setup-eval` reads files from your project directory to analyze your AI agent setup. Here is what happens with your data in each mode:
+`harness-eval` reads files from your project directory to analyze your AI agent setup. Here is what happens with your data in each mode:
 
 | Command | Sends data externally? | What is sent | Where |
 |---------|----------------------|--------------|-------|
@@ -93,4 +93,4 @@ See [`CHANGELOG.md`](CHANGELOG.md) for release history.
 
 ## Roadmap
 
-See [open issues](https://github.com/redhat-community-ai-tools/setup-eval/issues) for planned improvements and feature requests.
+See [open issues](https://github.com/redhat-community-ai-tools/harness-eval/issues) for planned improvements and feature requests.

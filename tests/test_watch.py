@@ -8,9 +8,9 @@ from unittest.mock import patch
 import pytest
 from click.testing import CliRunner
 
-from setup_eval.cli import cli
-from setup_eval.core.setup import collect_setup_file_paths
-from setup_eval.watch import (
+from harness_eval.cli import cli
+from harness_eval.core.setup import collect_setup_file_paths
+from harness_eval.watch import (
     _build_filter,
     _get_watch_directories,
     run_watch,
@@ -217,7 +217,7 @@ class TestCLIWatchFlag:
         with runner.isolated_filesystem():
             Path("CLAUDE.md").write_text("# Test")
             # Mock run_watch to avoid actually starting the watcher
-            with patch("setup_eval.watch.run_watch") as mock_watch:
+            with patch("harness_eval.watch.run_watch") as mock_watch:
                 result = runner.invoke(cli, ["lint", ".", "--watch"])
                 assert result.exit_code == 0
                 mock_watch.assert_called_once()
@@ -227,7 +227,7 @@ class TestCLIWatchFlag:
         runner = CliRunner()
         with runner.isolated_filesystem():
             Path("CLAUDE.md").write_text("# Test")
-            with patch("setup_eval.watch.run_watch") as mock_watch:
+            with patch("harness_eval.watch.run_watch") as mock_watch:
                 result = runner.invoke(
                     cli,
                     ["lint", ".", "--watch", "--preset", "strict"],
@@ -247,7 +247,7 @@ class TestCLIWatchWithIncompatibleFlags:
         runner = CliRunner()
         with runner.isolated_filesystem():
             Path("CLAUDE.md").write_text("# Test")
-            with patch("setup_eval.watch.run_watch"):
+            with patch("harness_eval.watch.run_watch"):
                 result = runner.invoke(
                     cli,
                     ["lint", ".", "--watch", "--fix"],
@@ -263,7 +263,7 @@ class TestCLIWatchWithIncompatibleFlags:
         runner = CliRunner()
         with runner.isolated_filesystem():
             Path("CLAUDE.md").write_text("# Test")
-            with patch("setup_eval.watch.run_watch"):
+            with patch("harness_eval.watch.run_watch"):
                 result = runner.invoke(
                     cli,
                     ["lint", ".", "--watch", "--fail-on-error"],

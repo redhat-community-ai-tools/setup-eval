@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from setup_eval.core.setup import discover_setup
-from setup_eval.inspection.engine import inspect_setup
+from harness_eval.core.setup import discover_setup
+from harness_eval.inspection.engine import inspect_setup
 
 
 def _diags_for(results, rule_id: str):

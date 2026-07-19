@@ -1,5 +1,0 @@
-"""Tool-specific setup discoverers."""
-
-from setup_eval.core.discoverers.registry import DISCOVERERS, get_all_discoverers
-
-__all__ = ["DISCOVERERS", "get_all_discoverers"]

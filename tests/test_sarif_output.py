@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from setup_eval.inspection.types import (
+from harness_eval.inspection.types import (
     Finding,
     FixSuggestion,
     InspectionResult,
@@ -10,8 +10,8 @@ from setup_eval.inspection.types import (
     RuleCategory,
     Severity,
 )
-from setup_eval.output.metadata import EvalMetadata
-from setup_eval.output.sarif import SARIF_SCHEMA, SARIF_VERSION, format_sarif
+from harness_eval.output.metadata import EvalMetadata
+from harness_eval.output.sarif import SARIF_SCHEMA, SARIF_VERSION, format_sarif
 
 
 def _make_finding(
@@ -65,9 +65,9 @@ class TestSarifStructure:
         meta = EvalMetadata(version="1.2.3")
         sarif = format_sarif([], meta)
         driver = sarif["runs"][0]["tool"]["driver"]
-        assert driver["name"] == "setup-eval"
+        assert driver["name"] == "harness-eval"
         assert driver["version"] == "1.2.3"
-        assert "setup-eval" in driver["informationUri"]
+        assert "harness-eval" in driver["informationUri"]
 
     def test_version_defaults_to_dev(self) -> None:
         sarif = format_sarif([], None)

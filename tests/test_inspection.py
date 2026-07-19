@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from setup_eval.inspection.engine import (
+from harness_eval.inspection.engine import (
     lint,
     lint_claude_md,
     lint_command,
     lint_hooks,
 )
-from setup_eval.inspection.parsers import (
+from harness_eval.inspection.parsers import (
     parse_claude_md,
     parse_command,
     parse_hooks,
@@ -287,7 +287,7 @@ class TestFrontmatterRules:
 
 class TestPresets:
     def test_security_preset_skips_structural(self, tmp_path: Path) -> None:
-        from setup_eval.config.presets import PRESETS
+        from harness_eval.config.presets import PRESETS
 
         skill_dir = tmp_path / "test-skill"
         skill_dir.mkdir()
@@ -299,7 +299,7 @@ class TestPresets:
         assert "frontmatter/description-quality" not in rule_ids
 
     def test_strict_preset_escalates_to_error(self) -> None:
-        from setup_eval.config.presets import PRESETS
+        from harness_eval.config.presets import PRESETS
 
         assert PRESETS["strict"]["frontmatter/description-quality"] == "error"
         assert PRESETS["strict"]["content/token-budget"] == "error"

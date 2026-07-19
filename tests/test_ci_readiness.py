@@ -6,9 +6,9 @@ from unittest.mock import patch
 
 import pytest
 
-from setup_eval.analysis.dependencies import analyze_dependencies
-from setup_eval.core.types import ComponentType, ParsedComponent, Setup
-from setup_eval.utils import tokens
+from harness_eval.analysis.dependencies import analyze_dependencies
+from harness_eval.core.types import ComponentType, ParsedComponent, Setup
+from harness_eval.utils import tokens
 
 
 class TestTiktokenFallback:

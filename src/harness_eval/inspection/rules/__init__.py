@@ -1,0 +1,184 @@
+from __future__ import annotations
+
+from harness_eval.inspection.registry import register_rule
+
+
+def register_all_rules() -> None:
+    """Import and register all built-in rules."""
+    # Skill rules
+    from harness_eval.inspection.rules.agents.constraint_body_match import ConstraintBodyMatch
+    from harness_eval.inspection.rules.agents.data_exfiltration import AgentDataExfiltration
+
+    # Agent rules
+    from harness_eval.inspection.rules.agents.description_required import (
+        AgentDescriptionRequired,
+    )
+    from harness_eval.inspection.rules.agents.disallowed_tools_parseable import (
+        DisallowedToolsParseable,
+    )
+    from harness_eval.inspection.rules.agents.model_specified import AgentModelSpecified
+    from harness_eval.inspection.rules.agents.no_credential_access import (
+        AgentNoCredentialAccess,
+    )
+    from harness_eval.inspection.rules.agents.no_prompt_injection import AgentNoPromptInjection
+    from harness_eval.inspection.rules.agents.obfuscation_detection import (
+        AgentObfuscationDetection,
+    )
+    from harness_eval.inspection.rules.agents.referenced_skills_exist import (
+        ReferencedSkillsExist,
+    )
+    from harness_eval.inspection.rules.agents.reverse_shell_detection import (
+        AgentReverseShellDetection,
+    )
+
+    # CLAUDE.md rules
+    from harness_eval.inspection.rules.claude_md.exists import ClaudeMdExists
+    from harness_eval.inspection.rules.claude_md.generic_advice import ClaudeMdGenericAdvice
+    from harness_eval.inspection.rules.claude_md.skill_duplication import (
+        ClaudeMdSkillDuplication,
+    )
+    from harness_eval.inspection.rules.commands.data_exfiltration import CommandDataExfiltration
+
+    # Command rules
+    from harness_eval.inspection.rules.commands.description_required import (
+        CommandDescriptionRequired,
+    )
+    from harness_eval.inspection.rules.commands.duplicate_detection import (
+        CommandDuplicateDetection,
+    )
+    from harness_eval.inspection.rules.commands.no_credential_access import (
+        CommandNoCredentialAccess,
+    )
+    from harness_eval.inspection.rules.commands.no_prompt_injection import (
+        CommandNoPromptInjection,
+    )
+    from harness_eval.inspection.rules.commands.obfuscation_detection import (
+        CommandObfuscationDetection,
+    )
+    from harness_eval.inspection.rules.commands.references_nonexistent_skill import (
+        CommandReferencesNonexistentSkill,
+    )
+    from harness_eval.inspection.rules.commands.reverse_shell_detection import (
+        CommandReverseShellDetection,
+    )
+    from harness_eval.inspection.rules.commands.script_exists import CommandScriptExists
+    from harness_eval.inspection.rules.commands.shadows_builtin import CommandShadowsBuiltin
+    from harness_eval.inspection.rules.commands.skill_overlap import CommandSkillOverlap
+    from harness_eval.inspection.rules.content.broken_references import BrokenReferences
+    from harness_eval.inspection.rules.content.circular_references import CircularReferences
+    from harness_eval.inspection.rules.content.duplicate_detection import DuplicateDetection
+    from harness_eval.inspection.rules.content.token_budget import TokenBudget
+    from harness_eval.inspection.rules.frontmatter.description_quality import DescriptionQuality
+    from harness_eval.inspection.rules.frontmatter.description_required import (
+        DescriptionRequired,
+    )
+    from harness_eval.inspection.rules.frontmatter.format_valid import FormatValid
+
+    # Hooks rules
+    from harness_eval.inspection.rules.hooks.dangerous_command import HooksDangerousCommand
+    from harness_eval.inspection.rules.hooks.env_leakage import HooksEnvLeakage
+    from harness_eval.inspection.rules.hooks.network_access import HooksNetworkAccess
+    from harness_eval.inspection.rules.hooks.script_boundary import HooksScriptBoundary
+    from harness_eval.inspection.rules.hooks.valid_structure import HooksValidStructure
+
+    # MCP rules
+    from harness_eval.inspection.rules.mcp.duplicate_server import McpDuplicateServer
+    from harness_eval.inspection.rules.mcp.no_wildcard_tools import McpNoWildcardTools
+    from harness_eval.inspection.rules.mcp.suspicious_endpoint import McpSuspiciousEndpoint
+    from harness_eval.inspection.rules.mcp.valid_config import McpValidConfig
+    from harness_eval.inspection.rules.quality.example_gap import ExampleGap
+    from harness_eval.inspection.rules.quality.imprecise_instruction import ImpreciseInstruction
+    from harness_eval.inspection.rules.quality.negative_only import NegativeOnly
+    from harness_eval.inspection.rules.quality.redundant_guidance import RedundantGuidance
+    from harness_eval.inspection.rules.quality.scope_overreach import ScopeOverreach
+    from harness_eval.inspection.rules.quality.stale_references import StaleReferences
+    from harness_eval.inspection.rules.quality.trigger_manipulation import TriggerManipulation
+    from harness_eval.inspection.rules.quality.unfinished_content import UnfinishedContent
+    from harness_eval.inspection.rules.security.ast_behavioral import AstBehavioral
+    from harness_eval.inspection.rules.security.bash_taint_tracking import BashTaintTracking
+    from harness_eval.inspection.rules.security.coercive_override import CoerciveOverride
+    from harness_eval.inspection.rules.security.cve_lookup import CveLookup
+    from harness_eval.inspection.rules.security.data_exfiltration import DataExfiltration
+    from harness_eval.inspection.rules.security.mcp_least_privilege import McpLeastPrivilege
+    from harness_eval.inspection.rules.security.mcp_tool_poisoning import McpToolPoisoning
+    from harness_eval.inspection.rules.security.no_credential_access import NoCredentialAccess
+    from harness_eval.inspection.rules.security.no_prompt_injection import NoPromptInjection
+    from harness_eval.inspection.rules.security.obfuscation_detection import (
+        ObfuscationDetection,
+    )
+    from harness_eval.inspection.rules.security.prompt_exfiltration import PromptExfiltration
+    from harness_eval.inspection.rules.security.reverse_shell_detection import (
+        ReverseShellDetection,
+    )
+    from harness_eval.inspection.rules.security.stealth_persistence import StealthPersistence
+    from harness_eval.inspection.rules.security.taint_tracking import TaintTracking
+    from harness_eval.inspection.rules.security.yara_scan import YaraScan
+    from harness_eval.inspection.rules.structural.skill_md_exists import SkillMdExists
+
+    for rule_cls in [
+        SkillMdExists,
+        DescriptionRequired,
+        DescriptionQuality,
+        FormatValid,
+        TokenBudget,
+        BrokenReferences,
+        CircularReferences,
+        DuplicateDetection,
+        NoPromptInjection,
+        NoCredentialAccess,
+        ReverseShellDetection,
+        ObfuscationDetection,
+        DataExfiltration,
+        CommandDescriptionRequired,
+        CommandScriptExists,
+        CommandNoPromptInjection,
+        CommandNoCredentialAccess,
+        CommandReverseShellDetection,
+        CommandObfuscationDetection,
+        CommandDataExfiltration,
+        CommandSkillOverlap,
+        CommandShadowsBuiltin,
+        CommandDuplicateDetection,
+        CommandReferencesNonexistentSkill,
+        ClaudeMdExists,
+        ClaudeMdSkillDuplication,
+        ClaudeMdGenericAdvice,
+        HooksScriptBoundary,
+        HooksValidStructure,
+        HooksDangerousCommand,
+        HooksEnvLeakage,
+        HooksNetworkAccess,
+        AgentDescriptionRequired,
+        ReferencedSkillsExist,
+        DisallowedToolsParseable,
+        ConstraintBodyMatch,
+        AgentNoPromptInjection,
+        AgentNoCredentialAccess,
+        AgentReverseShellDetection,
+        AgentObfuscationDetection,
+        AgentDataExfiltration,
+        AgentModelSpecified,
+        AstBehavioral,
+        TaintTracking,
+        BashTaintTracking,
+        McpLeastPrivilege,
+        McpValidConfig,
+        McpDuplicateServer,
+        McpSuspiciousEndpoint,
+        McpNoWildcardTools,
+        McpToolPoisoning,
+        YaraScan,
+        CveLookup,
+        ImpreciseInstruction,
+        RedundantGuidance,
+        UnfinishedContent,
+        ExampleGap,
+        StaleReferences,
+        NegativeOnly,
+        ScopeOverreach,
+        TriggerManipulation,
+        CoerciveOverride,
+        StealthPersistence,
+        PromptExfiltration,
+    ]:
+        register_rule(rule_cls())

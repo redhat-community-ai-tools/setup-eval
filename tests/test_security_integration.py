@@ -7,7 +7,7 @@ from pathlib import Path
 
 from click.testing import CliRunner
 
-from setup_eval.cli import cli
+from harness_eval.cli import cli
 
 
 def _create_setup(tmp_path: Path) -> Path:

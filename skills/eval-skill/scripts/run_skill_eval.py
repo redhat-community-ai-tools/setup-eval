@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["setup-eval"]
+# dependencies = ["harness-eval"]
 # ///
 """Run deep skill evaluation and output JSON results."""
 
@@ -19,13 +19,13 @@ def main() -> None:
     preset = sys.argv[3] if len(sys.argv) > 3 else "recommended"
     user_config = sys.argv[4] if len(sys.argv) > 4 and sys.argv[4] != "-" else None
 
-    from setup_eval.analysis.triggers import analyze_triggers
-    from setup_eval.config.presets import PRESETS
-    from setup_eval.core.setup import discover_setup
-    from setup_eval.core.types import ComponentType
-    from setup_eval.inspection.engine import lint
-    from setup_eval.inspection.parsers import parse_skill
-    from setup_eval.utils.similarity import tfidf_similarity
+    from harness_eval.analysis.triggers import analyze_triggers
+    from harness_eval.config.presets import PRESETS
+    from harness_eval.core.setup import discover_setup
+    from harness_eval.core.types import ComponentType
+    from harness_eval.inspection.engine import lint
+    from harness_eval.inspection.parsers import parse_skill
+    from harness_eval.utils.similarity import tfidf_similarity
 
     config_rules = PRESETS.get(preset, {})
 

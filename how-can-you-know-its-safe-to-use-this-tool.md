@@ -2,11 +2,11 @@
 
 The Claude Code plugin marketplace is still young. There's no centralized vetting process, no mandatory code review, and no standard security baseline for plugins. Anyone can publish a plugin, and most users install them without a second thought. The reality is that plugins can read your files, run commands, and send data over the network. That makes the marketplace a potential vector for malware, data exfiltration, and supply chain attacks.
 
-We don't think that's acceptable, especially for a tool like setup-eval that reads and analyzes your entire agent setup. So we've invested in making this plugin as safe and transparent as we can. Here's what we did and why.
+We don't think that's acceptable, especially for a tool like harness-eval that reads and analyzes your entire agent setup. So we've invested in making this plugin as safe and transparent as we can. Here's what we did and why.
 
 ## What the tool can and can't access
 
-setup-eval reads files inside the project directory you point it at. That's it. It uses path traversal protection (resolving symlinks, blocking `../` escapes) to make sure it never reads files outside your project boundary. It can't access your SSH keys, your cloud credentials, or files in other directories. If a malicious skill inside the project you're scanning tries to trick the tool into reading `/etc/passwd` or `~/.ssh/id_rsa`, the request is rejected.
+harness-eval reads files inside the project directory you point it at. That's it. It uses path traversal protection (resolving symlinks, blocking `../` escapes) to make sure it never reads files outside your project boundary. It can't access your SSH keys, your cloud credentials, or files in other directories. If a malicious skill inside the project you're scanning tries to trick the tool into reading `/etc/passwd` or `~/.ssh/id_rsa`, the request is rejected.
 
 ## What data goes where
 

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from setup_eval.core.setup import discover_setup
-from setup_eval.core.types import ComponentScope, ComponentType
+from harness_eval.core.setup import discover_setup
+from harness_eval.core.types import ComponentScope, ComponentType
 
 
 def test_discover_setup_a(setup_a_path: str) -> None:

@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["setup-eval"]
+# dependencies = ["harness-eval"]
 # ///
 """Run security-focused setup assessment and output security-only JSON."""
 
@@ -13,10 +13,10 @@ def main() -> None:
     setup_path = sys.argv[1] if len(sys.argv) > 1 else "."
     user_config = sys.argv[2] if len(sys.argv) > 2 and sys.argv[2] != "-" else None
 
-    from setup_eval.config.presets import SECURITY
-    from setup_eval.core.setup import discover_setup
-    from setup_eval.inspection.engine import inspect_setup
-    from setup_eval.inspection.registry import get_all_rules
+    from harness_eval.config.presets import SECURITY
+    from harness_eval.core.setup import discover_setup
+    from harness_eval.inspection.engine import inspect_setup
+    from harness_eval.inspection.registry import get_all_rules
 
     setup = discover_setup(
         name=Path(setup_path).name, path=setup_path, user_config_dir=user_config

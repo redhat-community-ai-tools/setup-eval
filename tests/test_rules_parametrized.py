@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from setup_eval.inspection.engine import lint, lint_claude_md, lint_command
-from setup_eval.inspection.types import ParsedSkill
+from harness_eval.inspection.engine import lint, lint_claude_md, lint_command
+from harness_eval.inspection.types import ParsedSkill
 
 # ---------------------------------------------------------------------------
 # Helpers

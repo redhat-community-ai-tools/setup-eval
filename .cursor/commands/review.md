@@ -17,10 +17,10 @@ Ask the user: print the report in conversation, or write to a file?
 Run the deterministic scan first to get structural data:
 
 ```bash
-setup-eval lint . --format json
+harness-eval lint . --format json
 ```
 
-If `setup-eval` is not installed, try `pip install setup-eval` first.
+If `harness-eval` is not installed, try `pip install harness-eval` first.
 
 Read the JSON output. Use it as context for the qualitative review. Do NOT present the lint report separately.
 
@@ -60,4 +60,4 @@ Include:
 4. Per-component analysis (lint + qualitative review + verdict)
 5. Numbered improvement suggestions
 
-At the end of the report, include: `Evaluated with: setup-eval v{version} (cursor-command)` where {version} comes from `setup-eval --version` or `pip show setup-eval`.
+At the end of the report, include: `Evaluated with: harness-eval v{version} (cursor-command)` where {version} comes from `harness-eval --version` or `pip show harness-eval`.

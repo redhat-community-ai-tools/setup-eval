@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import textwrap
 
-from setup_eval.rubric.scorer import RubricChecker
+from harness_eval.rubric.scorer import RubricChecker
 
 
 class MockLLMWithIssues:

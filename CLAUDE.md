@@ -1,4 +1,4 @@
-# setup-eval
+# harness-eval
 
 AI agent setup evaluation tool. See [`README.md`](README.md) for usage, features, and installation.
 
@@ -25,20 +25,20 @@ The CI runs 5 jobs: lint, typecheck, test, security gate, lint gate. All must pa
 
 ```bash
 uv run ruff format src/ tests/ && uv run ruff check src/ tests/ && uv run pytest tests/ -q
-uv run setup-eval security . --fail-on-warning   # security gate: any finding blocks
-uv run setup-eval lint . --fail-on-error          # lint gate: only errors block
+uv run harness-eval security . --fail-on-warning   # security gate: any finding blocks
+uv run harness-eval lint . --fail-on-error          # lint gate: only errors block
 ```
 
 The most common CI failure is forgetting `ruff format`. The security gate blocks on any security finding (even warnings). The lint gate blocks only on structural errors (broken references, missing descriptions).
 
 ## Project structure
 
-- `src/setup_eval/` - main package
+- `src/harness_eval/` - main package
   - `cli/` - Click CLI package (4 commands split into `lint.py`, `review.py`, `security.py`, `skill.py`)
   - `config/` - rule presets (recommended/strict/security/pre-workflow)
   - `core/` - setup discovery, fingerprinting, component types
     - `discoverers/` - per-tool discoverer classes (`ToolDiscoverer` ABC); add new assistants here
-  - `inspection/` - static analysis: parsers, lint engine, 59 rules, suppression, auto-fix
+  - `inspection/` - static analysis: parsers, lint engine, 64 rules, suppression, auto-fix
     - `rules/security/_shared.py` - shared scanning logic used by security rules across component types
   - `rubric/` - LLM-based issue detection; prompts in `rubric/prompts/`
   - `analysis/` - system-level analysis (budget, triggers, dependencies, context utilization)
@@ -56,7 +56,7 @@ The most common CI failure is forgetting `ruff format`. The security gate blocks
 - Plugin skills call Python scripts that use the same engine as the CLI
 - Cross-component state in rules uses `context.scan_state`, not module-level variables
 - Tests go in `tests/` mirroring the source structure
-- LLM prompts live in `src/setup_eval/rubric/prompts/` as markdown files, not inline strings
+- LLM prompts live in `src/harness_eval/rubric/prompts/` as markdown files, not inline strings
 - `skills/eval-skill/rubric/skills-rubric.md` is a symlink to `skills/review/rubric/skills-rubric.md`; edit the source, not the link
 - YARA and CVE rules only run in the `security` preset (used by `security`), never in lint
 - Rules that resolve file paths from user content must use `safe_join()` from `utils.paths` to prevent path traversal; never join untrusted paths with raw `/` or `Path()`

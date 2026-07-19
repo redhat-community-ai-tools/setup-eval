@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from setup_eval.inspection.engine import lint_agent
+from harness_eval.inspection.engine import lint_agent
 
 
 def _write_agent(tmp_path: Path, content: str, name: str = "test-agent.md") -> str:

@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from setup_eval.utils.paths import is_within, safe_join
+from harness_eval.utils.paths import is_within, safe_join
 
 
 class TestIsWithin:

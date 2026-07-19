@@ -19,3 +19,4 @@ htmlcov/
 .uv/
 uv.lock
 .tmp/
+repositories/SkillSpector

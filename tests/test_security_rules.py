@@ -8,9 +8,9 @@ from unittest.mock import patch
 
 import pytest
 
-from setup_eval.config.presets import SECURITY
-from setup_eval.inspection.engine import lint
-from setup_eval.inspection.rules.security.no_prompt_injection import (
+from harness_eval.config.presets import SECURITY
+from harness_eval.inspection.engine import lint
+from harness_eval.inspection.rules.security.no_prompt_injection import (
     _INJECTION_PATTERNS,
 )
 
@@ -376,12 +376,12 @@ class TestSubprocessHardcodedDetection:
 
 class TestCveSeverityMapping:
     def test_medium_cve_is_warning(self, skill_dir: Path) -> None:
-        from setup_eval.inspection.rules.security.cve_lookup import CveLookup
+        from harness_eval.inspection.rules.security.cve_lookup import CveLookup
 
         assert CveLookup.meta.default_severity.value == "warning"
 
     def test_adjudicated_finding_properties(self) -> None:
-        from setup_eval.inspection.types import (
+        from harness_eval.inspection.types import (
             AdjudicatedFinding,
             Finding,
             Location,
@@ -412,8 +412,8 @@ class TestCveSeverityMapping:
 
 class TestAdjudicationParsing:
     def test_parse_valid_response(self) -> None:
-        from setup_eval.cli.security import _parse_adjudication_response
-        from setup_eval.inspection.types import Finding, Location, RuleCategory, Severity
+        from harness_eval.cli.security import _parse_adjudication_response
+        from harness_eval.inspection.types import Finding, Location, RuleCategory, Severity
 
         findings = [
             Finding("r/1", Severity.ERROR, "msg1", Location("f.md"), RuleCategory.SECURITY),
@@ -433,8 +433,8 @@ class TestAdjudicationParsing:
         assert result[1].verdict == "CONFIRMED"
 
     def test_parse_invalid_falls_back_to_confirmed(self) -> None:
-        from setup_eval.cli.security import _parse_adjudication_response
-        from setup_eval.inspection.types import Finding, Location, RuleCategory, Severity
+        from harness_eval.cli.security import _parse_adjudication_response
+        from harness_eval.inspection.types import Finding, Location, RuleCategory, Severity
 
         findings = [
             Finding("r/1", Severity.ERROR, "msg1", Location("f.md"), RuleCategory.SECURITY),
