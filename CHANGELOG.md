@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- `agent/excessive-permissions`: flags agents with no allowedTools or disallowedTools (OWASP ASI02)
+- `security/memory-write-unscoped` + `agent/memory-write-unscoped`: flags unscoped memory/persistence writes (OWASP ASI06)
+- `security/unbounded-delegation` + `agent/unbounded-delegation`: flags unbounded subagent spawning (OWASP ASI08)
+- Rule count: 69 to 74 (5 new agentic security rules)
+
 ## [6.0.0] - 2026-07-22
 
 ### Added

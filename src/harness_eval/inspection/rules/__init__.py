@@ -8,13 +8,19 @@ def register_all_rules() -> None:
     # Skill rules
     from harness_eval.inspection.rules.agents.constraint_body_match import ConstraintBodyMatch
     from harness_eval.inspection.rules.agents.data_exfiltration import AgentDataExfiltration
-
-    # Agent rules
     from harness_eval.inspection.rules.agents.description_required import (
         AgentDescriptionRequired,
     )
     from harness_eval.inspection.rules.agents.disallowed_tools_parseable import (
         DisallowedToolsParseable,
+    )
+
+    # Agent rules
+    from harness_eval.inspection.rules.agents.excessive_permissions import (
+        AgentExcessivePermissions,
+    )
+    from harness_eval.inspection.rules.agents.memory_write_unscoped import (
+        AgentMemoryWriteUnscoped,
     )
     from harness_eval.inspection.rules.agents.model_specified import AgentModelSpecified
     from harness_eval.inspection.rules.agents.no_credential_access import (
@@ -29,6 +35,9 @@ def register_all_rules() -> None:
     )
     from harness_eval.inspection.rules.agents.reverse_shell_detection import (
         AgentReverseShellDetection,
+    )
+    from harness_eval.inspection.rules.agents.unbounded_delegation import (
+        AgentUnboundedDelegation,
     )
 
     # CLAUDE.md rules
@@ -106,6 +115,7 @@ def register_all_rules() -> None:
     from harness_eval.inspection.rules.security.data_exfiltration import DataExfiltration
     from harness_eval.inspection.rules.security.mcp_least_privilege import McpLeastPrivilege
     from harness_eval.inspection.rules.security.mcp_tool_poisoning import McpToolPoisoning
+    from harness_eval.inspection.rules.security.memory_write_unscoped import MemoryWriteUnscoped
     from harness_eval.inspection.rules.security.no_credential_access import NoCredentialAccess
     from harness_eval.inspection.rules.security.no_prompt_injection import NoPromptInjection
     from harness_eval.inspection.rules.security.obfuscation_detection import (
@@ -117,6 +127,7 @@ def register_all_rules() -> None:
     )
     from harness_eval.inspection.rules.security.stealth_persistence import StealthPersistence
     from harness_eval.inspection.rules.security.taint_tracking import TaintTracking
+    from harness_eval.inspection.rules.security.unbounded_delegation import UnboundedDelegation
     from harness_eval.inspection.rules.security.yara_scan import YaraScan
     from harness_eval.inspection.rules.structural.skill_md_exists import SkillMdExists
 
@@ -190,5 +201,10 @@ def register_all_rules() -> None:
         TotalContextBudget,
         PermissionEscalation,
         CrossComponentFlow,
+        AgentExcessivePermissions,
+        MemoryWriteUnscoped,
+        AgentMemoryWriteUnscoped,
+        UnboundedDelegation,
+        AgentUnboundedDelegation,
     ]:
         register_rule(rule_cls())

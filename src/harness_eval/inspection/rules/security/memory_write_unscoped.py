@@ -1,0 +1,66 @@
+"""Flag instructions that persist data across sessions without scoping constraints."""
+
+from __future__ import annotations
+
+import re
+
+from harness_eval.core.types import ComponentType
+from harness_eval.inspection.rules.security._shared import (
+    extract_content_and_path,
+    scan_lines_for_patterns,
+)
+from harness_eval.inspection.types import (
+    RuleCategory,
+    RuleContext,
+    RuleMeta,
+    Severity,
+)
+
+MEMORY_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
+    ("save to memory", re.compile(r"\b(save|write|store)\b.*\bmemory\b", re.I)),
+    ("persist to memory", re.compile(r"\bpersist\b.*\bmemory\b", re.I)),
+    ("cross-session persistence", re.compile(r"\bremember\b.*\bacross\b.*\bsession", re.I)),
+    ("store for later", re.compile(r"\bstore\b.*\bfor\s+later\b", re.I)),
+    ("persist between sessions", re.compile(r"\bpersist\b.*\bbetween\b.*\bsession", re.I)),
+    ("scratchpad write", re.compile(r"\b(write|update|save)\b.*\bscratchpad\b", re.I)),
+    ("memory MCP tool", re.compile(r"\bmcp__memory\b", re.I)),
+]
+
+
+class MemoryWriteUnscoped:
+    meta = RuleMeta(
+        id="security/memory-write-unscoped",
+        default_severity=Severity.WARNING,
+        fixable=False,
+        description="Instructions persist data across sessions without scoping constraints",
+        category=RuleCategory.SECURITY,
+        messages={
+            "memory_unscoped": (
+                "Line {{line}} contains '{{label}}'."
+                " Unscoped memory writes risk cross-session data poisoning."
+            ),
+            "memory_in_code_block": (
+                "Line {{line}} contains '{{label}}' inside a code block (likely safe)."
+            ),
+            "memory_in_example": (
+                "Line {{line}} contains '{{label}}' in a quote or example (likely safe)."
+            ),
+        },
+        frameworks={"owasp_agentic": "ASI06"},
+    )
+
+    def create(self, context: RuleContext) -> None:
+        result = extract_content_and_path(context, ComponentType.SKILL)
+        if result is None:
+            return
+        content, file_path = result
+
+        scan_lines_for_patterns(
+            content,
+            file_path,
+            context,
+            MEMORY_PATTERNS,
+            detected_msg="memory_unscoped",
+            code_block_msg="memory_in_code_block",
+            example_msg="memory_in_example",
+        )
