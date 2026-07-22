@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [6.1.0] - 2026-07-22
+
 ### Added
 - `agent/excessive-permissions`: flags agents with no allowedTools or disallowedTools (OWASP ASI02)
 - `security/memory-write-unscoped` + `agent/memory-write-unscoped`: flags unscoped memory/persistence writes (OWASP ASI06)
