@@ -111,6 +111,8 @@ GitHub Action:
 
 Directories like `.git/`, `__pycache__/`, `node_modules/`, `.venv/`, `vendor/`, and `.tox/` are automatically excluded from the recursive search.
 
+Note: `--recursive` follows symlinks within the project directory but skips symlinks that point outside the project boundary.
+
 ### What appears on the PR
 
 The action posts a comment showing:

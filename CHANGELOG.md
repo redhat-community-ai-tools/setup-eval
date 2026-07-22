@@ -8,6 +8,9 @@ All notable changes to this project will be documented in this file.
 - `--recursive` flag for lint and security: search the entire directory tree for agent configs in nested directories (skills, agents, commands, hooks, MCP configs)
 - Recursive mode in GitHub Action via `recursive: "true"` input
 
+### Fixed
+- `--recursive` now skips symlinks that resolve outside the project boundary, preventing traversal into unrelated directories
+
 ## [5.1.0] - 2026-07-20
 
 ### Added

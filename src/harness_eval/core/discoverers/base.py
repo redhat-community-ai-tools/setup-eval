@@ -17,13 +17,26 @@ _EXCLUDE_DIRS = {".git", "__pycache__", "node_modules", ".venv", "vendor", ".tox
 
 
 def _recursive_glob(root: Path, pattern: str) -> list[Path]:
-    """Glob recursively, excluding common non-project directories."""
+    """Glob recursively, excluding common non-project directories.
+
+    Skips symlinks that resolve outside the repo root to prevent
+    traversal into unrelated directories.
+    """
+    resolved_root = root.resolve()
     results = []
     for f in sorted(root.rglob(pattern)):
         if any(excluded in f.parts for excluded in _EXCLUDE_DIRS):
             continue
-        if f.is_file():
-            results.append(f)
+        if not f.is_file():
+            continue
+        if f.is_symlink():
+            try:
+                if not f.resolve().is_relative_to(resolved_root):
+                    continue
+            except (OSError, ValueError):
+                # Unresolvable symlink (broken, permissions, etc.)
+                continue
+        results.append(f)
     return results
 
 
