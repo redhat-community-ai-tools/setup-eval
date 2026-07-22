@@ -14,7 +14,7 @@ pip install harness-eval[tiktoken]      # exact token counting via tiktoken
 Run:
 
 ```bash
-harness-eval lint .                         # deterministic lint (64 rules)
+harness-eval lint .                         # deterministic lint (68 rules)
 harness-eval lint . --watch                 # re-run automatically on file changes
 harness-eval lint . --fail-on-error         # exit code 1 on errors (CI gate)
 harness-eval lint . --fail-on-warning       # exit code 1 on any finding (strict)
@@ -25,7 +25,7 @@ harness-eval security .                     # deterministic security scan
 harness-eval security . --review            # security scan + LLM semantic review
 harness-eval security . --fail-on-warning   # exit code 1 on any security finding
 harness-eval skill ./skills/my-skill --context . --rubric   # deep-evaluate one skill
-harness-eval rules                          # list all 64 rules
+harness-eval rules                          # list all 68 rules
 harness-eval rules --category security      # list security rules only
 harness-eval rules --target hooks           # list rules that apply to hooks
 harness-eval rules --format json            # machine-readable rule list
@@ -70,7 +70,7 @@ No API key needed. No LLM calls. Fully deterministic. Posts a summary comment on
           path: "."              # directories to scan, one per line (default: repo root)
           preset: "recommended"  # recommended, strict, security, or pre-workflow
           security-gate: "true"  # run security checks (15 rules)
-          lint-gate: "true"      # run lint checks (64 rules)
+          lint-gate: "true"      # run lint checks (68 rules)
           lint-fail-on: "error"  # "error" (default) or "warning" (strict)
           sarif: "true"          # inline PR annotations via Code Scanning
           comment: "true"        # post summary comment on PRs
