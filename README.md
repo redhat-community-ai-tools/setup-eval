@@ -68,7 +68,7 @@ See [`docs/INSTALL.md`](docs/INSTALL.md) for all installation options, CI integr
 | Hooks | 5 | Structure validation, script boundary, dangerous commands, env variable leakage, network access |
 | Agents | 13 | Description, model specified, skills exist, tool format, constraint matching, credentials, injection, exfiltration, obfuscation, reverse shells, excessive-permissions, memory-write-unscoped, unbounded-delegation |
 
-Four presets: `recommended` (default), `strict`, `security`, `pre-workflow`.
+Four presets: `recommended` (default), `strict`, `security`, `pre-workflow`. For a complete reference with examples, detection techniques, framework mappings, and AI tool coverage per rule, see [`docs/rules-reference.md`](docs/rules-reference.md).
 
 ### Frameworks
 
