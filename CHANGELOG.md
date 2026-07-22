@@ -9,6 +9,8 @@ All notable changes to this project will be documented in this file.
 - `security/memory-write-unscoped` + `agent/memory-write-unscoped`: flags unscoped memory/persistence writes (OWASP ASI06)
 - `security/unbounded-delegation` + `agent/unbounded-delegation`: flags unbounded subagent spawning (OWASP ASI08)
 - Rule count: 69 to 74 (5 new agentic security rules)
+- `docs/rules-reference.md`: complete reference for all 74 lint rules and LLM review system
+- Moved `INSTALL.md`, `THREAT_MODEL.md`, and `how-can-you-know-its-safe-to-use-this-tool.md` to `docs/`
 
 ## [6.0.0] - 2026-07-22
 

@@ -49,7 +49,7 @@ Multi-tool projects are fully supported. When a project contains files for multi
 
 ## Install
 
-See [`INSTALL.md`](INSTALL.md) for all installation options, CI integration, and configuration (Available as a **CLI tool**, **GitHub Action**, **Claude Code plugin**, and **Cursor commands**)
+See [`docs/INSTALL.md`](docs/INSTALL.md) for all installation options, CI integration, and configuration (Available as a **CLI tool**, **GitHub Action**, **Claude Code plugin**, and **Cursor commands**)
 
 ## Inspection Rules (74)
 
@@ -80,7 +80,7 @@ Rules are mapped to industry security frameworks where applicable:
 
 ## Security
 
-For a full overview of how this tool protects your code, your credentials, and your supply chain, see [`how-can-you-know-its-safe-to-use-this-tool.md`](how-can-you-know-its-safe-to-use-this-tool.md).
+For a full overview of how this tool protects your code, your credentials, and your supply chain, see [`docs/how-can-you-know-its-safe-to-use-this-tool.md`](docs/how-can-you-know-its-safe-to-use-this-tool.md).
 
 ## Privacy and Data Handling
 

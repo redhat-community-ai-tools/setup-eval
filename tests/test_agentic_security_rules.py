@@ -60,9 +60,7 @@ class TestExcessivePermissions:
         assert len(diags) == 0
 
     def test_with_allowed_tools_not_flagged(self, tmp_path: Path) -> None:
-        _make_agent(
-            tmp_path, "scoped-agent", "description: scoped\ntools:\n  - Read\n  - Write"
-        )
+        _make_agent(tmp_path, "scoped-agent", "description: scoped\ntools:\n  - Read\n  - Write")
         (tmp_path / "CLAUDE.md").write_text("# Test")
         from harness_eval.core.setup import discover_setup
         from harness_eval.inspection.engine import inspect_setup
