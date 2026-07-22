@@ -17,7 +17,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - Quality rules (`imprecise-instruction`, `unfinished-content`, `redundant-guidance`, `stale-references`) and `generic-advice` now use shared `ContextTracker` instead of ad-hoc code fence tracking
 - Cross-type checks rubric expanded from 21 to 22 checks
-- Rule count: 64 to 68
+- Rule count: 64 to 68 (4 new cross-component content rules)
 
 ### Fixed
 - `--recursive` now skips symlinks that resolve outside the project boundary, preventing traversal into unrelated directories

@@ -11,6 +11,7 @@ import click
 from harness_eval.cli import cli
 from harness_eval.cli._helpers import emit_output
 from harness_eval.core.setup import discover_setup
+from harness_eval.core.types import ParsedComponent
 from harness_eval.inspection.types import AdjudicatedFinding, Finding, Severity
 from harness_eval.output.metadata import EvalMetadata
 
@@ -206,9 +207,13 @@ def eval_setup_security(
                 f"  Adjudicating {n} components with findings...",
                 err=True,
             )
-            comp_map = {c.name: c for c in setup.components}
+            comp_map: dict[str, ParsedComponent] = {}
+            for c in setup.components:
+                key = f"{c.component_type.value}/{c.name}"
+                if key not in comp_map:
+                    comp_map[key] = c
             for r in components_needing_adjudication:
-                comp = comp_map.get(r.target_name)
+                comp = comp_map.get(f"{r.target_type}/{r.target_name}")
                 if not comp:
                     continue
                 findings_data = [

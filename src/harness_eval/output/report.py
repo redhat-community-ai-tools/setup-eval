@@ -408,8 +408,6 @@ def format_report_card(
 
 def _compute_certification(
     results: list[InspectionResult],
-    security_results: list[InspectionResult] | None = None,
-    review_score: float | None = None,
 ) -> dict:
     """Compute setup certification tiers.
 
@@ -435,16 +433,12 @@ def _compute_certification(
         and any(d.rule_id.startswith(p) for p in quality_rule_prefixes)
     )
 
-    security_errors = 0
-    if security_results is not None:
-        security_errors = sum(r.error_count for r in security_results)
-    else:
-        security_errors = sum(
-            1
-            for r in results
-            for d in r.diagnostics
-            if d.rule_id.startswith("security/") and d.severity.value == "error"
-        )
+    security_errors = sum(
+        1
+        for r in results
+        for d in r.diagnostics
+        if d.rule_id.startswith("security/") and d.severity.value == "error"
+    )
 
     basic_passed = total_errors == 0
     verified_passed = basic_passed and quality_warnings == 0

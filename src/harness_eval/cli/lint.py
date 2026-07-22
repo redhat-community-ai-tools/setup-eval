@@ -100,7 +100,7 @@ def eval_setup_lint(
             click.echo("Warning: --fail-on-error is ignored in watch mode.", err=True)
         if fail_on_warning:
             click.echo("Warning: --fail-on-warning is ignored in watch mode.", err=True)
-        run_watch(path=path, preset=preset, fmt=fmt, user_config=user_config)
+        run_watch(path=path, preset=preset, fmt=fmt, user_config=user_config, recursive=recursive)
         return
 
     t0 = time.monotonic()

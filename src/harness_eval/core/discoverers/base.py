@@ -11,6 +11,7 @@ from harness_eval.core.types import (
     ParsedComponent,
 )
 from harness_eval.utils.parsing import parse_frontmatter
+from harness_eval.utils.paths import is_within
 from harness_eval.utils.tokens import count_tokens
 
 _EXCLUDE_DIRS = {".git", "__pycache__", "node_modules", ".venv", "vendor", ".tox"}
@@ -22,20 +23,14 @@ def _recursive_glob(root: Path, pattern: str) -> list[Path]:
     Skips symlinks that resolve outside the repo root to prevent
     traversal into unrelated directories.
     """
-    resolved_root = root.resolve()
     results = []
     for f in sorted(root.rglob(pattern)):
         if any(excluded in f.parts for excluded in _EXCLUDE_DIRS):
             continue
         if not f.is_file():
             continue
-        if f.is_symlink():
-            try:
-                if not f.resolve().is_relative_to(resolved_root):
-                    continue
-            except (OSError, ValueError):
-                # Unresolvable symlink (broken, permissions, etc.)
-                continue
+        if f.is_symlink() and not is_within(f, root):
+            continue
         results.append(f)
     return results
 

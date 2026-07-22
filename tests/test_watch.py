@@ -238,6 +238,7 @@ class TestCLIWatchFlag:
                     preset="strict",
                     fmt="terminal",
                     user_config=None,
+                    recursive=False,
                 )
 
 

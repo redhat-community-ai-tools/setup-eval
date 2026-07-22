@@ -4,6 +4,10 @@ import re
 from pathlib import Path
 
 from harness_eval.core.types import ComponentType
+from harness_eval.inspection.rules.content._skill_refs import (
+    SKILL_REF_PATTERNS,
+    find_project_root,
+)
 from harness_eval.inspection.types import (
     Location,
     ReportDescriptor,
@@ -13,37 +17,14 @@ from harness_eval.inspection.types import (
     Severity,
 )
 
-_SKILL_REF_PATTERNS = [
-    re.compile(r"/(\w[\w-]+)(?:\s|$|[),\]])"),
-    re.compile(r"(?:skill|command)[:\s]+[\"']?(\w[\w-]+)[\"']?", re.IGNORECASE),
-    re.compile(
-        r"(?:invokes?|calls?|triggers?|runs?)\s+[\"'`]?/?(\w[\w-]+)[\"'`]?",
-        re.IGNORECASE,
-    ),
-]
-
 
 def _is_referenced(name: str, text: str) -> bool:
     """Check if a skill name appears in the given text via reference patterns or plain mention."""
-    for pattern in _SKILL_REF_PATTERNS:
+    for pattern in SKILL_REF_PATTERNS:
         for match in pattern.finditer(text):
             if match.group(1) == name:
                 return True
-    # Also check plain name mention (e.g. in CLAUDE.md lists or prose)
     return bool(re.search(rf"\b{re.escape(name)}\b", text))
-
-
-def _find_project_root(skill_path: str) -> Path | None:
-    """Walk up from a skill path to find the project root (containing CLAUDE.md or .claude/)."""
-    current = Path(skill_path).resolve()
-    for _ in range(10):
-        if (current / "CLAUDE.md").is_file() or (current / ".claude").is_dir():
-            return current
-        parent = current.parent
-        if parent == current:
-            break
-        current = parent
-    return None
 
 
 def _read_claude_md(project_root: Path) -> str:
@@ -101,7 +82,7 @@ class OrphanSkills:
                 reference_texts.append(cmd.body)
 
         # Read CLAUDE.md and agent bodies directly from the project
-        project_root = _find_project_root(all_skills[0].dir_path)
+        project_root = find_project_root(all_skills[0].dir_path)
         if project_root is not None:
             claude_md_content = _read_claude_md(project_root)
             if claude_md_content:

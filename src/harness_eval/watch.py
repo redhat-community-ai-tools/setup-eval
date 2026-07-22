@@ -50,6 +50,7 @@ def run_watch(
     fmt: str,
     user_config: str | None,
     debounce_ms: int = DEBOUNCE_MS,
+    recursive: bool = False,
 ) -> None:
     """Run lint in watch mode, re-running on file changes.
 
@@ -59,6 +60,7 @@ def run_watch(
         fmt: Output format ('terminal' or 'json').
         user_config: Optional user config directory.
         debounce_ms: Debounce window in milliseconds.
+        recursive: Search for agent configs in nested directories.
     """
     root = Path(path)
     if not root.is_dir():
@@ -81,7 +83,9 @@ def run_watch(
     config_rules = PRESETS.get(preset, {})
 
     user_config_path = Path(user_config) if user_config else None
-    watch_paths = collect_setup_file_paths(root, user_config_dir=user_config_path)
+    watch_paths = collect_setup_file_paths(
+        root, user_config_dir=user_config_path, recursive=recursive
+    )
     watch_dirs = _get_watch_directories(watch_paths)
 
     if not watch_dirs:
@@ -89,7 +93,9 @@ def run_watch(
 
     def _run_lint() -> None:
         """Run lint and display results."""
-        setup = discover_setup(name=root.name, path=path, user_config_dir=user_config)
+        setup = discover_setup(
+            name=root.name, path=path, user_config_dir=user_config, recursive=recursive
+        )
         results = inspect_setup(setup, config_rules)
         system = analyze_system(setup)
 

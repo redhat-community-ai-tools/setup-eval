@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-import re
-
 from harness_eval.core.types import ComponentType
+from harness_eval.inspection.rules.content._skill_refs import extract_references
 from harness_eval.inspection.types import (
     Location,
     ReportDescriptor,
@@ -11,22 +10,6 @@ from harness_eval.inspection.types import (
     RuleMeta,
     Severity,
 )
-
-_SKILL_REF_PATTERNS = [
-    re.compile(r"/(\w[\w-]+)(?:\s|$|[),\]])"),
-    re.compile(r"(?:skill|command)[:\s]+[\"']?(\w[\w-]+)[\"']?", re.IGNORECASE),
-    re.compile(r"(?:invokes?|calls?|triggers?|runs?)\s+[\"'`]?/?(\w[\w-]+)[\"'`]?", re.IGNORECASE),
-]
-
-
-def _extract_references(body: str, own_name: str) -> set[str]:
-    refs: set[str] = set()
-    for pattern in _SKILL_REF_PATTERNS:
-        for match in pattern.finditer(body):
-            name = match.group(1)
-            if name != own_name and len(name) > 1:
-                refs.add(name)
-    return refs
 
 
 def _find_cycles(graph: dict[str, set[str]]) -> list[list[str]]:
@@ -83,13 +66,13 @@ class CircularReferences:
 
         for skill in context.all_skills:
             if skill.body:
-                refs = _extract_references(skill.body, skill.dir_name)
+                refs = extract_references(skill.body, skill.dir_name)
                 graph[skill.dir_name] = refs
                 file_map[skill.dir_name] = skill.skill_md_path
 
         for cmd in context.all_commands:
             if cmd.body:
-                refs = _extract_references(cmd.body, cmd.dir_name)
+                refs = extract_references(cmd.body, cmd.dir_name)
                 graph[cmd.dir_name] = refs
                 file_map[cmd.dir_name] = cmd.command_md_path
 

@@ -65,7 +65,9 @@ class ImpreciseInstruction:
         for i, line in enumerate(lines):
             tracker.update(line)
 
-            if tracker.is_contextual(line):
+            if tracker.is_fenced():
+                continue
+            if line.lstrip().startswith(">"):
                 continue
 
             for category, label, pattern in _ALL_PATTERNS:

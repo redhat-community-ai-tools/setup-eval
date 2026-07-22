@@ -35,7 +35,3 @@ class ContextTracker:
     def is_fenced(self) -> bool:
         """Return True if currently inside a code fence."""
         return self.in_code_fence
-
-    def is_blockquote(self, line: str) -> bool:
-        """Return True if the line is a blockquote."""
-        return line.lstrip().startswith(">")

@@ -19,7 +19,7 @@ class TotalContextBudget:
         id="content/total-context-budget",
         default_severity=Severity.WARNING,
         fixable=False,
-        description="Total token usage across all components should not exceed context window limits",
+        description="Total skill token usage should not exceed context window budget",
         category=RuleCategory.CONTENT,
         messages={
             "over_budget": (

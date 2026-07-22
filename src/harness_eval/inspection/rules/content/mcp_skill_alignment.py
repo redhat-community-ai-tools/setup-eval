@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
@@ -14,10 +15,11 @@ from harness_eval.inspection.types import (
 )
 
 _MCP_PATTERNS = [
-    re.compile(r"\bmcp[_\-]?\w*", re.IGNORECASE),
-    re.compile(r"\bmcp_tool\b", re.IGNORECASE),
-    re.compile(r"\buse_mcp\b", re.IGNORECASE),
     re.compile(r"\bmcp__\w+", re.IGNORECASE),
+    re.compile(r"\bmcp[_\-]tool\b", re.IGNORECASE),
+    re.compile(r"\buse[_\s]mcp\b", re.IGNORECASE),
+    re.compile(r"\bmcp\s+server\b", re.IGNORECASE),
+    re.compile(r"\bmcp\s+tool\b", re.IGNORECASE),
 ]
 
 
@@ -49,9 +51,6 @@ class McpSkillAlignment:
         category=RuleCategory.CONTENT,
         messages={
             "mcp_unused": "MCP server '{{server}}' is configured but no skill references its tools",
-            "skill_missing_mcp": (
-                "Skill '{{skill}}' references MCP tool '{{tool}}' but no MCP server provides it"
-            ),
         },
         target_type=ComponentType.SKILL,
     )
@@ -73,22 +72,12 @@ class McpSkillAlignment:
 
         # Check which skills mention MCP
         skills_mentioning_mcp: list[str] = []
-        mcp_tool_refs: dict[str, list[str]] = {}
 
         for skill in all_skills:
             if skill.body and _mentions_mcp(skill.body):
                 skills_mentioning_mcp.append(skill.dir_name)
-                # Extract specific MCP tool references (mcp__server__tool pattern)
-                tool_matches = re.findall(r"\bmcp__(\w+)__(\w+)", skill.body)
-                if tool_matches:
-                    mcp_tool_refs[skill.dir_name] = [
-                        f"mcp__{server}__{tool}" for server, tool in tool_matches
-                    ]
 
         if has_mcp_config and not skills_mentioning_mcp:
-            # MCP config exists but no skill references MCP tools
-            import json
-
             try:
                 with open(mcp_config_path, encoding="utf-8") as f:
                     mcp_data = json.load(f)

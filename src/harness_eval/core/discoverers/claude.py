@@ -96,8 +96,6 @@ class ClaudeCodeDiscoverer(ToolDiscoverer):
         if recursive:
             for f in _recursive_glob(root, ".claude/settings.json"):
                 paths.append(f)
-            for f in _recursive_glob(root, "settings.json"):
-                paths.append(f)
 
         # Agents
         agents_dir = root / ".claude" / "agents"
@@ -267,15 +265,6 @@ class ClaudeCodeDiscoverer(ToolDiscoverer):
             )
         if recursive:
             for f in _recursive_glob(root, ".claude/settings.json"):
-                resolved = str(f.resolve())
-                if resolved not in seen_paths:
-                    seen_paths.add(resolved)
-                    results.append(
-                        parse_file(
-                            f, ComponentType.HOOKS, name="settings.json", source_tool="claude"
-                        )
-                    )
-            for f in _recursive_glob(root, "settings.json"):
                 resolved = str(f.resolve())
                 if resolved not in seen_paths:
                     seen_paths.add(resolved)

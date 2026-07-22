@@ -26,15 +26,22 @@ from harness_eval.rubric.types import RubricResult
     default=None,
     help="Path to ~/.claude directory for user-level CLAUDE.md discovery.",
 )
+@click.option(
+    "--recursive",
+    is_flag=True,
+    help="Recursively search for agent configs in all subdirectories.",
+)
 def eval_setup_review(
-    path: str, fmt: str, provider: str, model: str | None, user_config: str | None
+    path: str, fmt: str, provider: str, model: str | None, user_config: str | None, recursive: bool
 ) -> None:
     """Review: LLM rubric scoring per component. Requires API key in environment."""
     t0 = time.monotonic()
     from harness_eval.rubric.scorer import RubricChecker
     from harness_eval.utils.llm import create_client
 
-    setup = discover_setup(name=Path(path).name, path=path, user_config_dir=user_config)
+    setup = discover_setup(
+        name=Path(path).name, path=path, user_config_dir=user_config, recursive=recursive
+    )
 
     client = create_client(provider, model)
     checker = RubricChecker(client)

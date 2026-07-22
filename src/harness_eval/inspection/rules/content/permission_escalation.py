@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-import re
-
 from harness_eval.core.types import ComponentType
+from harness_eval.inspection.rules.content._skill_refs import extract_references
 from harness_eval.inspection.types import (
     Location,
     ReportDescriptor,
@@ -11,25 +10,6 @@ from harness_eval.inspection.types import (
     RuleMeta,
     Severity,
 )
-
-_SKILL_REF_PATTERNS = [
-    re.compile(r"/(\w[\w-]+)(?:\s|$|[),\]])"),
-    re.compile(r"(?:skill|command)[:\s]+[\"']?(\w[\w-]+)[\"']?", re.IGNORECASE),
-    re.compile(
-        r"(?:invokes?|calls?|triggers?|runs?)\s+[\"'`]?/?(\w[\w-]+)[\"'`]?",
-        re.IGNORECASE,
-    ),
-]
-
-
-def _extract_references(body: str, own_name: str) -> set[str]:
-    refs: set[str] = set()
-    for pattern in _SKILL_REF_PATTERNS:
-        for match in pattern.finditer(body):
-            name = match.group(1)
-            if name != own_name and len(name) > 1:
-                refs.add(name)
-    return refs
 
 
 class PermissionEscalation:
@@ -75,7 +55,7 @@ class PermissionEscalation:
             file_map[name] = skill.skill_md_path
 
             if skill.body:
-                refs_map[name] = _extract_references(skill.body, name)
+                refs_map[name] = extract_references(skill.body, name)
             else:
                 refs_map[name] = set()
 
